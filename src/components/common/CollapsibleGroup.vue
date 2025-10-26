@@ -35,5 +35,6 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
+    min-width: 800px;
   }
 </style>

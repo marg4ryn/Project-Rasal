@@ -5,7 +5,7 @@
     <CollapsibleGroup
       :items="[
         { label: t('settingsPage.appearance'), slotName: 'first' },
-        { label: t('settingsPage.definitions'), slotName: 'second' },
+        { label: t('settingsPage.mappings'), slotName: 'second' },
         { label: t('settingsPage.performance'), slotName: 'third' },
         { label: t('settingsPage.notifications'), slotName: 'fourth' },
       ]"

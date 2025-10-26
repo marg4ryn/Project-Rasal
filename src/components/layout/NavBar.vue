@@ -69,6 +69,7 @@
 <style scoped lang="scss">
   .nav-bar {
     width: 100%;
+    min-width: 1100px;
     height: 50px;
     background-color: var(--color-bg-primary);
     color: var(--color-on-bg-primary);

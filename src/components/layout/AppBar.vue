@@ -74,6 +74,7 @@
 <style lang="scss" scoped>
   .app-bar {
     width: 100%;
+    min-width: 1100px;
     height: 80px;
     background-color: var(--color-bg-primary);
     color: var(--color-on-bg-primary);
