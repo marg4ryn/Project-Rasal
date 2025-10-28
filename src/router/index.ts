@@ -44,7 +44,7 @@ export default function (): Router {
       name: 'time-range',
       meta: {
         title: t('title.time-range'),
-        showNavBar: false,
+        showNavBar: true,
       },
       component: TimeRange,
     },

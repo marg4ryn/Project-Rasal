@@ -26,6 +26,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 30px;
     min-width: 1100px;
     padding: 10px 20px;
     background-color: var(--color-bg-secondary);

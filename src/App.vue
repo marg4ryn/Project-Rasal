@@ -32,8 +32,9 @@
 
   const contentMinHeight = computed(() => {
     const appBarHeight = 80
+    const footerHeight = 30
     const navBarHeight = isNavBarVisible.value ? 50 : 0
-    return `calc(100vh - ${appBarHeight + navBarHeight}px)`
+    return `calc(100vh - ${appBarHeight + navBarHeight + footerHeight}px)`
   })
 
   onBeforeMount(() => {

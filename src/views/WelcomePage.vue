@@ -16,15 +16,22 @@
 
 <script lang="ts">
   import { defineComponent, ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAnalysisStore } from '@/stores/analysisStore'
 
   export default defineComponent({
     name: 'App',
     setup() {
       const link = ref<string>('')
+      const router = useRouter()
+      const analysisStore = useAnalysisStore()
 
       const startAction = () => {
         if (link.value) {
-          alert(`Rozpoczynam działanie dla linku: ${link.value}`)
+          analysisStore.setLink(link.value)
+          router.push('/time-range')
+        } else {
+          alert('Podaj link przed rozpoczęciem!')
         }
       }
 
