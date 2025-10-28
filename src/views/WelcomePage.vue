@@ -1,116 +1,161 @@
-<template>
-  <div class="content-wrapper">
-    <img src="/vite.svg" alt="Logo" class="logo" />
-    <h1 class="motto">Welcome to HotSpotter!</h1>
-    <h1 class="motto">Your repository, Your code city.</h1>
-    <p class="subtitle">Enter link to analysis target:</p>
-    <input
-      type="text"
-      v-model="link"
-      placeholder="e.g. https://github.com/marg4ryn/test.git"
-      class="link-input"
-    />
-    <button @click="startAction" :disabled="!link" class="start-button">Start</button>
-  </div>
-</template>
-
-<script lang="ts">
-  import { defineComponent, ref } from 'vue'
+<script setup lang="ts">
+  import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAnalysisStore } from '@/stores/analysisStore'
+  import AppButton from '@/components/common/AppButton.vue'
+  import LoadingOverlay from '@/components/layout/LoadingOverlay.vue'
 
-  export default defineComponent({
-    name: 'App',
-    setup() {
-      const link = ref<string>('')
-      const router = useRouter()
-      const analysisStore = useAnalysisStore()
+  const link = ref('')
+  const isAnalyzing = ref(false)
+  const router = useRouter()
+  const analysisStore = useAnalysisStore()
 
-      const startAction = () => {
-        if (link.value) {
-          analysisStore.setLink(link.value)
-          router.push('/time-range')
-        } else {
-          alert('Podaj link przed rozpoczęciem!')
-        }
-      }
+  const startAnalysis = async () => {
+    if (!link.value.trim()) {
+      alert('Please enter a repository link before starting!')
+      return
+    }
 
-      return {
-        link,
-        startAction,
-      }
-    },
-  })
+    isAnalyzing.value = true
+
+    try {
+      analysisStore.setLink(link.value)
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      router.push('/time-range')
+    } catch (error) {
+      console.error('Analysis error:', error)
+      alert('An error occurred during analysis. Please try again.')
+    } finally {
+      isAnalyzing.value = false
+    }
+  }
 </script>
 
-<style lang="scss">
-  .content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-    padding: 10px;
-    max-width: 500px;
+<template>
+  <section class="welcome-screen">
+    <LoadingOverlay :show="isAnalyzing" label="Loading repository..." />
+
+    <div class="welcome-content">
+      <img src="/vite.svg" alt="HotSpotter Logo" class="logo" />
+
+      <h1 class="title">Welcome to HotSpotter!</h1>
+      <h2 class="subtitle-heading">Your repository, Your code city.</h2>
+
+      <div class="input-section">
+        <label for="repo-link" class="input-label"> Enter link to analysis target: </label>
+        <input
+          id="repo-link"
+          type="text"
+          v-model="link"
+          placeholder="e.g. https://github.com/johndoe/test.git"
+          class="repo-input"
+          @keyup.enter="startAnalysis"
+          :disabled="isAnalyzing"
+        />
+      </div>
+
+      <AppButton label="Analyze" variant="primary" @click="startAnalysis" :disabled="isAnalyzing" />
+    </div>
+  </section>
+</template>
+
+<style scoped lang="scss">
+  .welcome-screen {
+    @include flex-center;
+    position: relative;
     width: 100%;
     height: 100%;
   }
 
+  .welcome-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    gap: 1.5rem;
+  }
+
   .logo {
-    width: 80px;
-    margin-bottom: 15px;
+    @include floating-logo;
   }
 
-  .motto {
-    font-size: 1.5rem;
+  .title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .subtitle-heading {
+    font-size: 1.25rem;
     font-weight: 400;
-    color: var(--color-on-bg-secondary);
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    line-height: 1.4;
   }
 
-  .subtitle {
-    font-size: 1rem;
-    color: var(--color-on-bg-secondary);
-    margin-top: 20px;
-    margin-bottom: 5px;
+  .input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 1rem;
   }
 
-  .link-input {
-    padding: 5px;
-    border: 2px solid var(--color-button-secondary);
-    background-color: var(--color-bg-primary);
-    border-radius: 10px;
+  .input-label {
     font-size: 1rem;
-    width: 350px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+  }
+
+  .repo-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s ease;
     box-sizing: border-box;
-    margin-bottom: 15px;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
 
     &:focus {
       outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.2);
-    }
-  }
-
-  .start-button {
-    margin: 5px;
-    padding: 8px;
-    background-color: var(--color-button-primary);
-    border: 1px solid var(--color-button-secondary);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    width: 150px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: var(--color-button-primary-hover);
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
     }
 
     &:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .title {
+      font-size: 1.5rem;
+    }
+
+    .subtitle-heading {
+      font-size: 1rem;
+    }
+
+    .repo-input {
+      font-size: 0.875rem;
+      padding: 0.875rem 1rem;
     }
   }
 </style>

@@ -10,6 +10,19 @@
   align-items: center;
 }
 
-@mixin transition($time: 0.25s) {
-  transition: all $time ease-in-out;
+@mixin floating-logo($size: 80px, $float-distance: 10px, $duration: 3s) {
+  width: $size;
+  height: $size;
+  margin-bottom: 1rem;
+  animation: float $duration ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-$float-distance);
+    }
+  }
 }

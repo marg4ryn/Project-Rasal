@@ -18,7 +18,7 @@
       :title="t('appbar.new-analysis')"
       :aria-label="t('appbar.new-analysis')"
     >
-      <img src="/vite.svg" alt="Logo" class="logo" /><span class="app-name">
+      <img src="/vite.svg" alt="Logo" class="app_logo" /><span class="app-name">
         <span class="app-name__1">Hot</span><span class="app-name__2">Spotter</span></span
       >
     </RouterLink>
@@ -108,7 +108,7 @@
       font-size: 1.1rem;
     }
 
-    .logo {
+    .app_logo {
       height: 40px;
       width: 40px;
     }

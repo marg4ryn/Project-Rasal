@@ -6,11 +6,9 @@
     show: boolean
   }>()
 
-  // Dla demonstracji - automatyczne ukrycie po 5 sekundach
   const demoMode = ref(false)
 
   onMounted(() => {
-    // Sprawdź czy to tryb demo (brak kontroli z zewnątrz)
     if (props.show) {
       demoMode.value = true
       setTimeout(() => {
@@ -74,17 +72,17 @@
 
     &:nth-child(1) {
       animation-delay: -0.45s;
-      border-top-color: #0ea5e9;
+      border-top-color: #bc1922;
     }
 
     &:nth-child(2) {
       animation-delay: -0.3s;
-      border-top-color: #22c55e;
+      border-top-color: #8b5cf6;
     }
 
     &:nth-child(3) {
       animation-delay: -0.15s;
-      border-top-color: #8b5cf6;
+      border-top-color: #28abf2;
     }
   }
 

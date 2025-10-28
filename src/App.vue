@@ -24,11 +24,11 @@
 
   const { locale } = useI18n()
 
+  const uiStore = useUIStore()
+  const isNavBarVisible = computed(() => uiStore.isNavBarVisible)
   const userSettings = useUserSettingsStore()
   const colorPrimary = ref(userSettings.selectedColor)
   let colorSecondary = ''
-  const uiStore = useUIStore()
-  const isNavBarVisible = computed(() => uiStore.isNavBarVisible)
 
   const contentMinHeight = computed(() => {
     const appBarHeight = 80
@@ -122,10 +122,5 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 8px;
-  }
-
-  AppFooter {
-    flex-shrink: 0;
   }
 </style>

@@ -176,25 +176,24 @@
 
 <style scoped lang="scss">
   .analysis-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    color: white;
+    @include flex-center;
+    position: relative;
+    width: 100%;
+    height: 100%;
   }
 
   .content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
-    max-width: 600px;
+    text-align: center;
+    max-width: 500px;
     width: 100%;
-    padding: 2rem;
+    gap: 1.5rem;
   }
 
   .logo {
-    margin-bottom: 1rem;
+    @include floating-logo;
   }
 
   .title {
