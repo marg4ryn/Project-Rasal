@@ -1,11 +1,17 @@
 <script setup lang="ts">
-  import { storeToRefs } from 'pinia'
   import { useUIStore } from '@/stores/uiStore'
+  import { useAnalysisStore } from '@/stores/analysisStore'
   import { useI18n } from 'vue-i18n'
   import { RouterLink } from 'vue-router'
 
   const { t } = useI18n()
-  const { showLabel, analysisTitle } = storeToRefs(useUIStore())
+
+  const showAnalysisTitle = useUIStore().showAnalysisTitle
+  const analysisStore = useAnalysisStore()
+  const repoName = analysisStore.link
+  const fromDate = analysisStore.fromDate
+  const toDate = analysisStore.toDate
+
   function openProfile() {}
   function openNotifications() {}
 </script>
@@ -23,8 +29,8 @@
       >
     </RouterLink>
 
-    <div v-if="showLabel" class="app-bar__center">
-      <span class="app-label">{{ analysisTitle }}</span>
+    <div v-if="showAnalysisTitle" class="app-bar__center">
+      <span class="app-label"> {{ repoName }} — {{ fromDate }} – {{ toDate }} </span>
     </div>
 
     <div class="app-bar__right">

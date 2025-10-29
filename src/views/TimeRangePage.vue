@@ -103,8 +103,6 @@
 <template>
   <div class="analysis-container">
     <div class="content">
-      <img src="/vite.svg" alt="Logo" class="logo" />
-
       <h1 class="title">
         The repository download has<br />
         completed. Please set the analysis<br />
@@ -190,10 +188,6 @@
     max-width: 500px;
     width: 100%;
     gap: 1.5rem;
-  }
-
-  .logo {
-    @include floating-logo;
   }
 
   .title {
