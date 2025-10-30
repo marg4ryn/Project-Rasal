@@ -1,70 +1,118 @@
-<script setup lang="ts">
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useAnalysisStore } from '@/stores/analysisStore'
-  import AppButton from '@/components/common/AppButton.vue'
-  import LoadingOverlay from '@/components/layout/LoadingOverlay.vue'
-
-  const link = ref('')
-  const isAnalyzing = ref(false)
-  const router = useRouter()
-  const analysisStore = useAnalysisStore()
-
-  const startAnalysis = async () => {
-    if (!link.value.trim()) {
-      alert('Please enter a repository link before starting!')
-      return
-    }
-
-    isAnalyzing.value = true
-
-    try {
-      analysisStore.setLink(link.value)
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-      router.push('/time-range')
-    } catch (error) {
-      console.error('Analysis error:', error)
-      alert('An error occurred during analysis. Please try again.')
-    } finally {
-      isAnalyzing.value = false
-    }
-  }
-</script>
-
 <template>
   <section class="welcome-screen">
-    <LoadingOverlay :show="isAnalyzing" label="Loading repository..." />
+    <LoadingOverlay
+      :show="isDownloading"
+      :label="t('welcomePage.loading') + ' ' + progress + '%'"
+    />
 
     <div class="welcome-content">
-      <img src="/vite.svg" alt="HotSpotter Logo" class="logo" />
+      <img src="/logo.png" alt="HotSpotter Logo" class="logo" />
 
-      <h1 class="title">Welcome to HotSpotter!</h1>
-      <h2 class="subtitle-heading">Your repository, Your code city.</h2>
+      <h1 class="title">{{ t('welcomePage.header') }} <span class="appname1">Hot</span>Spotter!</h1>
+      <h2 class="subtitle-heading">{{ t('welcomePage.motto') }}</h2>
 
       <div class="input-section">
-        <label for="repo-link" class="input-label"> Enter link to analysis target: </label>
+        <label for="repo-link" class="input-label">{{ t('welcomePage.prompt') }}</label>
         <input
           id="repo-link"
           type="text"
           v-model="link"
           placeholder="e.g. https://github.com/johndoe/test.git"
           class="repo-input"
-          @keyup.enter="startAnalysis"
-          :disabled="isAnalyzing"
+          @keyup.enter="handleDownload"
+          :disabled="isDownloading"
         />
       </div>
 
-      <AppButton label="Analyze" variant="primary" @click="startAnalysis" :disabled="isAnalyzing" />
+      <AppButton
+        :label="t('welcomePage.buttonAnalyze')"
+        variant="primary"
+        @click="handleDownload"
+        :disabled="isDownloading"
+      />
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  //import { useAnalysisStore } from '@/stores/analysisStore'
+  import { useI18n } from 'vue-i18n'
+  import AppButton from '@/components/common/AppButton.vue'
+  import LoadingOverlay from '@/components/layout/LoadingOverlay.vue'
+  import { downloadService } from '@/services/downloadService'
+
+  const { t } = useI18n()
+  const router = useRouter()
+  //const analysisStore = useAnalysisStore()
+  const link = ref('')
+  const progress = ref(0)
+  const status = ref('')
+  const isDownloading = ref(false)
+  const error = ref('')
+
+  const handleDownload = async () => {
+    if (!link.value.trim()) {
+      alert(t('welcomePage.alertEnterRepo'))
+      return
+    }
+
+    progress.value = 0
+    status.value = ''
+    error.value = ''
+    isDownloading.value = true
+
+    downloadService.startDownloadMock(
+      link.value,
+      // onProgress callback
+      (data) => {
+        progress.value = data.progress
+        status.value = data.status
+      },
+      // onComplete callback
+      (data) => {
+        status.value = `Zakończono! Plik: ${data.filename}`
+        isDownloading.value = false
+        router.push('/time-range')
+      },
+      // onError callback
+      (errorMsg) => {
+        error.value = errorMsg
+        isDownloading.value = false
+      }
+    )
+
+    // downloadService.startDownload(
+    //   link.value,
+    //   (data) => {
+    //     progress.value = data.progress;
+    //     status.value = data.status;
+    //   },
+    //   (data) => {
+    //     status.value = `Zakończono! Plik: ${data.filename}`;
+    //     isDownloading.value = false;
+    //   },
+    //   (errorMsg) => {
+    //     error.value = errorMsg;
+    //     isDownloading.value = false;
+    //   }
+    // );
+
+    // const handleCancel = () => {
+    //   downloadService.abort()
+    //   isDownloading.value = false
+    //   status.value = 'Anulowano'
+    // }
+  }
+</script>
 
 <style scoped lang="scss">
   .welcome-screen {
     @include flex-center;
     position: relative;
+    flex: 1 0 auto;
     width: 100%;
-    height: 100%;
   }
 
   .welcome-content {
@@ -75,88 +123,63 @@
     max-width: 500px;
     width: 100%;
     height: 100%;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .logo {
     @include floating-logo;
+    width: 200px;
+    height: 200px;
   }
 
   .title {
-    font-size: 2rem;
-    font-weight: 600;
-    color: white;
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-semibold;
+    color: var(--color-text-primary);
     margin: 0;
-    line-height: 1.2;
+    line-height: $line-height-tight;
+
+    .appname1 {
+      color: var(--color-primary);
+    }
   }
 
   .subtitle-heading {
-    font-size: 1.25rem;
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: $font-size-xl;
+    font-weight: $font-weight-normal;
+    color: var(--color-text-tertiary);
     margin: 0;
-    line-height: 1.4;
+    line-height: $line-height-normal;
   }
 
   .input-section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    @include flex-column($spacing-md);
     width: 100%;
-    margin-top: 1rem;
+    margin-top: $spacing-lg;
   }
 
   .input-label {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
+    font-size: $font-size-base;
+    color: var(--color-text-secondary);
+    font-weight: $font-weight-medium;
   }
 
   .repo-input {
-    width: 100%;
-    padding: 1rem 1.25rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    color: white;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    &:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.15);
-      border-color: #0ea5e9;
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    @include input-base;
   }
 
-  @media (max-width: 640px) {
+  @include respond-to-sm {
     .title {
-      font-size: 1.5rem;
+      font-size: $font-size-2xl;
     }
 
     .subtitle-heading {
-      font-size: 1rem;
+      font-size: $font-size-base;
     }
 
     .repo-input {
-      font-size: 0.875rem;
-      padding: 0.875rem 1rem;
+      font-size: $font-size-sm;
+      padding: $spacing-md $spacing-lg;
     }
   }
 </style>

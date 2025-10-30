@@ -73,6 +73,16 @@
     "notifications": "Notifications"
   },
 
+  "welcomePage": {
+    "header": "Welcome to",
+    "motto": "Your repository, Your code city.",
+    "prompt": "Enter link to analysis target:",
+    "buttonAnalyze": "Analyze",
+    "alertEnterRepo": "Please enter a repository link before starting!",
+    "alerServerError": "An error occurred during analysis. Please try again.",
+    "loading": "Loading repository..."
+  },
+
   "others": {
     "inDevelopmentLabel": "In Development",
     "closeIconButton": "Close"
