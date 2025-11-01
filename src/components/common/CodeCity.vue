@@ -13,9 +13,9 @@ import type { CityData } from '@/types/city'
 import { useCodeCityScene } from '@/composables/useCodeCityScene'
 import { useCodeCityState } from '@/composables/useCodeCityState'
 import { processNode } from '@/utils/city/layout'
-import { createGeometry, clearEdgesCache, createMergedEdges } from '@/utils/city/geometry'
+import { createGeometry, createMergedEdges } from '@/utils/city/geometry'
 import * as THREE from 'three'
-import { COLORS, CAMERA_DAMPING, AUTO_ROTATE_DELAY, AUTO_ROTATE_SPEED } from '@/utils/city/constants'
+import { COLORS, CAMERA_DAMPING, AUTO_ROTATE_DELAY, AUTO_ROTATE_SPEED, CENTER_TRANSITION_SPEED } from '@/utils/city/constants'
 import { toRaw } from 'vue'
 
 interface Props {
@@ -40,7 +40,7 @@ let animationId: number | null = null
 const { getScene, getCamera, getRenderer, getRaycaster, getMouse, initScene, cleanup: cleanupScene } = 
   useCodeCityScene(containerRef, props.initialZoom)
 
-const { hoveredObject, selectedObject, objectMap, clearSelection } = 
+const { hoveredObject, selectedObject, objectMap, rotationCenter, setRotationCenter, clearSelection } = 
   useCodeCityState()
 
 // Kontrolki
@@ -52,7 +52,9 @@ const controls = {
   rotationVelocity: { x: 0, y: 0 },
   zoom: props.initialZoom,
   targetZoom: props.initialZoom,
-  lastInteractionTime: Date.now() - 3000
+  lastInteractionTime: Date.now() - 3000,
+  currentCenter: new THREE.Vector3(0, 0, 0),
+  targetCenter: new THREE.Vector3(0, 0, 0),
 }
 
 let mouseDownPosition = { x: 0, y: 0 }
@@ -122,7 +124,12 @@ function handleClick(cam: THREE.Camera, scn: THREE.Scene, e: MouseEvent) {
       }
     }
 
-    if (clickedObject && clickedObject !== selectedObject.value) {
+    if (!clickedObject) {
+      setEmissiveColor(selectedObject.value, COLORS.buildingEmissive)
+      selectedObject.value = null
+      controls.targetCenter = new THREE.Vector3(0, 0, 0)
+      setRotationCenter(new THREE.Vector3(0, 0, 0))
+    } else if (clickedObject !== toRaw(selectedObject.value)) {
       const nodeData = objectMap.get(clickedObject)
       emit('buildingClick', nodeData.name, nodeData)
 
@@ -130,6 +137,27 @@ function handleClick(cam: THREE.Camera, scn: THREE.Scene, e: MouseEvent) {
 
       selectedObject.value = clickedObject
       setEmissiveColor(selectedObject.value, COLORS.selected)
+      
+      // Ustaw nowy target centrum rotacji
+      if (clickedObject.userData.type === 'building') {
+        let parent = clickedObject.parent
+        while (parent) {
+          if (parent.children.length > 0) {
+            const platformMesh = parent.children.find((child: any) => 
+              child.userData && child.userData.type === 'platform'
+            )
+            if (platformMesh) {
+              controls.targetCenter.copy(platformMesh.position)
+              setRotationCenter(platformMesh.position)
+              break
+            }
+          }
+          parent = parent.parent
+        }
+      } else if (clickedObject.userData.type === 'platform') {
+        controls.targetCenter.copy(clickedObject.position)
+        setRotationCenter(clickedObject.position)
+      }
     }
   }
 }
@@ -204,11 +232,15 @@ function updateCamera(cam: THREE.PerspectiveCamera) {
   controls.rotation.y += (controls.targetRotation.y - controls.rotation.y) * CAMERA_DAMPING
   controls.zoom += (controls.targetZoom - controls.zoom) * CAMERA_DAMPING
 
+  controls.currentCenter.lerp(controls.targetCenter, CENTER_TRANSITION_SPEED)
+
   const distance = controls.zoom
-  cam.position.x = distance * Math.sin(controls.rotation.y) * Math.cos(controls.rotation.x)
-  cam.position.y = distance * Math.sin(controls.rotation.x)
-  cam.position.z = distance * Math.cos(controls.rotation.y) * Math.cos(controls.rotation.x)
-  cam.lookAt(0, 0, 0)
+  const center = controls.currentCenter
+  
+  cam.position.x = center.x + distance * Math.sin(controls.rotation.y) * Math.cos(controls.rotation.x)
+  cam.position.y = center.y + distance * Math.sin(controls.rotation.x)
+  cam.position.z = center.z + distance * Math.cos(controls.rotation.y) * Math.cos(controls.rotation.x)
+  cam.lookAt(center.x, center.y, center.z)
 }
 
 function initThreeJS() {

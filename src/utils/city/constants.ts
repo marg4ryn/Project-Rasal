@@ -5,8 +5,9 @@ export const BUILDING_WIDTH_SCALE = 10
 export const PLATFORM_HEIGHT = 1
 export const AREA_BUFFER = 1.2
 export const CAMERA_DAMPING = 0.05
+export const CENTER_TRANSITION_SPEED = 0.05
 export const AUTO_ROTATE_DELAY = 3000
-export const AUTO_ROTATE_SPEED = 0.001
+export const AUTO_ROTATE_SPEED = 0.002
 
 export const COLORS = {
   building: 0xf0f0f0,
