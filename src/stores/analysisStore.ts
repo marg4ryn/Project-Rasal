@@ -1,13 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { createAnalysisConnection } from '@/services/analysisConnection'
+import {
+  createAnalysisConnection,
+  AnalysisStatus,
+  AnalysisResult,
+} from '@/services/analysisConnection'
 
 export interface AnalysisState {
   id: string
   screenId: string
-  status: 'idle' | 'running' | 'completed' | 'error'
-  progress?: any
-  result?: any
+  state: 'idle' | 'running' | 'completed' | 'error'
+  status?: AnalysisStatus
+  result?: AnalysisResult
   error?: string
   startedAt?: Date
   completedAt?: Date
@@ -27,11 +31,11 @@ export const useAnalysisStore = defineStore('analysis', () => {
   }
 
   const isRunning = (screenId: string) => {
-    return computed(() => analyses.value.get(screenId)?.status === 'running')
+    return computed(() => analyses.value.get(screenId)?.state === 'running')
   }
 
   const getAllRunning = computed(() => {
-    return Array.from(analyses.value.values()).filter((a) => a.status === 'running')
+    return Array.from(analyses.value.values()).filter((a) => a.state === 'running')
   })
 
   const initializeAnalysis = (screenId: string) => {
@@ -39,7 +43,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
       analyses.value.set(screenId, {
         id: `${screenId}-${Date.now()}`,
         screenId,
-        status: 'idle',
+        state: 'idle',
       })
     }
   }
@@ -54,8 +58,8 @@ export const useAnalysisStore = defineStore('analysis', () => {
     initializeAnalysis(screenId)
 
     const analysis = analyses.value.get(screenId)!
-    analysis.status = 'running'
-    analysis.progress = undefined
+    analysis.state = 'running'
+    analysis.status = undefined
     analysis.error = undefined
     analysis.result = undefined
     analysis.startedAt = new Date()
@@ -63,16 +67,16 @@ export const useAnalysisStore = defineStore('analysis', () => {
 
     try {
       const connection = createAnalysisConnection(screenId, params, {
-        onProgress: (progress: any) => {
+        onProgress: (status: AnalysisStatus) => {
           const current = analyses.value.get(screenId)
           if (current) {
-            current.progress = progress
+            current.status = status
           }
         },
-        onComplete: (result: any) => {
+        onComplete: (result: AnalysisResult) => {
           const current = analyses.value.get(screenId)
           if (current) {
-            current.status = 'completed'
+            current.state = 'completed'
             current.result = result
             current.completedAt = new Date()
           }
@@ -81,7 +85,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
         onError: (error: string) => {
           const current = analyses.value.get(screenId)
           if (current) {
-            current.status = 'error'
+            current.state = 'error'
             current.error = error
             current.completedAt = new Date()
           }
@@ -91,7 +95,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
 
       connections.value.set(screenId, connection)
     } catch (error) {
-      analysis.status = 'error'
+      analysis.state = 'error'
       analysis.error = error instanceof Error ? error.message : 'Unknown error'
       analysis.completedAt = new Date()
     }
@@ -99,11 +103,24 @@ export const useAnalysisStore = defineStore('analysis', () => {
 
   const stopAnalysis = (screenId: string) => {
     const analysis = analyses.value.get(screenId)
-    if (analysis && analysis.status === 'running') {
-      analysis.status = 'idle'
-      analysis.progress = undefined
+    if (analysis && analysis.state === 'running') {
+      analysis.state = 'idle'
+      analysis.status = undefined
       closeConnection(screenId)
     }
+  }
+
+  const resetAnalysis = (screenId: string) => {
+    const analysis = analyses.value.get(screenId)
+    if (analysis) {
+      analysis.state = 'idle'
+      analysis.status = undefined
+      analysis.result = undefined
+      analysis.error = undefined
+      analysis.startedAt = undefined
+      analysis.completedAt = undefined
+    }
+    closeConnection(screenId)
   }
 
   const closeConnection = (screenId: string) => {
@@ -129,6 +146,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     initializeAnalysis,
     startAnalysis,
     stopAnalysis,
+    resetAnalysis,
     closeConnection,
     closeAllConnections,
   }

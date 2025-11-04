@@ -1,7 +1,36 @@
 interface AnalysisCallbacks {
-  onProgress: (progress: any) => void
-  onComplete: (result: any) => void
+  onProgress: (status: AnalysisStatus) => void
+  onComplete: (result: AnalysisResult) => void
   onError: (error: string) => void
+}
+
+export enum AnalysisStatus {
+  INITIALIZING = 0,
+  PROCESSING_DATA = 1,
+  ANALYZING = 2,
+  GENERATING_RESULTS = 3,
+  FINALIZING = 4,
+  COMPLETED = 5,
+}
+
+export const ANALYSIS_STATUS_LABELS: Record<AnalysisStatus, string> = {
+  [AnalysisStatus.INITIALIZING]: 'Initializing analysis...',
+  [AnalysisStatus.PROCESSING_DATA]: 'Data processing...',
+  [AnalysisStatus.ANALYZING]: 'Analysis in progress...',
+  [AnalysisStatus.GENERATING_RESULTS]: 'Generating results...',
+  [AnalysisStatus.FINALIZING]: 'Finalization...',
+  [AnalysisStatus.COMPLETED]: 'Completed',
+}
+
+export interface AnalysisResult {
+  success: boolean
+  data: any
+  timestamp: string
+  metadata?: {
+    processingTime?: number
+    recordsProcessed?: number
+    [key: string]: any
+  }
 }
 
 const MAX_RETRIES = 3
@@ -37,7 +66,13 @@ export function createAnalysisConnection(
     eventSource.addEventListener('progress', (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data)
-        callbacks?.onProgress(data.progress)
+        const status = data.status as AnalysisStatus
+
+        if (status in AnalysisStatus) {
+          callbacks?.onProgress(status)
+        } else {
+          console.warn('Unknown status received:', status)
+        }
       } catch (error) {
         console.error('Failed to parse progress event:', error)
       }
@@ -45,7 +80,7 @@ export function createAnalysisConnection(
 
     eventSource.addEventListener('complete', (event: MessageEvent) => {
       try {
-        const result = JSON.parse(event.data)
+        const result: AnalysisResult = JSON.parse(event.data)
         callbacks?.onComplete(result)
         cleanup()
       } catch (error) {
@@ -55,7 +90,7 @@ export function createAnalysisConnection(
       }
     })
 
-    eventSource.addEventListener('error-msg', (event: MessageEvent) => {
+    eventSource.addEventListener('error', (event: MessageEvent) => {
       try {
         const errorData = JSON.parse(event.data)
         callbacks?.onError(errorData.message || 'Server error')
@@ -106,4 +141,8 @@ export function createAnalysisConnection(
     eventSource: eventSource!,
     cleanup,
   }
+}
+
+export function getAnalysisStatusLabel(status: AnalysisStatus): string {
+  return ANALYSIS_STATUS_LABELS[status] || 'Nieznany status'
 }

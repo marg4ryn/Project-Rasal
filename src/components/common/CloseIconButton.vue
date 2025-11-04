@@ -2,8 +2,8 @@
   <button
     class="icon-button"
     @click="handleBack"
-    :title="t('others.closeIconButton')"
-    :aria-label="t('others.closeIconButton')"
+    :title="t('common.close')"
+    :aria-label="t('common.close')"
   >
     <svg
       width="24"

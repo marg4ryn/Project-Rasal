@@ -1,37 +1,55 @@
-<script setup lang="ts">
-  import { ref, onMounted } from 'vue'
-
-  const props = defineProps<{
-    label?: string
-    show: boolean
-  }>()
-
-  const demoMode = ref(false)
-
-  onMounted(() => {
-    if (props.show) {
-      demoMode.value = true
-      setTimeout(() => {
-        demoMode.value = false
-      }, 5000)
-    }
-  })
-</script>
-
 <template>
   <Transition name="fade">
-    <div v-if="show || demoMode" class="loading-overlay">
+    <div v-if="show" class="loading-overlay">
       <div class="loading-content">
         <div class="spinner">
           <div class="spinner-ring"></div>
           <div class="spinner-ring"></div>
           <div class="spinner-ring"></div>
         </div>
-        <p class="loading-label">{{ label || 'Loading...' }}</p>
+        <p class="loading-label">{{ label || t('common.loading') }}</p>
+
+        <AppButton
+          v-if="showCancelButton && onCancel"
+          :label="t('common.abort')"
+          variant="danger"
+          @click="showDialog = true"
+        />
       </div>
     </div>
   </Transition>
+  <ModalBox
+    v-if="showDialog"
+    :label="modalLabel || ''"
+    :onConfirm="handleCancel"
+    @close="showDialog = false"
+  />
 </template>
+
+<script setup lang="ts">
+  import { ref } from 'vue'
+  import { useI18n } from 'vue-i18n'
+  import ModalBox from '@/components/common/ModalBox.vue'
+  import AppButton from '@/components/common/AppButton.vue'
+
+  const { t } = useI18n()
+
+  const showDialog = ref(false)
+
+  const props = defineProps<{
+    label?: string
+    show: boolean
+    onCancel?: () => void
+    showCancelButton?: boolean
+    modalLabel?: string
+  }>()
+
+  const handleCancel = () => {
+    if (props.onCancel) {
+      props.onCancel()
+    }
+  }
+</script>
 
 <style scoped lang="scss">
   .loading-overlay {

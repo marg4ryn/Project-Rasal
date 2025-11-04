@@ -56,7 +56,9 @@
 <style lang="scss" scoped>
   .nav-item-wrapper {
     position: relative;
-    display: inline-block;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
 
     .nav-item {
       @include flex-center;

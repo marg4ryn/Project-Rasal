@@ -3,7 +3,6 @@ import { i18n } from '@/i18n'
 import { useUIStore } from '@/stores/uiStore'
 
 const Welcome = () => import('@/views/miscellaneous/WelcomePage.vue')
-const TimeRange = () => import('@/views/miscellaneous/TimeRangePage.vue')
 const Settings = () => import('@/views/miscellaneous/SettingsPage.vue')
 const About = () => import('@/views/miscellaneous/AboutPage.vue')
 const Attributions = () => import('@/views/miscellaneous/AttributionsPage.vue')
@@ -39,15 +38,6 @@ export default function (): Router {
         showNavBar: true,
       },
       component: Welcome,
-    },
-    {
-      path: '/time-range',
-      name: 'time-range',
-      meta: {
-        title: t('title.time-range'),
-        showNavBar: true,
-      },
-      component: TimeRange,
     },
     {
       path: '/settings',

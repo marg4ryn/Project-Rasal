@@ -1,7 +1,7 @@
 <script setup lang="ts">
   defineProps<{
     label: string
-    variant?: 'primary' | 'secondary'
+    variant?: 'primary' | 'secondary' | 'danger'
   }>()
 
   const emit = defineEmits<{
@@ -54,6 +54,24 @@
         background: rgba(255, 255, 255, 0.15);
         border-color: rgba(255, 255, 255, 0.3);
         transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    &--danger {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid #ef4444;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
       }
 
       &:active {
