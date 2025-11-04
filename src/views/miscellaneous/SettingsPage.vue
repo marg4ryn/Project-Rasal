@@ -5,7 +5,7 @@
     <CollapsibleGroup
       :items="[
         { label: t('settingsPage.appearance'), slotName: 'first' },
-        { label: t('settingsPage.definitions'), slotName: 'second' },
+        { label: t('settingsPage.mappings'), slotName: 'second' },
         { label: t('settingsPage.performance'), slotName: 'third' },
         { label: t('settingsPage.notifications'), slotName: 'fourth' },
       ]"
@@ -61,8 +61,8 @@
 
   const languages = [
     { label: t('settingsPage.systemDefault'), value: 'system' },
-    { label: t('settingsPage.english'), value: 'en' },
-    { label: t('settingsPage.polish'), value: 'pl' },
+    { label: 'English', value: 'en' },
+    { label: 'Polski', value: 'pl' },
   ]
 
   const colors = [
