@@ -147,7 +147,7 @@ function handleClick(cam: THREE.Camera, scn: THREE.Scene, e: MouseEvent) {
       setEmissiveColor(selectedObject.value, COLORS.buildingEmissive)
 
       selectedObject.value = clickedObject
-      setEmissiveColor(selectedObject.value, COLORS.selected)
+      //setEmissiveColor(selectedObject.value, COLORS.selected)
       
       // Ustaw nowy target centrum rotacji
       controls.targetCenter.copy(clickedObject.position)

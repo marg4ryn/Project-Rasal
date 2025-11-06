@@ -233,11 +233,12 @@ export function applyColorData(
       const originalColor = new THREE.Color(COLORS.building)
       const targetColor = new THREE.Color(currentColorData.color)
       
-      material.color.lerpColors(originalColor, targetColor, currentColorData.intensity * 1.5)
+      material.color.lerpColors(originalColor, targetColor, currentColorData.intensity * 3)
       
       // emissive things
-      const emissiveColor = new THREE.Color(currentColorData.color)
-      material.emissive.copy(emissiveColor)
+      //const emissiveColor = new THREE.Color(currentColorData.color)
+      //material.emissive.copy(emissiveColor)
+      //material.emissiveIntensity = 0.8
     }
   })
 }

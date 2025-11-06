@@ -27,9 +27,9 @@ const cityData = ref({
 })
 
 const colorData = ref([
-  { path: "/api/UserService.java", color: 0xa30000, intensity: 0.9 },
-  { path: "/internal/Cache.java", color: 0xa30000, intensity: 0.5 }, 
-  { path: "/Main.java", color: 0xa30000, intensity: 0.2 }            
+  { path: "/api/UserService.java", color: 0xbf1b1b, intensity: 0.9 },
+  { path: "/internal/Cache.java", color: 0xbf1b1b, intensity: 0.5 }, 
+  { path: "/Main.java", color: 0xbf1b1b, intensity: 0.2 }            
 ])
 
 const cityDataBig = ref({

@@ -15,6 +15,6 @@ export const COLORS = {
   platform: 0xf0f0f0,
   platformEmissive: 0x666666,
   hover: 0x643ff,
-  selected: 0x643ff,
+  selected: 0x001b6e,
   edge: 0x000000,
 } as const
