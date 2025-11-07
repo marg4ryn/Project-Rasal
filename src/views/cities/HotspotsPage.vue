@@ -2,30 +2,6 @@
   import { ref } from 'vue'
   import CodeCity from '@/components/visuals/CodeCity.vue'
 
-  // Tymczasowe dane testowe
-  const cityData = ref({
-    name: 'root',
-    children: [
-      {
-        name: 'internal',
-        children: [
-          { name: 'SessionImpl.java', height: 0.8, width: 0.49 },
-          { name: 'SessionFactoryImpl.java', height: 0.2, width: 0.43 },
-          { name: 'Transaction.java', height: 0.4, width: 0.35 },
-          { name: 'Cache.java', height: 0.55, width: 0.55 },
-        ],
-      },
-      {
-        name: 'api',
-        children: [
-          { name: 'UserService.java', height: 0.94, width: 0.6 },
-          { name: 'AuthService.java', height: 0.12, width: 0.7 },
-        ],
-      },
-      { name: 'Main.java', height: 0.33, width: 0.85 },
-    ],
-  })
-
   const cityDataBig = ref({
     name: 'root',
     children: [
