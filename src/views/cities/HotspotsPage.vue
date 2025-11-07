@@ -1,333 +1,335 @@
-<script setup lang="ts">
-  import { ref, onMounted, onUnmounted } from 'vue'
-  import CodeCity from '@/components/visuals/CodeCity.vue'
-  import { useCodeCityController } from '@/composables/useCodeCityController'
+<template>
+  <div class="hotspots-page">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input v-model="searchQuery" type="text" placeholder="Search files..." class="search-input" />
+      <button class="search-button">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" />
+          <path
+            d="M12.5 12.5L17 17"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
 
+    <div class="content-wrapper">
+      <!-- Left Panel - Files List -->
+      <aside class="left-panel">
+        <div class="panel-header">
+          <h2>SUSPICIOUS FILES</h2>
+          <button class="info-button">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" />
+              <path
+                d="M8 7V11M8 5V5.5"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="files-list">
+          <div
+            v-for="file in filteredFiles"
+            :key="file.path"
+            class="file-item"
+            :class="{ active: selectedPath === file.path }"
+            @click="handleFileSelect(file.path)"
+          >
+            <div class="file-info">
+              <svg
+                v-if="file.type === 'directory'"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="file-icon"
+              >
+                <path d="M2 3H7L8 5H14V13H2V3Z" />
+              </svg>
+              <svg
+                v-else
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="file-icon"
+              >
+                <path d="M3 1H9L13 5V15H3V1Z" />
+                <path d="M9 1V5H13" stroke="currentColor" stroke-width="1.5" fill="none" />
+              </svg>
+              <span class="file-name">{{ file.name }}</span>
+            </div>
+            <span
+              v-if="file.intensity !== undefined"
+              class="file-suspicion"
+              :style="{ color: getIntensityColor(file.intensity) }"
+            >
+              {{ Math.round(file.intensity * 100) }}%
+            </span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center - Code City -->
+      <div class="project-view">
+        <CodeCity :data="cityData" :colorData="colorData" @buildingClick="handleBuildingClick" />
+      </div>
+
+      <!-- Right Panel - Details -->
+      <aside class="right-panel">
+        <div class="panel-header">
+          <button
+            v-if="selectedPath && selectedPath !== '/'"
+            class="back-button"
+            @click="navigateUp"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M12 4L6 10L12 16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <div class="file-icon">
+            <svg
+              v-if="selectedItem?.type === 'directory'"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M2 3H9L11 6H18V17H2V3Z" />
+            </svg>
+            <svg v-else width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M4 2H12L16 6V18H4V2Z" />
+              <path d="M12 2V6H16" stroke="currentColor" stroke-width="1.5" fill="none" />
+            </svg>
+          </div>
+          <span class="file-title">{{ selectedItem?.name || 'Select a file' }}</span>
+        </div>
+
+        <!-- File Details -->
+        <div v-if="selectedItem && selectedItem.type === 'file'" class="file-details">
+          <h3>FILE METRICS</h3>
+
+          <div class="metric-item">
+            <span class="metric-label">Path:</span>
+            <span class="metric-value path-value">{{ selectedItem.path }}</span>
+          </div>
+
+          <div v-if="selectedItem.height !== undefined" class="metric-item">
+            <span class="metric-label">Height:</span>
+            <span class="metric-value">{{ selectedItem.height.toFixed(2) }}</span>
+          </div>
+
+          <div v-if="selectedItem.width !== undefined" class="metric-item">
+            <span class="metric-label">Width:</span>
+            <span class="metric-value">{{ selectedItem.width.toFixed(2) }}</span>
+          </div>
+
+          <div v-if="selectedColorData" class="metric-item">
+            <span class="metric-label">Intensity:</span>
+            <span
+              class="metric-value suspicion-value"
+              :style="{ color: getIntensityColor(selectedColorData.intensity) }"
+            >
+              {{ Math.round(selectedColorData.intensity * 100) }}%
+            </span>
+          </div>
+
+          <div v-if="selectedColorData" class="metric-item">
+            <span class="metric-label">Color:</span>
+            <span class="metric-value">
+              <span
+                class="color-box"
+                :style="{
+                  backgroundColor: `#${selectedColorData.color.toString(16).padStart(6, '0')}`,
+                }"
+              ></span>
+              #{{ selectedColorData.color.toString(16).padStart(6, '0').toUpperCase() }}
+            </span>
+          </div>
+
+          <!-- <div class="action-buttons">
+            <button class="btn btn-primary">X-Ray</button>
+            <button class="btn btn-secondary">
+              Source Code
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M6 4L10 8L6 12"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div> -->
+        </div>
+
+        <!-- Directory Children -->
+        <div
+          v-else-if="selectedItem && selectedItem.type === 'directory' && selectedItem.children"
+          class="directory-children"
+        >
+          <h3>DIRECTORY CONTENTS</h3>
+
+          <div class="children-list">
+            <div
+              v-for="child in selectedItem.children"
+              :key="child.path"
+              class="child-item"
+              @click="handleFileSelect(child.path)"
+            >
+              <svg
+                v-if="child.type === 'directory'"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="child-icon"
+              >
+                <path d="M2 3H7L8 5H14V13H2V3Z" />
+              </svg>
+              <svg
+                v-else
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="child-icon"
+              >
+                <path d="M3 1H9L13 5V15H3V1Z" />
+                <path d="M9 1V5H13" stroke="currentColor" stroke-width="1.5" fill="none" />
+              </svg>
+              <span class="child-name">{{ child.name }}</span>
+              <span v-if="child.type === 'directory'" class="child-type"
+                >{{ getChildrenCount(child) }} items</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- No Selection -->
+        <div v-else class="no-selection">
+          <p>Select a file or directory to view details</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import { useCodeCityController } from '@/composables/useCodeCityController'
+  import { useLogger } from '@/composables/useLogger'
+  import { cityData, colorData } from '@/utils/city/cityData'
+  import CodeCity from '@/components/visuals/CodeCity.vue'
+
+  interface ColorDataItem {
+    path: string
+    color: number
+    intensity: number
+  }
+
+  interface CityDataNode {
+    name: string
+    type: 'file' | 'directory'
+    path: string
+    height?: number
+    width?: number
+    children?: CityDataNode[]
+  }
+
+  const log = useLogger('HotspotsPage')
   const { selectBuilding } = useCodeCityController()
 
-  // Tymczasowe dane testowe
-  const cityData = ref({
-    name: 'root', type: "directory", path: "/",
-    children: [
-      {
-        name: 'internal', type: "directory", path: "/internal",
-        children: [
-          { name: 'SessionImpl.java', type: "file", path: "/internal/SessionImpl.java", height: 0.8, width: 0.49 },
-          { name: 'SessionFactoryImpl.java', type: "file", path: "/internal/SessionFactoryImpl.java", height: 0.2, width: 0.43 },
-          { name: 'Transaction.java', type: "file", path: "/internal/Transaction.java", height: 0.4, width: 0.35 },
-          { name: 'Cache.java', type: "file", path: "/internal/Cache.java", height: 0.55, width: 0.55 },
-        ],
-      },
-      {
-        name: 'api', type: "directory", path: "/api",
-        children: [
-          { name: 'UserService.java', type: "file", path: "/api/UserService.java", height: 0.94, width: 0.6 },
-          { name: 'AuthService.java', type: "file", path: "/api/AuthService.java", height: 0.12, width: 0.7 },
-        ],
-      },
-      { name: 'Main.java', type: "file", path: "/Main.java", height: 0.33, width: 0.85 },
-    ],
+  const searchQuery = ref('')
+  const selectedPath = ref<string>('/')
+
+  // Flatten city data for file list
+  const flattenedFiles = computed(() => {
+    const files: Array<CityDataNode & { intensity?: number }> = []
+
+    function traverse(node: CityDataNode) {
+      const colorInfo = colorData.find((c) => c.path === node.path)
+
+      files.push({
+        ...node,
+        intensity: colorInfo?.intensity,
+      })
+
+      if (node.children) {
+        node.children.forEach(traverse)
+      }
+    }
+
+    traverse(cityData)
+
+    const withIntensity = files.filter((f) => f.intensity !== undefined)
+
+    return withIntensity.sort((a, b) => b.intensity! - a.intensity!)
   })
 
-  const cityDataBig = ref({
-    name: 'root', 
-    type: "directory", 
-    path: "/",
-    children: [
-      {
-        name: 'src', 
-        type: "directory", 
-        path: "/src",
-        children: [
-          {
-            name: 'main',
-            type: "directory",
-            path: "/src/main",
-            children: [
-              {
-                name: 'java',
-                type: "directory",
-                path: "/src/main/java",
-                children: [
-                  {
-                    name: 'com',
-                    type: "directory",
-                    path: "/src/main/java/com",
-                    children: [
-                      {
-                        name: 'company',
-                        type: "directory",
-                        path: "/src/main/java/com/company",
-                        children: [
-                          {
-                            name: 'api',
-                            type: "directory",
-                            path: "/src/main/java/com/company/api",
-                            children: [
-                              { name: 'UserController.java', type: "file", path: "/src/main/java/com/company/api/UserController.java", height: 0.75, width: 0.68 },
-                              { name: 'AuthController.java', type: "file", path: "/src/main/java/com/company/api/AuthController.java", height: 0.82, width: 0.71 },
-                              { name: 'ProductController.java', type: "file", path: "/src/main/java/com/company/api/ProductController.java", height: 0.91, width: 0.78 },
-                              { name: 'OrderController.java', type: "file", path: "/src/main/java/com/company/api/OrderController.java", height: 0.88, width: 0.65 },
-                              { name: 'PaymentController.java', type: "file", path: "/src/main/java/com/company/api/PaymentController.java", height: 0.69, width: 0.59 },
-                            ]
-                          },
-                          {
-                            name: 'service',
-                            type: "directory",
-                            path: "/src/main/java/com/company/service",
-                            children: [
-                              { name: 'UserService.java', type: "file", path: "/src/main/java/com/company/service/UserService.java", height: 0.94, width: 0.82 },
-                              { name: 'AuthService.java', type: "file", path: "/src/main/java/com/company/service/AuthService.java", height: 0.87, width: 0.75 },
-                              { name: 'ProductService.java', type: "file", path: "/src/main/java/com/company/service/ProductService.java", height: 0.96, width: 0.88 },
-                              { name: 'OrderService.java', type: "file", path: "/src/main/java/com/company/service/OrderService.java", height: 0.92, width: 0.79 },
-                              { name: 'PaymentService.java', type: "file", path: "/src/main/java/com/company/service/PaymentService.java", height: 0.85, width: 0.73 },
-                              { name: 'EmailService.java', type: "file", path: "/src/main/java/com/company/service/EmailService.java", height: 0.61, width: 0.54 },
-                              { name: 'NotificationService.java', type: "file", path: "/src/main/java/com/company/service/NotificationService.java", height: 0.72, width: 0.66 },
-                            ]
-                          },
-                          {
-                            name: 'repository',
-                            type: "directory",
-                            path: "/src/main/java/com/company/repository",
-                            children: [
-                              { name: 'UserRepository.java', type: "file", path: "/src/main/java/com/company/repository/UserRepository.java", height: 0.45, width: 0.52 },
-                              { name: 'ProductRepository.java', type: "file", path: "/src/main/java/com/company/repository/ProductRepository.java", height: 0.48, width: 0.55 },
-                              { name: 'OrderRepository.java', type: "file", path: "/src/main/java/com/company/repository/OrderRepository.java", height: 0.43, width: 0.49 },
-                              { name: 'PaymentRepository.java', type: "file", path: "/src/main/java/com/company/repository/PaymentRepository.java", height: 0.41, width: 0.47 },
-                            ]
-                          },
-                          {
-                            name: 'model',
-                            type: "directory",
-                            path: "/src/main/java/com/company/model",
-                            children: [
-                              { name: 'User.java', type: "file", path: "/src/main/java/com/company/model/User.java", height: 0.68, width: 0.61 },
-                              { name: 'Product.java', type: "file", path: "/src/main/java/com/company/model/Product.java", height: 0.71, width: 0.64 },
-                              { name: 'Order.java', type: "file", path: "/src/main/java/com/company/model/Order.java", height: 0.73, width: 0.67 },
-                              { name: 'Payment.java', type: "file", path: "/src/main/java/com/company/model/Payment.java", height: 0.58, width: 0.53 },
-                              { name: 'Address.java', type: "file", path: "/src/main/java/com/company/model/Address.java", height: 0.39, width: 0.42 },
-                              { name: 'Category.java', type: "file", path: "/src/main/java/com/company/model/Category.java", height: 0.44, width: 0.48 },
-                            ]
-                          },
-                          {
-                            name: 'dto',
-                            type: "directory",
-                            path: "/src/main/java/com/company/dto",
-                            children: [
-                              { name: 'UserDTO.java', type: "file", path: "/src/main/java/com/company/dto/UserDTO.java", height: 0.52, width: 0.49 },
-                              { name: 'ProductDTO.java', type: "file", path: "/src/main/java/com/company/dto/ProductDTO.java", height: 0.54, width: 0.51 },
-                              { name: 'OrderDTO.java', type: "file", path: "/src/main/java/com/company/dto/OrderDTO.java", height: 0.56, width: 0.52 },
-                              { name: 'PaymentDTO.java', type: "file", path: "/src/main/java/com/company/dto/PaymentDTO.java", height: 0.47, width: 0.45 },
-                              { name: 'LoginRequest.java', type: "file", path: "/src/main/java/com/company/dto/LoginRequest.java", height: 0.28, width: 0.32 },
-                              { name: 'RegisterRequest.java', type: "file", path: "/src/main/java/com/company/dto/RegisterRequest.java", height: 0.32, width: 0.36 },
-                            ]
-                          },
-                          {
-                            name: 'config',
-                            type: "directory",
-                            path: "/src/main/java/com/company/config",
-                            children: [
-                              { name: 'SecurityConfig.java', type: "file", path: "/src/main/java/com/company/config/SecurityConfig.java", height: 0.79, width: 0.72 },
-                              { name: 'DatabaseConfig.java', type: "file", path: "/src/main/java/com/company/config/DatabaseConfig.java", height: 0.65, width: 0.58 },
-                              { name: 'WebConfig.java', type: "file", path: "/src/main/java/com/company/config/WebConfig.java", height: 0.57, width: 0.51 },
-                              { name: 'CacheConfig.java', type: "file", path: "/src/main/java/com/company/config/CacheConfig.java", height: 0.48, width: 0.44 },
-                            ]
-                          },
-                          {
-                            name: 'util',
-                            type: "directory",
-                            path: "/src/main/java/com/company/util",
-                            children: [
-                              { name: 'JwtUtil.java', type: "file", path: "/src/main/java/com/company/util/JwtUtil.java", height: 0.83, width: 0.76 },
-                              { name: 'PasswordEncoder.java', type: "file", path: "/src/main/java/com/company/util/PasswordEncoder.java", height: 0.41, width: 0.39 },
-                              { name: 'ValidationUtil.java', type: "file", path: "/src/main/java/com/company/util/ValidationUtil.java", height: 0.59, width: 0.54 },
-                              { name: 'DateUtil.java', type: "file", path: "/src/main/java/com/company/util/DateUtil.java", height: 0.36, width: 0.38 },
-                              { name: 'StringUtil.java', type: "file", path: "/src/main/java/com/company/util/StringUtil.java", height: 0.44, width: 0.42 },
-                            ]
-                          },
-                          {
-                            name: 'exception',
-                            type: "directory",
-                            path: "/src/main/java/com/company/exception",
-                            children: [
-                              { name: 'GlobalExceptionHandler.java', type: "file", path: "/src/main/java/com/company/exception/GlobalExceptionHandler.java", height: 0.72, width: 0.67 },
-                              { name: 'ResourceNotFoundException.java', type: "file", path: "/src/main/java/com/company/exception/ResourceNotFoundException.java", height: 0.24, width: 0.29 },
-                              { name: 'ValidationException.java', type: "file", path: "/src/main/java/com/company/exception/ValidationException.java", height: 0.22, width: 0.27 },
-                              { name: 'AuthenticationException.java', type: "file", path: "/src/main/java/com/company/exception/AuthenticationException.java", height: 0.26, width: 0.31 },
-                            ]
-                          },
-                          { name: 'Application.java', type: "file", path: "/src/main/java/com/company/Application.java", height: 0.38, width: 0.45 },
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                name: 'resources',
-                type: "directory",
-                path: "/src/main/resources",
-                children: [
-                  { name: 'application.properties', type: "file", path: "/src/main/resources/application.properties", height: 0.51, width: 0.47 },
-                  { name: 'application-dev.properties', type: "file", path: "/src/main/resources/application-dev.properties", height: 0.43, width: 0.41 },
-                  { name: 'application-prod.properties', type: "file", path: "/src/main/resources/application-prod.properties", height: 0.46, width: 0.43 },
-                  {
-                    name: 'db',
-                    type: "directory",
-                    path: "/src/main/resources/db",
-                    children: [
-                      {
-                        name: 'migration',
-                        type: "directory",
-                        path: "/src/main/resources/db/migration",
-                        children: [
-                          { name: 'V1__create_users_table.sql', type: "file", path: "/src/main/resources/db/migration/V1__create_users_table.sql", height: 0.34, width: 0.38 },
-                          { name: 'V2__create_products_table.sql', type: "file", path: "/src/main/resources/db/migration/V2__create_products_table.sql", height: 0.36, width: 0.39 },
-                          { name: 'V3__create_orders_table.sql', type: "file", path: "/src/main/resources/db/migration/V3__create_orders_table.sql", height: 0.38, width: 0.41 },
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    name: 'static',
-                    type: "directory",
-                    path: "/src/main/resources/static",
-                    children: [
-                      { name: 'index.html', type: "file", path: "/src/main/resources/static/index.html", height: 0.29, width: 0.33 },
-                      { name: 'styles.css', type: "file", path: "/src/main/resources/static/styles.css", height: 0.42, width: 0.44 },
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            name: 'test',
-            type: "directory",
-            path: "/src/test",
-            children: [
-              {
-                name: 'java',
-                type: "directory",
-                path: "/src/test/java",
-                children: [
-                  {
-                    name: 'com',
-                    type: "directory",
-                    path: "/src/test/java/com",
-                    children: [
-                      {
-                        name: 'company',
-                        type: "directory",
-                        path: "/src/test/java/com/company",
-                        children: [
-                          {
-                            name: 'service',
-                            type: "directory",
-                            path: "/src/test/java/com/company/service",
-                            children: [
-                              { name: 'UserServiceTest.java', type: "file", path: "/src/test/java/com/company/service/UserServiceTest.java", height: 0.88, width: 0.79 },
-                              { name: 'AuthServiceTest.java', type: "file", path: "/src/test/java/com/company/service/AuthServiceTest.java", height: 0.82, width: 0.74 },
-                              { name: 'ProductServiceTest.java', type: "file", path: "/src/test/java/com/company/service/ProductServiceTest.java", height: 0.91, width: 0.83 },
-                              { name: 'OrderServiceTest.java', type: "file", path: "/src/test/java/com/company/service/OrderServiceTest.java", height: 0.86, width: 0.77 },
-                            ]
-                          },
-                          {
-                            name: 'api',
-                            type: "directory",
-                            path: "/src/test/java/com/company/api",
-                            children: [
-                              { name: 'UserControllerTest.java', type: "file", path: "/src/test/java/com/company/api/UserControllerTest.java", height: 0.76, width: 0.69 },
-                              { name: 'AuthControllerTest.java', type: "file", path: "/src/test/java/com/company/api/AuthControllerTest.java", height: 0.73, width: 0.67 },
-                              { name: 'ProductControllerTest.java', type: "file", path: "/src/test/java/com/company/api/ProductControllerTest.java", height: 0.78, width: 0.71 },
-                            ]
-                          },
-                          {
-                            name: 'integration',
-                            type: "directory",
-                            path: "/src/test/java/com/company/integration",
-                            children: [
-                              { name: 'UserIntegrationTest.java', type: "file", path: "/src/test/java/com/company/integration/UserIntegrationTest.java", height: 0.94, width: 0.87 },
-                              { name: 'OrderIntegrationTest.java', type: "file", path: "/src/test/java/com/company/integration/OrderIntegrationTest.java", height: 0.89, width: 0.81 },
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        name: 'docs',
-        type: "directory",
-        path: "/docs",
-        children: [
-          { name: 'README.md', type: "file", path: "/docs/README.md", height: 0.67, width: 0.62 },
-          { name: 'CONTRIBUTING.md', type: "file", path: "/docs/CONTRIBUTING.md", height: 0.54, width: 0.51 },
-          { name: 'API.md', type: "file", path: "/docs/API.md", height: 0.78, width: 0.73 },
-          {
-            name: 'architecture',
-            type: "directory",
-            path: "/docs/architecture",
-            children: [
-              { name: 'overview.md', type: "file", path: "/docs/architecture/overview.md", height: 0.63, width: 0.58 },
-              { name: 'database-schema.md', type: "file", path: "/docs/architecture/database-schema.md", height: 0.71, width: 0.66 },
-            ]
-          }
-        ]
-      },
-      {
-        name: 'scripts',
-        type: "directory",
-        path: "/scripts",
-        children: [
-          { name: 'build.sh', type: "file", path: "/scripts/build.sh", height: 0.41, width: 0.43 },
-          { name: 'deploy.sh', type: "file", path: "/scripts/deploy.sh", height: 0.48, width: 0.49 },
-          { name: 'test.sh', type: "file", path: "/scripts/test.sh", height: 0.36, width: 0.39 },
-        ]
-      },
-      { name: 'pom.xml', type: "file", path: "/pom.xml", height: 0.85, width: 0.78 },
-      { name: '.gitignore', type: "file", path: "/.gitignore", height: 0.18, width: 0.24 },
-      { name: 'README.md', type: "file", path: "/README.md", height: 0.59, width: 0.56 },
-    ],
+  const filteredFiles = computed(() => {
+    if (!searchQuery.value) return flattenedFiles.value
+    const query = searchQuery.value.toLowerCase()
+    return flattenedFiles.value.filter(
+      (file) => file.name.toLowerCase().includes(query) || file.path.toLowerCase().includes(query)
+    )
   })
 
-  const colorData = ref([
-    { path: "/api/UserService.java", color: 0xbf1b1b, intensity: 0.9 },
-    { path: "/internal/Cache.java", color: 0xbf1b1b, intensity: 0.5 }, 
-    { path: "/Main.java", color: 0xbf1b1b, intensity: 0.2 }            
-  ])
+  const selectedItem = computed(() => {
+    return flattenedFiles.value.find((f) => f.path === selectedPath.value)
+  })
 
-  const colorDataBig = ref([
-    { path: "/src/main/java/com/company/service/UserService.java", color: 0xbf1b1b, intensity: 0.95 },
-    { path: "/src/main/java/com/company/service/ProductService.java", color: 0xbf1b1b, intensity: 0.88 },
-    { path: "/src/main/java/com/company/api/OrderController.java", color: 0xbf1b1b, intensity: 0.82 },
-    { path: "/src/main/java/com/company/util/JwtUtil.java", color: 0xbf1b1b, intensity: 0.76 },
-    { path: "/src/main/java/com/company/config/SecurityConfig.java", color: 0xbf1b1b, intensity: 0.71 },
-    { path: "/src/main/java/com/company/service/OrderService.java", color: 0xbf1b1b, intensity: 0.65 },
-    { path: "/src/main/java/com/company/exception/GlobalExceptionHandler.java", color: 0xbf1b1b, intensity: 0.58 },
-    { path: "/src/test/java/com/company/integration/UserIntegrationTest.java", color: 0xbf1b1b, intensity: 0.52 },
-    { path: "/src/main/java/com/company/api/ProductController.java", color: 0xbf1b1b, intensity: 0.46 },
-    { path: "/src/main/java/com/company/service/PaymentService.java", color: 0xbf1b1b, intensity: 0.39 },
-    { path: "/src/test/java/com/company/service/ProductServiceTest.java", color: 0xbf1b1b, intensity: 0.33 },
-    { path: "/src/main/java/com/company/model/Order.java", color: 0xbf1b1b, intensity: 0.27 },
-    { path: "/docs/API.md", color: 0xbf1b1b, intensity: 0.21 },
-    { path: "/pom.xml", color: 0xbf1b1b, intensity: 0.15 }
-  ])
+  const selectedColorData = computed(() => {
+    return colorData.find((c) => c.path === selectedPath.value)
+  })
 
   function handleBuildingClick(name: string, path: string, intensity?: number) {
-    console.log('Clicked on:', name, ' Path:', path, ' Intensity: ', intensity)
+    log.info('Clicked on:', name, ' Path:', path, ' Intensity: ', intensity)
+    selectedPath.value = path
+    selectBuilding(path)
+  }
+
+  function handleFileSelect(path: string) {
+    selectedPath.value = path
+    selectBuilding(path)
+  }
+
+  function navigateUp() {
+    const parentPath = selectedPath.value.split('/').slice(0, -1).join('/') || '/'
+    selectedPath.value = parentPath
+    selectBuilding(parentPath)
+  }
+
+  function getChildrenCount(node: CityDataNode): number {
+    return node.children?.length || 0
+  }
+
+  function getIntensityColor(intensity: number): string {
+    if (intensity >= 0.8) return '#ff4444'
+    if (intensity >= 0.6) return '#ff8844'
+    if (intensity >= 0.4) return '#ffaa44'
+    if (intensity >= 0.2) return '#ffcc44'
+    return '#ffee44'
   }
 
   function handleKeyPress(e: KeyboardEvent) {
     if (e.key === 'c' || e.key === 'C') {
-      const success = selectBuilding(
-        '/src/main/java/com/company/service/UserService.java'
-      )
+      selectBuilding('/src/main/java/com/company/service/UserService.java')
+      selectedPath.value = '/src/main/java/com/company/service/UserService.java'
     }
   }
 
@@ -338,22 +340,373 @@
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyPress)
   })
-
 </script>
 
-<template>
-  <div class="project-view">
-    <CodeCity 
-      :data="cityDataBig"
-      :colorData="colorDataBig"
-      @buildingClick="handleBuildingClick"
-    />
-  </div>
-</template>
+<style scoped lang="scss">
+  .hotspots-page {
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-<style scoped>
+  .search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0 1.5rem;
+    gap: 0.5rem;
+
+    .search-input {
+      width: 400px;
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      color: #e6e6e6;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      &:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    .search-button {
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: #e6e6e6;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+
+  .content-wrapper {
+    display: flex;
+    flex: 1;
+    gap: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+    overflow: hidden;
+  }
+
+  .left-panel,
+  .right-panel {
+    background: var(--color-bg-secondary);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+
+    h2 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--color-text-tertiary);
+      margin: 0;
+      flex: 1;
+    }
+
+    .info-button,
+    .back-button {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    .file-icon {
+      color: rgba(255, 255, 255, 0.7);
+      display: flex;
+    }
+
+    .file-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e6e6e6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+  }
+
+  .files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+    flex: 1;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-primary);
+      border-radius: 3px;
+
+      &:hover {
+        background: (var(--color-primary-light));
+        cursor: pointer;
+      }
+    }
+  }
+
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    gap: 0.75rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-border);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--color-border);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 0;
+
+      .file-icon {
+        color: rgba(255, 255, 255, 0.6);
+        flex-shrink: 0;
+      }
+
+      .file-name {
+        font-size: 0.85rem;
+        color: #e6e6e6;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .file-suspicion {
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+  }
+
   .project-view {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
     width: 60vw;
     height: 80vh;
+  }
+
+  .file-details,
+  .directory-children {
+    h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0 0 1.5rem 0;
+    }
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    .metric-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .metric-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e6e6e6;
+      word-break: break-all;
+
+      &.path-value {
+        font-size: 0.75rem;
+        font-family: 'Monaco', 'Courier New', monospace;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      &.suspicion-value {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+
+      .color-box {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        vertical-align: middle;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .children-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+    max-height: 400px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+  }
+
+  .child-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .child-icon {
+      color: rgba(255, 255, 255, 0.6);
+      flex-shrink: 0;
+    }
+
+    .child-name {
+      font-size: 0.85rem;
+      color: #e6e6e6;
+      flex: 1;
+    }
+
+    .child-type {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    padding: 0.875rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &.btn-primary {
+      background: #4ade80;
+      color: #0a192f;
+
+      &:hover {
+        background: #5eea8f;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+      }
+    }
+
+    &.btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e6e6e6;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  .no-selection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    text-align: center;
   }
 </style>

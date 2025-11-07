@@ -1,4 +1,7 @@
 import { ref } from 'vue'
+import { useLogger } from '@/composables/useLogger'
+
+const log = useLogger('useCodeCityController')
 
 type SelectBuildingCallback = (path: string) => boolean
 
@@ -13,10 +16,9 @@ export function useCodeCityController() {
     selectBuildingCallback.value = null
   }
 
-  // Dla komponentów zewnętrznych - wywołuje zaznaczenie
   function selectBuilding(path: string): boolean {
     if (!selectBuildingCallback.value) {
-      console.warn('City component not mounted')
+      log.warn('City component not mounted')
       return false
     }
     return selectBuildingCallback.value(path)
@@ -25,6 +27,6 @@ export function useCodeCityController() {
   return {
     registerSelectBuilding,
     unregisterSelectBuilding,
-    selectBuilding
+    selectBuilding,
   }
 }
