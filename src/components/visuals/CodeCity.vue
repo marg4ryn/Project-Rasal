@@ -15,7 +15,7 @@
   import { processNode } from '@/utils/city/layout'
   import { createGeometry, createMergedEdges, getColorDataForPath } from '@/utils/city/geometry'
   import * as THREE from 'three'
-  import { COLORS, CAMERA_DAMPING, AUTO_ROTATE_DELAY, AUTO_ROTATE_SPEED, CENTER_TRANSITION_SPEED } from '@/utils/city/constants'
+  import { COLORS, CAMERA_DAMPING, AUTO_ROTATE_DELAY, AUTO_ROTATE_SPEED, CENTER_TRANSITION_SPEED, BUILDING_ZOOM, PLATFORM_ZOOM_MULT } from '@/utils/city/constants'
   import { toRaw } from 'vue'
   import { applyColorData, clearColorData } from '@/utils/city/geometry'
   import { useCodeCityController } from '@/composables/useCodeCityController'
@@ -57,12 +57,33 @@
     }
   }, { deep: true })
 
+  // Kontrolki
+  const controls = {
+    isDragging: false,
+    previousMousePosition: { x: 0, y: 0 },
+    rotation: { x: 0.5, y: 0.8 },
+    targetRotation: { x: 0.5, y: 0.8 },
+    rotationVelocity: { x: 0, y: 0 },
+    zoom: props.initialZoom,
+    targetZoom: props.initialZoom,
+    lastInteractionTime: Date.now() - 3000,
+    currentCenter: new THREE.Vector3(0, 0.5, 0),
+    targetCenter: new THREE.Vector3(0, 0.5, 0),
+  }
+
+  let mouseDownPosition = { x: 0, y: 0 }
+  let mouseDownTime = 0
+  let resizeHandler: (() => void) | null = null
+  let initialZoom = props.initialZoom
+
   function deselectCityNode(returnEmit: boolean) {
     if (selectedObject.value) {
       restoreOriginalColor(toRaw(selectedObject.value))
       selectedObject.value = null
-      controls.targetCenter = new THREE.Vector3(0, 0, 0)
-      setRotationCenter(new THREE.Vector3(0, 0, 0))
+      controls.targetCenter = new THREE.Vector3(0, 0.5, 0)
+      setRotationCenter(new THREE.Vector3(0, 0.5, 0))
+
+      controls.targetZoom = initialZoom
 
       if (returnEmit) {
         emit('buildingClick', null, null)
@@ -109,6 +130,11 @@
 
     controls.targetCenter.copy(mesh.position)
     setRotationCenter(mesh.position)
+
+    const camera = getCamera()
+    if (camera) {
+      controls.targetZoom = calculateOptimalZoom(mesh, camera)
+    }
     
     if (returnEmit) {
       const colorInfo = getColorDataForPath(nodeData.path)
@@ -131,23 +157,34 @@
     material.emissive.setHex(COLORS.emissiveColor)
   }
 
-  // Kontrolki
-  const controls = {
-    isDragging: false,
-    previousMousePosition: { x: 0, y: 0 },
-    rotation: { x: 0.5, y: 0.8 },
-    targetRotation: { x: 0.5, y: 0.8 },
-    rotationVelocity: { x: 0, y: 0 },
-    zoom: props.initialZoom,
-    targetZoom: props.initialZoom,
-    lastInteractionTime: Date.now() - 3000,
-    currentCenter: new THREE.Vector3(0, 0, 0),
-    targetCenter: new THREE.Vector3(0, 0, 0),
+  function calculateInitialZoom(rootData: any, camera: THREE.PerspectiveCamera): number {
+    const maxDimension = Math.max(rootData.width, rootData.depth)
+    const fov = camera.fov * (Math.PI / 180)
+    const distance = maxDimension * 0.5 / (Math.tan(fov))
+    const result = distance * PLATFORM_ZOOM_MULT
+    return result >= BUILDING_ZOOM ? result : BUILDING_ZOOM
   }
 
-  let mouseDownPosition = { x: 0, y: 0 }
-  let mouseDownTime = 0
-  let resizeHandler: (() => void) | null = null
+  function calculateOptimalZoom(mesh: THREE.Mesh, camera: THREE.PerspectiveCamera): number {
+    const nodeData = objectMap.get(mesh)
+    if (!nodeData) return controls.targetZoom
+    
+    // Dla platformy
+    if (mesh.userData.type === 'platform') {
+      const geometry = mesh.geometry as THREE.BoxGeometry
+      const params = geometry.parameters
+      const maxDimension = Math.max(params.width, params.depth)
+      
+      const fov = camera.fov * (Math.PI / 180)
+      const distance = maxDimension * 0.5 / (Math.tan(fov))
+      const result = distance * PLATFORM_ZOOM_MULT
+      
+      return result >= BUILDING_ZOOM ? result : BUILDING_ZOOM
+    }
+    
+    // Dla budynku
+    return BUILDING_ZOOM
+  }
 
   function setEmissiveColor(mesh: THREE.Mesh | null, color: number) {
     if (!mesh) return
@@ -267,7 +304,7 @@
     rnd.domElement.addEventListener('wheel', (e) => {
       e.preventDefault()
       controls.targetZoom += e.deltaY * 0.1
-      controls.targetZoom = Math.max(50, Math.min(500, controls.targetZoom))
+      controls.targetZoom = Math.max(40, Math.min(initialZoom * 2, controls.targetZoom))
     })
   }
 
@@ -318,6 +355,11 @@
 
     const mergedEdges = createMergedEdges()
     scene.add(mergedEdges)
+
+    const optimalZoom = calculateInitialZoom(rootData, camera)
+    initialZoom = optimalZoom
+    controls.zoom = optimalZoom
+    controls.targetZoom = optimalZoom
 
     if (props.colorData && props.colorData.length > 0) {
       applyColorData(props.colorData, objectMap)
