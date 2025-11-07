@@ -20,7 +20,7 @@
   import { applyColorData, clearColorData } from '@/utils/city/geometry'
   import { useCodeCityController } from '@/composables/useCodeCityController'
 
-  const { registerSelectBuilding, unregisterSelectBuilding } = useCodeCityController()
+  const { registerSelectCityNode, unregisterSelectCityNode } = useCodeCityController()
 
   interface Props {
     data: CityNode | null
@@ -36,7 +36,7 @@
   })
 
   const emit = defineEmits<{
-    buildingClick: [name: string, path: string, intensity?: number]
+    buildingClick: [name: string | null, path: string | null, intensity?: number]
   }>()
 
   const containerRef = ref<HTMLDivElement | null>(null)
@@ -57,7 +57,25 @@
     }
   }, { deep: true })
 
-  function selectBuildingByPath(path: string): boolean {
+  function deselectCityNode(returnEmit: boolean) {
+    if (selectedObject.value) {
+      restoreOriginalColor(toRaw(selectedObject.value))
+      selectedObject.value = null
+      controls.targetCenter = new THREE.Vector3(0, 0, 0)
+      setRotationCenter(new THREE.Vector3(0, 0, 0))
+
+      if (returnEmit) {
+        emit('buildingClick', null, null)
+      }
+    }
+  }
+
+  function selectCityNodeByPath(path: string | null): boolean {
+    if (!path) {
+      deselectCityNode(false)
+      return true
+    }
+
     let targetMesh: THREE.Mesh | null = null
     
     objectMap.forEach((nodeData, mesh) => {
@@ -70,11 +88,11 @@
       return false
     }
     
-    selectBuilding(targetMesh, false)
+    selectCityNode(targetMesh, false)
     return true
   }
 
-  function selectBuilding(mesh: THREE.Mesh, returnEmit: boolean) {
+  function selectCityNode(mesh: THREE.Mesh, returnEmit: boolean) {
     const nodeData = objectMap.get(mesh)
     if (!nodeData) return
     
@@ -87,6 +105,7 @@
     // Ustaw kolor selected
     const material = mesh.material as THREE.MeshPhongMaterial
     material.color.setHex(COLORS.selected)
+    material.emissive.setHex(COLORS.emissiveColor)
 
     controls.targetCenter.copy(mesh.position)
     setRotationCenter(mesh.position)
@@ -194,14 +213,9 @@
       }
 
       if (!clickedObject) {
-        if (selectedObject.value) {
-          restoreOriginalColor(toRaw(selectedObject.value))
-        }
-        selectedObject.value = null
-        controls.targetCenter = new THREE.Vector3(0, 0, 0)
-        setRotationCenter(new THREE.Vector3(0, 0, 0))
+        deselectCityNode(true)
       } else if (clickedObject !== toRaw(selectedObject.value)) {
-        selectBuilding(clickedObject, true)
+        selectCityNode(clickedObject, true)
       }
     }
   }
@@ -345,14 +359,22 @@
     clearSelection()
   }
 
+  function handleKeyPress(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      deselectCityNode(true)
+    }
+  }
+
   onMounted(() => {
     initThreeJS()
-    registerSelectBuilding(selectBuildingByPath)
+    registerSelectCityNode(selectCityNodeByPath)
+    window.addEventListener('keydown', handleKeyPress)
   })
 
   onUnmounted(() => {
     cleanup()
-    unregisterSelectBuilding()
+    unregisterSelectCityNode()
+    window.removeEventListener('keydown', handleKeyPress)
   })
 </script>
 
