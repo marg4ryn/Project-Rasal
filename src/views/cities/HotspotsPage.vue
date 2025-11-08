@@ -32,7 +32,7 @@
       class="code-city"
       :data="cityData"
       :colorData="colorData"
-      @buildingClick="handleBuildingClick"
+      @cityNodeClick="handleCityNodeClick"
     />
 
     <RightPanel
@@ -93,7 +93,7 @@
   import RightPanel from '@/components/city/RightPanel.vue'
   import CodeCity from '@/components/visuals/CodeCity.vue'
 
-  const { selectBuilding } = useCodeCityController()
+  const { selectCityNode } = useCodeCityController()
 
   const log = useLogger('HotspotsPage')
 
@@ -145,21 +145,21 @@
     return files.sort((a, b) => b.intensity! - a.intensity!)
   })
 
-  function handleBuildingClick(name: string, path: string, intensity?: number) {
+  function handleCityNodeClick(name: string | null, path: string | null, intensity?: number) {
     log.info('Clicked on:', name, ' Path:', path, ' Intensity: ', intensity)
-    selectedPath.value = path
-    selectBuilding(path)
+    selectedPath.value = path ?? ''
+    selectCityNode(path)
   }
 
   function handleFileSelect(path: string) {
     selectedPath.value = path
-    selectBuilding(path)
+    selectCityNode(path)
   }
 
   function navigateUp() {
     const parentPath = selectedPath.value.split('/').slice(0, -1).join('/') || '/'
     selectedPath.value = parentPath
-    selectBuilding(parentPath)
+    selectCityNode(parentPath)
   }
 
   function openCoupling() {}
