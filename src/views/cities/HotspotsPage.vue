@@ -6,6 +6,7 @@
 
     <LeftPanel
       class="left-panel"
+      label="SUSPICIOUS FILES"
       :items="filteredFiles"
       :selectedPath="selectedPath"
       :handleFileSelect="handleFileSelect"
@@ -80,14 +81,21 @@
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
-  import { useCodeCityController } from '@/composables/useCodeCityController'
   import { useLogger } from '@/composables/useLogger'
+  import { CityNode } from '@/types/city'
+  import { useCodeCityController } from '@/composables/useCodeCityController'
+  import { findNodeByPath, getChildrenCount } from '@/utils/functions/cityNodeUtils'
   import { cityData, colorData } from '@/utils/city/cityData'
+
+  import TabNavigation from '@/components/city/TabNavigation.vue'
+  import AppSearchBar from '@/components/common/AppSearchBar.vue'
   import LeftPanel from '@/components/city/LeftPanel.vue'
   import RightPanel from '@/components/city/RightPanel.vue'
   import CodeCity from '@/components/visuals/CodeCity.vue'
-  import AppSearchBar from '@/components/common/AppSearchBar.vue'
-  import TabNavigation from '@/components/city/TabNavigation.vue'
+
+  const { selectBuilding } = useCodeCityController()
+
+  const log = useLogger('HotspotsPage')
 
   const tabs = [
     { id: 'hotspots', label: 'HOTSPOTS', route: '/hotspots' },
@@ -95,42 +103,29 @@
     { id: 'code-age', label: 'code-age', route: '/code-age' },
   ]
 
-  interface CityDataNode {
-    name: string
-    type: 'file' | 'directory'
-    path: string
-    height?: number
-    width?: number
-    children?: CityDataNode[]
-  }
-
-  const log = useLogger('HotspotsPage')
-  const { selectBuilding } = useCodeCityController()
-
   const searchQuery = ref('')
   const selectedPath = ref<string>('/')
 
-  function openCoupling() {}
-  function openXRay() {}
-  function openSourceCode() {}
+  const selectedItem = computed(() => {
+    return findNodeByPath(selectedPath.value, cityData)
+  })
 
-  function findNodeByPath(path: string, root: CityDataNode = cityData): CityDataNode | null {
-    if (root.path === path) return root
+  const selectedColorData = computed(() => {
+    return colorData.find((c) => c.path === selectedPath.value)
+  })
 
-    if (root.children) {
-      for (const child of root.children) {
-        const found = findNodeByPath(path, child)
-        if (found) return found
-      }
-    }
-
-    return null
-  }
+  const filteredFiles = computed(() => {
+    if (!searchQuery.value) return flattenedFilesForList.value
+    const query = searchQuery.value.toLowerCase()
+    return flattenedFilesForList.value.filter(
+      (file) => file.name.toLowerCase().includes(query) || file.path.toLowerCase().includes(query)
+    )
+  })
 
   const flattenedFilesForList = computed(() => {
-    const files: Array<CityDataNode & { intensity?: number }> = []
+    const files: Array<CityNode & { intensity?: number }> = []
 
-    function traverse(node: CityDataNode) {
+    function traverse(node: CityNode) {
       const colorInfo = colorData.find((c) => c.path === node.path)
 
       if (colorInfo) {
@@ -150,22 +145,6 @@
     return files.sort((a, b) => b.intensity! - a.intensity!)
   })
 
-  const filteredFiles = computed(() => {
-    if (!searchQuery.value) return flattenedFilesForList.value
-    const query = searchQuery.value.toLowerCase()
-    return flattenedFilesForList.value.filter(
-      (file) => file.name.toLowerCase().includes(query) || file.path.toLowerCase().includes(query)
-    )
-  })
-
-  const selectedItem = computed(() => {
-    return findNodeByPath(selectedPath.value)
-  })
-
-  const selectedColorData = computed(() => {
-    return colorData.find((c) => c.path === selectedPath.value)
-  })
-
   function handleBuildingClick(name: string, path: string, intensity?: number) {
     log.info('Clicked on:', name, ' Path:', path, ' Intensity: ', intensity)
     selectedPath.value = path
@@ -183,9 +162,9 @@
     selectBuilding(parentPath)
   }
 
-  function getChildrenCount(node: CityDataNode): number {
-    return node.children?.length || 0
-  }
+  function openCoupling() {}
+  function openXRay() {}
+  function openSourceCode() {}
 
   function getIntensityColor(intensity: number): string {
     if (intensity >= 0.8) return '#ff4444'

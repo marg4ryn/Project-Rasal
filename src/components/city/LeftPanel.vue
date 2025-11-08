@@ -1,9 +1,9 @@
 <template>
   <aside class="left-panel" :style="{ maxHeight }">
     <div class="panel-header">
-      <h2>SUSPICIOUS FILES</h2>
+      <h2>{{ props.label }}</h2>
 
-      <button v-if="showInfo" class="info-button" @mouseenter="onInfoHover?.()">
+      <button v-if="props.showInfo" class="info-button" @mouseenter="props.onInfoHover?.()">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" />
           <path
@@ -16,13 +16,15 @@
       </button>
     </div>
 
-    <div class="files-list">
+    <div class="item-list">
+      <AppSearchBar v-model="searchQuery" class="search-bar" />
+
       <div
-        v-for="item in items"
+        v-for="item in filteredItems"
         :key="item.path"
         class="file-item"
-        :class="{ active: selectedPath === item.path }"
-        @click="handleFileSelect(item.path)"
+        :class="{ active: props.selectedPath === item.path }"
+        @click="props.handleFileSelect(item.path)"
       >
         <slot name="item" :item="item" />
       </div>
@@ -31,8 +33,12 @@
 </template>
 
 <script setup lang="ts">
+  import { ref, computed } from 'vue'
+  import AppSearchBar from '@/components/common/AppSearchBar.vue'
+
   const props = defineProps<{
-    items: Array<{ path: string; [key: string]: any }>
+    items: Array<{ path: string; name?: string; [key: string]: any }>
+    label: string
     selectedPath?: string
     handleFileSelect: (path: string) => void
     showInfo?: boolean
@@ -40,7 +46,17 @@
     maxHeight?: string
   }>()
 
-  const maxHeight = props.maxHeight || '100%'
+  const maxHeight = computed(() => props.maxHeight || '100%')
+
+  const searchQuery = ref('')
+
+  const filteredItems = computed(() => {
+    if (!searchQuery.value) return props.items
+    const query = searchQuery.value.toLowerCase()
+    return props.items.filter(
+      (file) => file.name?.toLowerCase().includes(query) || file.path.toLowerCase().includes(query)
+    )
+  })
 </script>
 
 <style scoped>
@@ -54,6 +70,10 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .search-bar {
+    margin-bottom: 1rem;
   }
 
   .panel-header {
@@ -86,19 +106,9 @@
         color: rgba(255, 255, 255, 0.9);
       }
     }
-
-    .file-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #e6e6e6;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex: 1;
-    }
   }
 
-  .files-list {
+  .item-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -119,7 +129,6 @@
       border-radius: 3px;
 
       &:hover {
-        background: (var(--color-primary-light));
         cursor: pointer;
       }
     }
