@@ -4,11 +4,11 @@ import { createAnalysisConnection } from '@/services/analysisConnection'
 import { useNotificationsStore } from '@/stores/notificationsStore'
 import { AnalysisState, AnalysisConnection } from '@/types'
 
-export const useAnalysisStore = defineStore('analysis', () => {
+export const useConnectionStore = defineStore('connections', () => {
   const analyses = ref<Map<string, AnalysisState>>(new Map())
   const connections = ref<Map<string, AnalysisConnection>>(new Map())
 
-  const getAnalysis = (screenId: string) => {
+  const getConnection = (screenId: string) => {
     return computed(() => analyses.value.get(screenId))
   }
 
@@ -20,7 +20,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     return Array.from(analyses.value.values()).filter((a) => a.state === 'running')
   })
 
-  const initializeAnalysis = (screenId: string, screenName?: string, screenRoute?: string) => {
+  const initializeConnection = (screenId: string, screenName?: string, screenRoute?: string) => {
     if (!analyses.value.has(screenId)) {
       analyses.value.set(screenId, {
         id: `${screenId}-${Date.now()}`,
@@ -32,7 +32,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     }
   }
 
-  const startAnalysis = async (screenId: string, params?: Record<string, any>) => {
+  const startConnection = async (screenId: string, params?: Record<string, any>) => {
     if (isRunning(screenId).value) {
       console.warn(`Analysis for ${screenId} is already running`)
       return
@@ -119,7 +119,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     }
   }
 
-  const stopAnalysis = (screenId: string) => {
+  const stopConnection = (screenId: string) => {
     const analysis = analyses.value.get(screenId)
     if (analysis && analysis.state === 'running') {
       analysis.state = 'idle'
@@ -137,7 +137,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     }
   }
 
-  const resetAnalysis = (screenId: string) => {
+  const resetConnection = (screenId: string) => {
     const analysis = analyses.value.get(screenId)
     if (analysis) {
       analysis.state = 'idle'
@@ -167,13 +167,13 @@ export const useAnalysisStore = defineStore('analysis', () => {
 
   return {
     analyses,
-    getAnalysis,
+    getConnection,
     isRunning,
     getAllRunning,
-    initializeAnalysis,
-    startAnalysis,
-    stopAnalysis,
-    resetAnalysis,
+    initializeConnection,
+    startConnection,
+    stopConnection,
+    resetConnection,
     closeConnection,
     closeAllConnections,
   }

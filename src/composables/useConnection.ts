@@ -1,13 +1,13 @@
 import { computed } from 'vue'
-import { useAnalysisStore } from '@/stores/analysisStore'
+import { useConnectionStore } from '@/stores/connectionsStore'
 import { getAnalysisStatusLabel } from '@/services/analysisConnection'
 
-export function useAnalysis(screenId: string, screenName?: string, screenRoute?: string) {
-  const store = useAnalysisStore()
+export function useConnection(screenId: string, screenName?: string, screenRoute?: string) {
+  const store = useConnectionStore()
 
-  store.initializeAnalysis(screenId, screenName, screenRoute)
+  store.initializeConnection(screenId, screenName, screenRoute)
 
-  const analysis = store.getAnalysis(screenId)
+  const analysis = store.getConnection(screenId)
   const isRunning = store.isRunning(screenId)
   const isBusy = computed(() => analysis.value?.state === 'running')
   const isCompleted = computed(() => analysis.value?.state === 'completed')
@@ -31,15 +31,15 @@ export function useAnalysis(screenId: string, screenName?: string, screenRoute?:
   })
 
   const start = (params?: Record<string, any>) => {
-    return store.startAnalysis(screenId, params)
+    return store.startConnection(screenId, params)
   }
 
   const stop = () => {
-    store.stopAnalysis(screenId)
+    store.stopConnection(screenId)
   }
 
   const reset = () => {
-    store.resetAnalysis(screenId)
+    store.resetConnection(screenId)
   }
 
   return {
