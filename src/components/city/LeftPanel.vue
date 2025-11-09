@@ -52,7 +52,7 @@
 
   const maxHeight = computed(() => props.maxHeight || '100%')
 
-  const filteredItems = ref([])
+  const filteredItems = ref<typeof props.items>(props.items || [])
 </script>
 
 <style scoped lang="scss">

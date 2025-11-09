@@ -44,6 +44,8 @@
       :data="cityData"
       :colorData="colorData"
       @cityNodeClick="handleCityNodeClick"
+      @cityNodeHover="handleCityNodeHover"
+      @cityNodeCancelHover="handleCityNodeCancelHover"
     />
 
     <RightPanel
@@ -134,6 +136,14 @@
   function handleCityNodeSelect(path: string) {
     selectedPath.value = path
     selectCityNode(path)
+  }
+
+  function handleCityNodeHover(path: string) {
+    console.log('Hovered over: ', path)
+  }
+
+  function handleCityNodeCancelHover(path: string) {
+    console.log('No longer hovering over: ', path)
   }
 
   function navigateUp() {

@@ -49,9 +49,11 @@
     return files.sort((a, b) => b.intensity! - a.intensity!)
   })
 
+  const itemsForLeftPanel = ref(flattenedFilesForList.value)
+
   const leftPanelConfig = computed(() => ({
     label: 'SUSPICIOUS FILES',
-    items: flattenedFilesForList.value,
+    items: itemsForLeftPanel.value,
     showInfo: true,
   }))
 
@@ -61,14 +63,6 @@
     if (intensity >= 0.4) return '#ffaa44'
     if (intensity >= 0.2) return '#ffcc44'
     return '#ffee44'
-  }
-
-  function handleBuildingHover(path: string) {
-    console.log('Hovered over: ', path)
-  }
-
-  function handleBuildingCancelHover(path: string) {
-    console.log('No longer hovering over: ', path)
   }
 </script>
 
