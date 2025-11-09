@@ -322,6 +322,14 @@
   function handleBuildingClick(name: string | null, path: string | null, intensity?: number) {
     console.log('Clicked on:', name, ' Path:', path, ' Intensity: ', intensity)
   }
+
+  function handleBuildingHover(path: string) {
+    console.log('Hovered over: ', path)
+  }
+
+  function handleBuildingCancelHover(path: string) {
+    console.log('No longer hovering over: ', path)
+  }
 </script>
 
 <template>
@@ -330,6 +338,8 @@
       :data="cityDataBig"
       :colorData="colorDataBig"
       @buildingClick="handleBuildingClick"
+      @buildingHover="handleBuildingHover"
+      @buildingCancelHover="handleBuildingCancelHover"
     />
   </div>
 </template>
