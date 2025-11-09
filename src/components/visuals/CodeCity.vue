@@ -44,9 +44,9 @@
   })
 
   const emit = defineEmits<{
-    buildingClick: [name: string | null, path: string | null, intensity?: number],
-    buildingHover: [path: string],
-    buildingCancelHover: [path: string]
+    cityNodeClick: [name: string | null, path: string | null, intensity?: number]
+    cityNodeHover: [path: string]
+    cityNodeCancelHover: [path: string]
   }>()
 
   const containerRef = ref<HTMLDivElement | null>(null)
@@ -63,14 +63,8 @@
     cleanup: cleanupScene,
   } = useCodeCityScene(containerRef, props.initialZoom)
 
-  const {
-    hoveredObject,
-    selectedObject,
-    objectMap,
-    rotationCenter,
-    setRotationCenter,
-    clearSelection,
-  } = useCodeCityState()
+  const { hoveredObject, selectedObject, objectMap, setRotationCenter, clearSelection } =
+    useCodeCityState()
 
   watch(
     () => props.colorData,
@@ -220,7 +214,7 @@
 
   function handleHover(cam: THREE.Camera, scn: THREE.Scene) {
     if (controls.isDragging) return
-    
+
     const raycaster = getRaycaster()
     const mouse = getMouse()
     if (!raycaster || !mouse) return
@@ -243,7 +237,7 @@
       restoreOriginalColor(toRaw(hoveredObject.value))
 
       const nodeData = objectMap.get(toRaw(hoveredObject.value))
-      emit('buildingCancelHover', nodeData.path)
+      emit('cityNodeCancelHover', nodeData.path)
     }
 
     // Ustaw nowy hovered object
@@ -255,7 +249,7 @@
       material.color.setHex(COLORS.hover)
 
       const nodeData = objectMap.get(toRaw(hoveredObject.value))
-      emit('buildingHover', nodeData.path)
+      emit('cityNodeHover', nodeData.path)
     }
   }
 
@@ -304,7 +298,7 @@
         restoreOriginalColor(toRaw(hoveredObject.value))
 
         const nodeData = objectMap.get(toRaw(hoveredObject.value))
-        emit('buildingCancelHover', nodeData.path)
+        emit('cityNodeCancelHover', nodeData.path)
 
         hoveredObject.value = null
       }
