@@ -139,11 +139,11 @@
   }
 
   function handleCityNodeHover(path: string) {
-    console.log('Hovered over: ', path)
+    //console.log('Hovered over: ', path)
   }
 
   function handleCityNodeCancelHover(path: string) {
-    console.log('No longer hovering over: ', path)
+    //console.log('No longer hovering over: ', path)
   }
 
   function navigateUp() {
