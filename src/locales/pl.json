@@ -97,6 +97,29 @@
     "viewDetails": "Zobacz wyniki"
   },
 
+  "status": {
+    "downloading": "Pobieranie repozytorium...",
+    "processingData": "Przetwarzanie danych...",
+    "analyzing": "Rozpoczynanie analizy...",
+    "sonar": "Analizowanie...",
+    "unknown": "Nieznany status"
+  },
+
+  "errors": {
+    "failedToParseCompletionData": "Nie udało się przetworzyć danych",
+    "serverError": "Błąd serwera",
+    "unknownServerError": "Nieznany błąd serwera",
+    "connectionFailedMaxRetries": "Połączenie nie powiodło się "
+  },
+
+  "analysis": {
+    "completed": "Proces '{screen}' zakończył się pomyślnie w {duration}s.",
+    "failed": "Proces '{screen}' nie powiódł się: {error}.",
+    "start_failed": "Nie udało się rozpocząć procesu '{screen}': {error}.",
+    "cancelled": "Proces '{screen}' został anulowany",
+    "repo-download": "Analiza repozytorium"
+  },
+
   "rightPanel": {
     "selectFile": "Wybierz plik",
     "fileMetrics": "METRYKI PLIKU",

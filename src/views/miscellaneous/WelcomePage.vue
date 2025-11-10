@@ -125,9 +125,8 @@
   const toDateError = ref('')
 
   const { isBusy, isCompleted, statusLabel, start, stop } = useConnection(
-    'download-repository',
-    'Repository Download',
-    '/system-overview'
+    '/system-overview',
+    'analysis.repo-download'
   )
 
   const logoSrc = computed(() => {
@@ -279,8 +278,8 @@
 
     await start({
       repositoryUrl: link.value.trim(),
-      startDate: showDateInputs.value ? fromDate.value : null,
-      endDate: showDateInputs.value ? toDate.value : null,
+      startDate: fromDate.value,
+      endDate: toDate.value,
     })
   }
 
@@ -341,6 +340,7 @@
     line-height: $line-height-tight;
 
     .appname {
+      font-weight: 800;
       color: var(--color-primary);
     }
   }

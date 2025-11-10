@@ -42,7 +42,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
       error: 'error',
       info: 'info',
       warning: 'warning',
-      alert: 'warning',
     }
 
     showToast(notification.message, variantMap[notification.type] || 'info', 5000)

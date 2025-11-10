@@ -97,6 +97,29 @@
     "viewDetails": "View Results"
   },
 
+  "status": {
+    "downloading": "Downloading repository...",
+    "processingData": "Processing data...",
+    "analyzing": "Starting analysis...",
+    "sonar": "Performing analysis...",
+    "unknown": "Unknown status"
+  },
+
+  "errors": {
+    "failedToParseCompletionData": "Failed to parse completion data",
+    "serverError": "Server error",
+    "unknownServerError": "Unknown server error",
+    "connectionFailedMaxRetries": "Connection failed after multiple retries"
+  },
+
+  "analysis": {
+    "completed": "Process' {screen}' completed successfully in {duration}s.",
+    "failed": "Process '{screen}' failed: {error}.",
+    "start_failed": "Process '{screen}' failed to start: {error}.",
+    "cancelled": "Process '{screen}' was cancelled",
+    "repo-download": "Repository analysis"
+  },
+
   "rightPanel": {
     "selectFile": "Select a file",
     "fileMetrics": "FILE METRICS",
