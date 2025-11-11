@@ -249,7 +249,7 @@
 
     &__link {
       align-self: flex-start;
-      color: var(--color-primary);
+      color: $color-hiperlink;
       text-decoration: none;
       font-size: $font-size-xs;
       font-weight: $font-weight-medium;

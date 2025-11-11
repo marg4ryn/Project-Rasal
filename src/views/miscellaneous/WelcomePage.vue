@@ -2,7 +2,7 @@
   <section class="welcome-screen">
     <LoadingBar
       :show="isBusy"
-      :label="statusLabel || t('welcomePage.loading')"
+      :label="statusLabel || 'welcomePage.loading'"
       :show-cancel-button="true"
       :on-cancel="handleCancelAnalysis"
       :modal-label="t('welcomePage.modal')"

@@ -7,7 +7,7 @@
           <div class="spinner-ring"></div>
           <div class="spinner-ring"></div>
         </div>
-        <p class="loading-label">{{ label || t('common.loading') }}</p>
+        <p class="loading-label">{{ t(label || 'common.loading') }}</p>
 
         <AppButton
           v-if="showCancelButton && onCancel"

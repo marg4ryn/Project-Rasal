@@ -30,10 +30,10 @@ export interface AnalysisResult {
 }
 
 export enum AnalysisStatus {
-  DOWNLOADING = 0,
-  PROCESSING_DATA = 1,
-  ANALYZING = 2,
-  SONAR = 3,
+  DOWNLOADING = 'DOWNLOADING',
+  PROCESSING_DATA = 'PROCESSING_DATA',
+  ANALYZING = 'ANALYZING',
+  SONAR = 'SONAR',
 }
 
 const ANALYSIS_STATUS_LABEL_KEYS: Record<AnalysisStatus, string> = {
