@@ -76,15 +76,18 @@ npm run lint
 Here's an overview of the project's directory structure:
 
 -   **`components/`**: Reusable Vue components.
+    -   `city/`: Components for building city pages
     -   `common/`: Small, versatile UI components
-    -   `layout/`: Page wireframes
     -   `modals`: Dialog boxes and popups
     -   `sections`: Larger parts of the interface
     -   `settings`: Settings page components
     -   `visuals`: Graphic elements
+-   **`composables/`**: Composables
 -   **`locales/`**: Stores translation files for different languages.
+-   **`mocks/`**: API and data mocks
 -   **`router/`**: Vue Router configuration.
 -   **`services/`**: Files containing business logic and communication with external APIs.
 -   **`stores/`**: Pinia modules for global state management.
 -   **`styles/`**: SCSS files.
+-   **`types/`**: Custom typescript types
 -   **`views/`**: Components representing entire pages/views of the application.

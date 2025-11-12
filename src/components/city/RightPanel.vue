@@ -78,7 +78,10 @@
           v-for="child in filteredChildren"
           :key="child.path"
           class="child-item"
+          :class="{ 'custom-hover': hoveredPath === child.path }"
           @click="handleCityNodeSelect(child.path)"
+          @mouseenter="handleCityNodeHover?.(child.path)"
+          @mouseleave="handleCityNodeCancelHover?.(child.path)"
         >
           <svg
             v-if="child.type === 'directory'"
@@ -126,8 +129,11 @@
 
   const props = defineProps<{
     selectedItem?: CityNode | null
+    hoveredPath?: string
     navigateUp: () => void
     handleCityNodeSelect: (path: string) => void
+    handleCityNodeHover?: (path: string) => void
+    handleCityNodeCancelHover?: (path: string) => void
     metricTypes?: MetricType[]
     showFindCoupling?: boolean
   }>()
@@ -283,6 +289,11 @@
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid $color-none;
+
+    &.custom-hover {
+      background: var(--color-item-bg-hover);
+      border-color: var(--color-border);
+    }
 
     &:hover {
       background: var(--color-item-bg-hover);

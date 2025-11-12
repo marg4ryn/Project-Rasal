@@ -125,6 +125,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid $color-none;
+    font-size: $font-size-sm;
 
     &:hover {
       background: var(--color-item-bg-hover);

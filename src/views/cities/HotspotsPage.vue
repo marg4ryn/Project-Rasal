@@ -24,9 +24,9 @@
   })
 
   const tabs = [
-    { id: 'hotspots', label: 'HOTSPOTS', route: '/hotspots' },
-    { id: 'complexity-trends', label: 'complexity-trends', route: '/complexity-trends' },
-    { id: 'code-age', label: 'code-age', route: '/code-age' },
+    { id: 'hotspots', label: 'navbar.hotspots', route: '/hotspots' },
+    { id: 'complexity-trends', label: 'navbar.complexity-trends', route: '/complexity-trends' },
+    { id: 'code-age', label: 'navbar.code-age', route: '/code-age' },
   ]
 
   const flattenedFilesForList = computed(() => {
@@ -66,44 +66,4 @@
   }
 </script>
 
-<style scoped lang="scss">
-  .file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-    gap: 0.75rem;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--color-border);
-    }
-
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex: 1;
-      min-width: 0;
-
-      .file-name {
-        font-size: 0.85rem;
-        color: #e6e6e6;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .file-suspicion {
-      font-size: 0.8rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-  }
-</style>
+<style scoped lang="scss"></style>

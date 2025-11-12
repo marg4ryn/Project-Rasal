@@ -29,11 +29,11 @@
   import { applyColorData, clearColorData } from '@/utils/city/geometry'
   import { useCodeCityController } from '@/composables/useCodeCityController'
 
-  const { 
-    registerSelectCityNode, 
+  const {
+    registerSelectCityNode,
     unregisterSelectCityNode,
     registerSetCityNodeHoverByPath,
-    unregisterSetCityNodeHoverByPath 
+    unregisterSetCityNodeHoverByPath,
   } = useCodeCityController()
 
   interface Props {
@@ -180,7 +180,9 @@
       material.color.setHex(COLORS.hover)
 
       const nodeData = objectMap.get(toRaw(hoveredObject.value))
-      if (returnEmit) { emit('cityNodeHover', nodeData.path) }
+      if (returnEmit) {
+        emit('cityNodeHover', nodeData.path)
+      }
     }
   }
 
@@ -189,11 +191,13 @@
       restoreOriginalColor(toRaw(hoveredObject.value))
 
       const nodeData = objectMap.get(toRaw(hoveredObject.value))
-      if (returnEmit) { emit('cityNodeCancelHover', nodeData.path) }
+      if (returnEmit) {
+        emit('cityNodeCancelHover', nodeData.path)
+      }
     }
   }
 
-  function setCityNodeHoverByPath (path: string | null): boolean {
+  function setCityNodeHoverByPath(path: string | null): boolean {
     if (!path) {
       resetCityNodeHover(false)
       return true
@@ -387,8 +391,8 @@
 
     rnd.domElement.addEventListener('mouseleave', () => {
       isMouseOverCanvas = false
-      controls.isDragging = false;
-      
+      controls.isDragging = false
+
       // Wyczyść hover gdy myszka opuszcza canvas
       resetCityNodeHover(true)
       hoveredObject.value = null
@@ -470,7 +474,9 @@
       animationId = requestAnimationFrame(animate)
       if (camera && scene && renderer) {
         updateCamera(camera)
-        if (isMouseOverCanvas) { handleHover(camera, scene) }
+        if (isMouseOverCanvas) {
+          handleHover(camera, scene)
+        }
         renderer.render(scene, camera)
       }
     }
