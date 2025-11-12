@@ -75,7 +75,7 @@
     "prompt": "Enter link to analysis target:",
     "from": "From",
     "to": "To",
-    "buttonStart": "Start",
+    "buttonStart": "Analyze",
     "alertEnterRepo": "Please enter a repository link before starting!",
     "loading": "Downloading repository...",
     "modal": "Are you sure you want to abort the repository download?",
