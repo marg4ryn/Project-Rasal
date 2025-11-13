@@ -1,31 +1,46 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
+import type { CityNode } from '@/types'
+import { useLogger } from '@/composables/useLogger'
 
-export const useAnalysisStore = defineStore('api', () => {
-  const analysisId = ref<string | null>(null)
-  const projectName = ref<string>('')
-  const createdAt = ref<string | null>(null)
+const log = useLogger('apiStore')
 
-  const hasAnalysis = computed(() => !!analysisId.value)
+export const useApiStore = defineStore('api', () => {
+  const structure = ref<CityNode>({} as CityNode)
+  const loading = ref<Record<string, boolean>>({})
+  const errors = ref<Record<string, string | null>>({})
 
-  function setAnalysis(id: string, name: string, created: string) {
-    analysisId.value = id
-    projectName.value = name
-    createdAt.value = created
+  function setStructure(data: CityNode) {
+    structure.value = data
+    log.info('Structure set successfully')
   }
 
-  function clearAnalysis() {
-    analysisId.value = null
-    projectName.value = ''
-    createdAt.value = null
+  function setLoading(key: string, value: boolean) {
+    loading.value[key] = value
+    log.info(`Loading state for ${key}: ${value}`)
+  }
+
+  function setError(key: string, message: string | null) {
+    errors.value[key] = message
+    if (message) {
+      log.error(`Error for ${key}: ${message}`)
+    }
+  }
+
+  function clearAll() {
+    structure.value = {} as CityNode
+    loading.value = {}
+    errors.value = {}
+    log.info('All API data cleared')
   }
 
   return {
-    analysisId,
-    projectName,
-    createdAt,
-    hasAnalysis,
-    setAnalysis,
-    clearAnalysis,
+    structure,
+    loading,
+    errors,
+    setStructure,
+    setLoading,
+    setError,
+    clearAll,
   }
 })

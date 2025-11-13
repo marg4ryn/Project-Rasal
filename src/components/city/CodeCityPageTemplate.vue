@@ -76,6 +76,7 @@
   import { useLogger } from '@/composables/useLogger'
   import { useCodeCityController } from '@/composables/useCodeCityController'
   import { useCityStore } from '@/stores/cityStore'
+  import { useApiStore } from '@/stores/apiStore'
   import { MetricType, CityNode } from '@/types'
 
   import TabNavigation from '@/components/city/TabNavigation.vue'
@@ -114,13 +115,16 @@
   const { selectCityNode, setCityNodeHoverByPath } = useCodeCityController()
   const log = useLogger('CodeCityPageTemplate')
   const cityStore = useCityStore()
-  const cityData = cityStore.cityData
   const searchQuery = ref('')
   const selectedPath = ref<string>('')
   const hoveredPath = ref<string>('')
   const mouseX = ref(0)
   const mouseY = ref(0)
   const showToolbar = ref(true)
+  const apiStore = useApiStore()
+  const isEmpty = Object.keys(apiStore.structure).length === 0
+  const cityData = !isEmpty ? apiStore.structure : cityStore.cityData
+  console.log(cityData)
 
   const selectedItem = computed(() => {
     return findNodeByPath(selectedPath.value, cityData)

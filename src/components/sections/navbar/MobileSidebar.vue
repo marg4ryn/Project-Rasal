@@ -189,7 +189,7 @@
       width: 280px;
 
       .sidebar-content {
-        padding: 70px $spacing-md $spacing-md $spacing-md;
+        padding: 150px $spacing-md $spacing-md $spacing-md;
       }
     }
   }

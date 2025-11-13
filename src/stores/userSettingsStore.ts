@@ -6,6 +6,7 @@ export const useUserSettingsStore = defineStore('userSettings', () => {
   const selectedColor = ref<'#bc1922' | '#28abf2'>('#bc1922')
   const selectedTheme = ref<'light' | 'dark' | 'system'>('dark')
   const selectedLanguage = ref<'en' | 'pl' | 'system'>('system')
+  const isGradientOn = ref<'on' | 'off'>('on')
 
   const colorPrimary = ref('')
   const colorSecondary = ref('')
@@ -22,6 +23,10 @@ export const useUserSettingsStore = defineStore('userSettings', () => {
 
   function setLanguage(language: 'pl' | 'en' | 'system') {
     selectedLanguage.value = language
+  }
+
+  function setIsGradientOn(option: 'on' | 'off') {
+    isGradientOn.value = option
   }
 
   async function applyMainColor(color: string) {
@@ -109,9 +114,11 @@ export const useUserSettingsStore = defineStore('userSettings', () => {
     selectedColor,
     selectedTheme,
     selectedLanguage,
+    isGradientOn,
     setColor,
     setTheme,
     setLanguage,
+    setIsGradientOn,
     colorPrimary,
     colorSecondary,
   }

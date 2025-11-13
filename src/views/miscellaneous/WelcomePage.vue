@@ -98,7 +98,9 @@
   import { useNewAnalysisStore } from '@/stores/newAnalysisStore'
   import { useUserSettingsStore } from '@/stores/userSettingsStore'
   import { useConnection } from '@/composables/useConnection'
+  import { useApi } from '@/composables/useApi'
   import { useLogger } from '@/composables/useLogger'
+  import { useUIStore } from '@/stores/uiStore'
   import AppButton from '@/components/common/AppButton.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
@@ -107,6 +109,7 @@
   const log = useLogger('WelcomePage')
   const newAnalysisStore = useNewAnalysisStore()
   const userSettingsStore = useUserSettingsStore()
+  const uiStore = useUIStore()
 
   const REPO_URL_PATTERN =
     /^(?:https:\/\/)?(?:git(?:hub|lab))\.com\/(?:[^/]+)\/(?:(?!\.git$)[^/]+?)(?:\.git)*$/
@@ -128,6 +131,7 @@
     '/system-overview',
     'analysis.repo-download'
   )
+  const { fetchCodeCity } = useApi()
 
   const logoSrc = computed(() => {
     switch (userSettingsStore.selectedColor) {
@@ -283,9 +287,11 @@
     })
   }
 
-  watch(isCompleted, (newValue) => {
+  watch(isCompleted, async (newValue) => {
     if (newValue) {
+      await fetchCodeCity()
       resetNewAnalysisStore()
+      uiStore.isAppBarVisible = true
       router.push('/system-overview')
     }
   })
@@ -450,6 +456,7 @@
     padding: $spacing-md;
     font-size: $font-size-sm;
     text-align: center;
+    justify-content: center;
     cursor: pointer;
     transition: all $transition-fast;
 

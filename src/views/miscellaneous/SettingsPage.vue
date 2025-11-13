@@ -24,6 +24,12 @@
             name="theme"
             :options="themes"
           /> -->
+          <SectionHeader :label="t('settingsPage.gradient')" />
+          <RadioButtonGroup
+            v-model="useUserSettingsStore().isGradientOn"
+            name="gradient"
+            :options="gradient"
+          />
           <SectionHeader :label="t('settingsPage.language')" />
           <AppDropdownSelect
             id="language-select"
@@ -70,6 +76,12 @@
     { label: t('settingsPage.red'), value: '#bc1922' },
     { label: t('settingsPage.blue'), value: '#28abf2' },
   ]
+
+  const gradient = [
+    { label: t('settingsPage.on'), value: 'on' },
+    { label: t('settingsPage.off'), value: 'off' },
+  ]
+
   // const themes = [
   //   { label: t('settingsPage.dark'), value: 'dark' },
   //   { label: t('settingsPage.light'), value: 'light' },
