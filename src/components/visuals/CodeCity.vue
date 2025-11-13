@@ -395,8 +395,8 @@
 
     rnd.domElement.addEventListener('wheel', (e) => {
       e.preventDefault()
-      controls.targetZoom += e.deltaY * 0.1
-      controls.targetZoom = Math.max(40, Math.min(initialZoom * 2, controls.targetZoom))
+      controls.targetZoom += e.deltaY * 0.0007 * controls.targetZoom
+      controls.targetZoom = Math.max(40, Math.min(initialZoom * 1.5, controls.targetZoom))
     })
 
     rnd.domElement.addEventListener('mouseenter', () => {
