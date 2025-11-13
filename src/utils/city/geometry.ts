@@ -239,7 +239,7 @@ export function applyColorData(
   })
 
   objectMap.forEach((data, key) => {
-    if (typeof key !== 'string') return // useless?
+    if (typeof key !== 'string') return
 
     const currentColorData = colorDataMap.get(data.node.path)
 
@@ -264,7 +264,7 @@ export function clearColorData(objectMap: Map<any, any>): void {
   const updatedMeshes = new Set<THREE.InstancedMesh>()
 
   objectMap.forEach((data, key) => {
-    if (typeof key !== 'string') return // useless?
+    if (typeof key !== 'string') return
     
     if (data.type === 'building') {
       const mesh = data.mesh as THREE.InstancedMesh
