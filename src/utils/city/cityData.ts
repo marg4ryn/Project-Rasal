@@ -80,37 +80,37 @@ export const colorData = [
 
 export const cityData2 = {
   name: 'root',
-  type: 'directory',
+  type: 'dir',
   path: '/',
   children: [
     {
       name: 'src',
-      type: 'directory',
+      type: 'dir',
       path: '/src',
       children: [
         {
           name: 'main',
-          type: 'directory',
+          type: 'dir',
           path: '/src/main',
           children: [
             {
               name: 'java',
-              type: 'directory',
+              type: 'dir',
               path: '/src/main/java',
               children: [
                 {
                   name: 'com',
-                  type: 'directory',
+                  type: 'dir',
                   path: '/src/main/java/com',
                   children: [
                     {
                       name: 'company',
-                      type: 'directory',
+                      type: 'dir',
                       path: '/src/main/java/com/company',
                       children: [
                         {
                           name: 'api',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/api',
                           children: [
                             {
@@ -152,7 +152,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'service',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/service',
                           children: [
                             {
@@ -208,7 +208,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'repository',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/repository',
                           children: [
                             {
@@ -243,7 +243,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'model',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/model',
                           children: [
                             {
@@ -292,7 +292,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'dto',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/dto',
                           children: [
                             {
@@ -341,7 +341,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'config',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/config',
                           children: [
                             {
@@ -376,7 +376,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'util',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/util',
                           children: [
                             {
@@ -418,7 +418,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'exception',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/main/java/com/company/exception',
                           children: [
                             {
@@ -466,7 +466,7 @@ export const cityData2 = {
             },
             {
               name: 'resources',
-              type: 'directory',
+              type: 'dir',
               path: '/src/main/resources',
               children: [
                 {
@@ -492,12 +492,12 @@ export const cityData2 = {
                 },
                 {
                   name: 'db',
-                  type: 'directory',
+                  type: 'dir',
                   path: '/src/main/resources/db',
                   children: [
                     {
                       name: 'migration',
-                      type: 'directory',
+                      type: 'dir',
                       path: '/src/main/resources/db/migration',
                       children: [
                         {
@@ -527,7 +527,7 @@ export const cityData2 = {
                 },
                 {
                   name: 'static',
-                  type: 'directory',
+                  type: 'dir',
                   path: '/src/main/resources/static',
                   children: [
                     {
@@ -552,27 +552,27 @@ export const cityData2 = {
         },
         {
           name: 'test',
-          type: 'directory',
+          type: 'dir',
           path: '/src/test',
           children: [
             {
               name: 'java',
-              type: 'directory',
+              type: 'dir',
               path: '/src/test/java',
               children: [
                 {
                   name: 'com',
-                  type: 'directory',
+                  type: 'dir',
                   path: '/src/test/java/com',
                   children: [
                     {
                       name: 'company',
-                      type: 'directory',
+                      type: 'dir',
                       path: '/src/test/java/com/company',
                       children: [
                         {
                           name: 'service',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/test/java/com/company/service',
                           children: [
                             {
@@ -607,7 +607,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'api',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/test/java/com/company/api',
                           children: [
                             {
@@ -635,7 +635,7 @@ export const cityData2 = {
                         },
                         {
                           name: 'integration',
-                          type: 'directory',
+                          type: 'dir',
                           path: '/src/test/java/com/company/integration',
                           children: [
                             {
@@ -666,7 +666,7 @@ export const cityData2 = {
     },
     {
       name: 'docs',
-      type: 'directory',
+      type: 'dir',
       path: '/docs',
       children: [
         { name: 'README.md', type: 'file', path: '/docs/README.md', height: 0.67, width: 0.62 },
@@ -680,7 +680,7 @@ export const cityData2 = {
         { name: 'API.md', type: 'file', path: '/docs/API.md', height: 0.78, width: 0.73 },
         {
           name: 'architecture',
-          type: 'directory',
+          type: 'dir',
           path: '/docs/architecture',
           children: [
             {
@@ -703,7 +703,7 @@ export const cityData2 = {
     },
     {
       name: 'scripts',
-      type: 'directory',
+      type: 'dir',
       path: '/scripts',
       children: [
         { name: 'build.sh', type: 'file', path: '/scripts/build.sh', height: 0.41, width: 0.43 },

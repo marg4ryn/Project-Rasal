@@ -1,6 +1,7 @@
 <template>
   <div class="app">
     <MeshGradient
+      v-if="userSettings.isGradientOn === 'on'"
       :primary-color="userSettings.colorPrimary"
       :secondary-color="userSettings.colorSecondary"
       class="background-gradient"

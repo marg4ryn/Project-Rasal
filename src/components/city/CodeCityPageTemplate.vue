@@ -1,5 +1,13 @@
 <template>
-  <div class="code-city-page">
+  <div class="code-city-page" @mousemove="handleMouseMove">
+    <div
+      v-if="hoveredItem && showToolbar"
+      class="hover-toolbar"
+      :style="{ left: mouseX + 'px', top: mouseY + 'px' }"
+    >
+      {{ hoveredItem.name }}
+    </div>
+
     <TabNavigation class="tab-nav" :tabs="tabs" />
 
     <AppSearchBar v-model="searchQuery" class="search-bar-wrapper" type="normal" />
@@ -52,9 +60,11 @@
       v-if="rightPanelConfig"
       class="right-panel"
       :selectedItem="selectedItem"
-      :selectedPath="selectedPath"
+      :hoveredPath="hoveredPath"
       :navigateUp="navigateUp"
       :handleCityNodeSelect="handleCityNodeSelect"
+      :handleCityNodeHover="handleCityNodeHover"
+      :handleCityNodeCancelHover="handleCityNodeCancelHover"
       :showFindCoupling="rightPanelConfig.showFindCoupling"
       :metric-types="rightPanelConfig.metricTypes"
     />
@@ -62,10 +72,11 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted, onUnmounted } from 'vue'
   import { useLogger } from '@/composables/useLogger'
   import { useCodeCityController } from '@/composables/useCodeCityController'
   import { useCityStore } from '@/stores/cityStore'
+  import { useApiStore } from '@/stores/apiStore'
   import { MetricType, CityNode } from '@/types'
 
   import TabNavigation from '@/components/city/TabNavigation.vue'
@@ -104,13 +115,23 @@
   const { selectCityNode, setCityNodeHoverByPath } = useCodeCityController()
   const log = useLogger('CodeCityPageTemplate')
   const cityStore = useCityStore()
-  const cityData = cityStore.cityData
-
   const searchQuery = ref('')
   const selectedPath = ref<string>('')
+  const hoveredPath = ref<string>('')
+  const mouseX = ref(0)
+  const mouseY = ref(0)
+  const showToolbar = ref(true)
+  const apiStore = useApiStore()
+  const isEmpty = Object.keys(apiStore.structure).length === 0
+  const cityData = !isEmpty ? apiStore.structure : cityStore.cityData
+  console.log(cityData)
 
   const selectedItem = computed(() => {
     return findNodeByPath(selectedPath.value, cityData)
+  })
+
+  const hoveredItem = computed(() => {
+    return findNodeByPath(hoveredPath.value, cityData)
   })
 
   function findNodeByPath(path: string, root: CityNode): CityNode | null {
@@ -138,11 +159,13 @@
   }
 
   function handleCityNodeHover(path: string) {
-    //log.info('Hovered over: ', path)
+    hoveredPath.value = path
+    setCityNodeHoverByPath(path)
   }
 
-  function handleCityNodeCancelHover(path: string) {
-    //log.info('No longer hovering over: ', path)
+  function handleCityNodeCancelHover() {
+    hoveredPath.value = ''
+    setCityNodeHoverByPath('')
   }
 
   function navigateUp() {
@@ -150,6 +173,22 @@
     selectedPath.value = parentPath
     selectCityNode(parentPath)
   }
+
+  function handleMouseMove(e: MouseEvent) {
+    mouseX.value = e.clientX + 10
+    mouseY.value = e.clientY + 10
+    const target = e.target as HTMLElement
+    const isOverPanel = target.closest('.left-panel, .left-panels-container, .right-panel')
+    showToolbar.value = !isOverPanel
+  }
+
+  onMounted(() => {
+    window.addEventListener('mousemove', handleMouseMove)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('mousemove', handleMouseMove)
+  })
 </script>
 
 <style scoped lang="scss">
@@ -164,6 +203,19 @@
     justify-content: center;
   }
 
+  .hover-toolbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
   .tab-nav {
     position: absolute;
     top: 1.5rem;
@@ -174,8 +226,8 @@
 
   .search-bar-wrapper {
     position: absolute;
-    top: 4rem;
-    left: 50%;
+    top: 1rem;
+    left: 68%;
     transform: translateX(-50%);
     z-index: 10;
   }

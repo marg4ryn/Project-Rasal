@@ -3,10 +3,15 @@ import { ref } from 'vue'
 
 export const useUIStore = defineStore('ui', () => {
   const isNavBarVisible = ref(true)
+  const isAppBarVisible = ref(true)
   const showAnalysisTitle = ref(false)
 
   function setIsNavBarVisible(value: boolean) {
     isNavBarVisible.value = value
+  }
+
+  function setIsAppBarVisible(value: boolean) {
+    isAppBarVisible.value = value
   }
 
   function setShowAnalysisTitle(value: boolean) {
@@ -15,8 +20,10 @@ export const useUIStore = defineStore('ui', () => {
 
   return {
     isNavBarVisible,
+    isAppBarVisible,
     showAnalysisTitle,
     setIsNavBarVisible,
+    setIsAppBarVisible,
     setShowAnalysisTitle,
   }
 })

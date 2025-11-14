@@ -1,20 +1,22 @@
 <template>
-  <header class="app-bar">
-    <RouterLink
-      to="/welcome"
-      class="app-bar__left clickable-area"
-      :title="t('appbar.new-analysis')"
-      :aria-label="t('appbar.new-analysis')"
-    >
-      <img :src="logoSrc" alt="Logo" class="app_logo" />
-      <span class="app-name">
-        <span class="app-name__1">Hot</span><span class="app-name__2">Spotter</span>
-      </span>
-    </RouterLink>
+  <header class="app-bar" :class="{ 'app-bar--minimal': !isAppBarVisible }">
+    <template v-if="isAppBarVisible">
+      <button
+        class="app-bar__left clickable-area"
+        :title="t('appbar.new-analysis')"
+        :aria-label="t('appbar.new-analysis')"
+        @click="openNewAnalysis"
+      >
+        <img :src="logoSrc" alt="Logo" class="app_logo" />
+        <span class="app-name">
+          <span class="app-name__1">Hot</span><span class="app-name__2">Spotter</span>
+        </span>
+      </button>
 
-    <div v-if="showAnalysisTitle" class="app-bar__center">
-      <span class="app-label"> {{ repoName }} — {{ fromDate }} – {{ toDate }} </span>
-    </div>
+      <div v-if="showAnalysisTitle" class="app-bar__center">
+        <span class="app-label"> {{ repoName }} — {{ fromDate }} – {{ toDate }} </span>
+      </div>
+    </template>
 
     <div class="app-bar__right">
       <div ref="notificationBtnRef" class="notification-wrapper">
@@ -68,6 +70,12 @@
   </header>
 
   <NotificationsPanel ref="notificationsPanelRef" />
+  <ModalBox
+    v-if="showDialog"
+    :label="t('appbar.modal')"
+    :onConfirm="handleNewAnalysis"
+    @close="showDialog = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -75,19 +83,22 @@
   import { useUserSettingsStore } from '@/stores/userSettingsStore'
   import { useNotificationsStore } from '@/stores/notificationsStore'
   import { useI18n } from 'vue-i18n'
-  import { RouterLink } from 'vue-router'
+  import { useRouter, RouterLink } from 'vue-router'
   import { computed, ref, onMounted, onUnmounted } from 'vue'
   import NotificationsPanel from '@/components/sections/NotificationsPanel.vue'
+  import ModalBox from '@/components/modals/ModalBox.vue'
 
   const { t } = useI18n()
-
-  const showAnalysisTitle = useUIStore().showAnalysisTitle
+  const router = useRouter()
+  const uiStore = useUIStore()
+  const isAppBarVisible = computed(() => uiStore.isAppBarVisible)
+  const showAnalysisTitle = computed(() => uiStore.showAnalysisTitle)
   const userSettingsStore = useUserSettingsStore()
   const notificationsStore = useNotificationsStore()
   const repoName = ref('')
   const fromDate = ref('')
   const toDate = ref('')
-
+  const showDialog = ref(false)
   const notificationBtnRef = ref<HTMLElement | null>(null)
   const notificationsPanelRef = ref<InstanceType<typeof NotificationsPanel> | null>(null)
 
@@ -101,6 +112,15 @@
         return '/logo_red.png'
     }
   })
+
+  function openNewAnalysis() {
+    showDialog.value = true
+  }
+
+  function handleNewAnalysis() {
+    uiStore.isAppBarVisible = true
+    router.push('/welcome')
+  }
 
   function openNotifications() {
     notificationsStore.togglePanel()
@@ -141,6 +161,12 @@
     padding: 0 20px;
     flex-shrink: 0;
     position: relative;
+    transition: background-color 0.3s ease;
+
+    &--minimal {
+      background-color: transparent;
+      justify-content: flex-end;
+    }
 
     &__right {
       display: flex;
@@ -156,6 +182,10 @@
       text-decoration: none;
       color: var(--color-text-primary);
       border-radius: $radius-md;
+      background-color: var(--color-bg-primary);
+      border: none;
+      padding: 0;
+      background: none;
     }
 
     &__center {

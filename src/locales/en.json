@@ -25,7 +25,8 @@
     "settings": "Settings",
     "notifications": "Notifications",
     "user-profile": "User Profile",
-    "new-analysis": "New Analysis"
+    "new-analysis": "New Analysis",
+    "modal": "Are you sure you want to leave the current analysis?"
   },
 
   "navbar": {
@@ -66,7 +67,10 @@
     "systemDefault": "System default",
     "mappings": "Mappings",
     "performance": "Performance",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "gradient": "Background gradient",
+    "on": "On",
+    "off": "Off"
   },
 
   "welcomePage": {
@@ -110,6 +114,17 @@
     "serverError": "Server error",
     "unknownServerError": "Unknown server error",
     "connectionFailedMaxRetries": "Connection failed after multiple retries"
+  },
+
+  "api": {
+    "errors": {
+      "unknown": "Unknown error",
+      "httpError": "HTTP error occurred",
+      "timeout": "Request timeout",
+      "requestTimeout": "The request took too long to complete",
+      "noAnalysisId": "No analysis ID provided",
+      "fetchStructureFailed": "Failed to load structure"
+    }
   },
 
   "analysis": {

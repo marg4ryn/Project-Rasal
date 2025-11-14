@@ -25,7 +25,8 @@
     "settings": "Ustawienia",
     "notifications": "Powiadomienia",
     "user-profile": "Twoje konto",
-    "new-analysis": "Nowa analiza"
+    "new-analysis": "Nowa analiza",
+    "modal": "Czy na pewno chcesz opuścić bieżącą analizę?"
   },
 
   "navbar": {
@@ -66,7 +67,10 @@
     "systemDefault": "Domyślny systemowy",
     "mappings": "Mapowania",
     "performance": "Wydajność",
-    "notifications": "Powiadomienia"
+    "notifications": "Powiadomienia",
+    "gradient": "Gradient tła",
+    "on": "Włączony",
+    "off": "Wyłączony"
   },
 
   "welcomePage": {
@@ -110,6 +114,16 @@
     "serverError": "Błąd serwera",
     "unknownServerError": "Nieznany błąd serwera",
     "connectionFailedMaxRetries": "Połączenie nie powiodło się "
+  },
+  "api": {
+    "errors": {
+      "unknown": "Nieznany błąd",
+      "httpError": "Wystąpił błąd HTTP",
+      "timeout": "Przekroczono limit czasu",
+      "requestTimeout": "Żądanie trwało zbyt długo",
+      "noAnalysisId": "Nie podano ID analizy",
+      "fetchStructureFailed": "Nie udało się załadować struktury"
+    }
   },
 
   "analysis": {

@@ -15,7 +15,7 @@
 
       <div class="file-icon">
         <svg
-          v-if="selectedItem?.type === 'directory'"
+          v-if="selectedItem?.type === 'dir'"
           width="20"
           height="20"
           viewBox="0 0 20 20"
@@ -62,7 +62,7 @@
     </div>
 
     <div
-      v-else-if="selectedItem && selectedItem.type === 'directory' && selectedItem.children"
+      v-else-if="selectedItem && selectedItem.type === 'dir' && selectedItem.children"
       class="directory-children"
     >
       <h3>{{ $t('rightPanel.directoryContents') }}</h3>
@@ -78,10 +78,13 @@
           v-for="child in filteredChildren"
           :key="child.path"
           class="child-item"
+          :class="{ 'custom-hover': hoveredPath === child.path }"
           @click="handleCityNodeSelect(child.path)"
+          @mouseenter="handleCityNodeHover?.(child.path)"
+          @mouseleave="handleCityNodeCancelHover?.(child.path)"
         >
           <svg
-            v-if="child.type === 'directory'"
+            v-if="child.type === 'dir'"
             width="16"
             height="16"
             viewBox="0 0 16 16"
@@ -103,7 +106,7 @@
           </svg>
 
           <span class="child-name">{{ child.name }}</span>
-          <span v-if="child.type === 'directory'" class="child-type">
+          <span v-if="child.type === 'dir'" class="child-type">
             {{ getChildrenCount(child) }} {{ $t('rightPanel.items') }}
           </span>
         </div>
@@ -126,8 +129,11 @@
 
   const props = defineProps<{
     selectedItem?: CityNode | null
+    hoveredPath?: string
     navigateUp: () => void
     handleCityNodeSelect: (path: string) => void
+    handleCityNodeHover?: (path: string) => void
+    handleCityNodeCancelHover?: (path: string) => void
     metricTypes?: MetricType[]
     showFindCoupling?: boolean
   }>()
@@ -283,6 +289,11 @@
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid $color-none;
+
+    &.custom-hover {
+      background: var(--color-item-bg-hover);
+      border-color: var(--color-border);
+    }
 
     &:hover {
       background: var(--color-item-bg-hover);

@@ -71,20 +71,49 @@
 
 <style scoped lang="scss">
   .search-bar {
-    @include input-base;
+    width: 100%;
+    padding: $input-padding-y $input-padding-x;
+    border: $input-border-width solid var(--color-input-border);
+    color: var(--color-text-primary);
+    font-size: $font-size-base;
+    transition: all $transition-base;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 24px;
-    height: 48px;
+    height: 38px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-input-border-hover);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     &.normal {
-      width: 400px;
+      width: 260px;
+      background: rgba(0, 0, 0, 0.25);
     }
 
     &.mini {
       width: 100%;
       font-size: 0.85rem;
+      background: transparent;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.25);
+      border-color: var(--color-input-border-hover);
     }
 
     .search-input {
@@ -97,6 +126,10 @@
       font-size: 0.95rem;
       transition: all 0.3s ease;
 
+      &:hover {
+        background: transparent;
+      }
+
       &::placeholder {
         color: var(--color-text-muted);
       }
@@ -107,7 +140,7 @@
     }
 
     .search-icon {
-      padding: 0 0.8rem;
+      padding: 5px;
       background: transparent;
       border: 0;
       border-radius: 50%;
@@ -120,7 +153,7 @@
     }
 
     .clear-button {
-      padding: 0 0.8rem;
+      padding: 5px;
       background: transparent;
       border: 0;
       border-radius: 50%;
@@ -137,7 +170,7 @@
       }
 
       &:focus {
-        color: var(--color-primary);
+        color: $color-button-danger;
         outline: none;
       }
     }
