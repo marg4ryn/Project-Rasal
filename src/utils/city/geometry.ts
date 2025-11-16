@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import type { CityNode, ProcessedNodeData } from '@/types'
-import { COLORS } from '@/utils/city/constants'
+import { COLORS, BUILDING_HEIGHT_SCALE, BUILDING_WIDTH_SCALE } from '@/utils/city/constants'
 
 const geometryCache = new Map<string, THREE.BoxGeometry>()
 const edgesCache = new Map<string, Float32Array>()
@@ -30,72 +30,6 @@ interface InstanceGroupData {
 const instanceGroups = new Map<string, InstanceGroupData>()
 
 // ========== TWORZENIE GEOMETRII ==========
-export function createBuilding(
-  node: CityNode,
-  nodeData: ProcessedNodeData,
-  x: number,
-  y: number,
-  z: number,
-  objectMap: Map<any, any>
-): THREE.Mesh {
-  const key = `${nodeData.width}_${nodeData.height}_${nodeData.depth}`
-  let geometry = geometryCache.get(key)
-
-  if (!geometry) {
-    geometry = new THREE.BoxGeometry(nodeData.width, nodeData.height, nodeData.depth)
-    geometryCache.set(key, geometry)
-  }
-
-  const material = new THREE.MeshPhongMaterial({
-    color: COLORS.building,
-    emissive: COLORS.emissiveColor,
-  })
-  const mesh = new THREE.Mesh(geometry, material)
-  mesh.position.set(x, y + nodeData.height / 2, z)
-  mesh.castShadow = true
-  mesh.receiveShadow = true
-
-  mesh.userData = { name: node.name, isSelectable: true, type: 'building' }
-  objectMap.set(mesh, node)
-
-  collectEdges(geometry, x, y + nodeData.height / 2, z)
-
-  return mesh
-}
-
-export function createPlatform(
-  node: CityNode,
-  nodeData: ProcessedNodeData,
-  x: number,
-  y: number,
-  z: number,
-  objectMap: Map<any, any>
-): THREE.Mesh {
-  const key = `${nodeData.width}_${nodeData.height}_${nodeData.depth}`
-  let geometry = geometryCache.get(key)
-
-  if (!geometry) {
-    geometry = new THREE.BoxGeometry(nodeData.width, nodeData.height, nodeData.depth)
-    geometryCache.set(key, geometry)
-  }
-
-  const material = new THREE.MeshPhongMaterial({
-    color: COLORS.platform,
-    emissive: COLORS.emissiveColor,
-  })
-  const mesh = new THREE.Mesh(geometry, material)
-  mesh.position.set(x, y + nodeData.height / 2, z)
-  mesh.castShadow = true
-  mesh.receiveShadow = true
-
-  mesh.userData = { name: node.name, isSelectable: true, type: 'platform' }
-  objectMap.set(mesh, node)
-
-  collectEdges(geometry, x, y + nodeData.height / 2, z)
-
-  return mesh
-}
-
 export function collectEdges(geometry: THREE.BoxGeometry, x: number, y: number, z: number): void {
   const params = geometry.parameters
   const cacheKey = `${params.width}_${params.height}_${params.depth}`
@@ -292,7 +226,10 @@ export function collectBuildingInstance(
   y: number,
   z: number
 ): void {
-  const key = `building_${nodeData.width}_${nodeData.height}_${nodeData.depth}`
+  const buildWidth = nodeData.width < 0.1 * BUILDING_WIDTH_SCALE ? 0.1 * BUILDING_WIDTH_SCALE : nodeData.width
+  const buildHeight = nodeData.height < 0.1 * BUILDING_HEIGHT_SCALE ? 0.1 * BUILDING_HEIGHT_SCALE : nodeData.height
+
+  const key = `building_${buildWidth}_${buildHeight}_${buildWidth}`
   
   if (!instanceGroups.has(key)) {
     instanceGroups.set(key, { buildings: [] })
@@ -300,7 +237,7 @@ export function collectBuildingInstance(
   
   const instance = instanceGroups.get(key)!
   const matrix = new THREE.Matrix4()
-  matrix.setPosition(x, y + nodeData.height / 2, z)
+  matrix.setPosition(x, y + buildHeight / 2, z)
   
   instance.buildings.push({
     node,
@@ -311,11 +248,11 @@ export function collectBuildingInstance(
   // Zbieranie edges
   const geometry = geometryCache.get(key.replace('building_', ''))
   if (!geometry) {
-    const geom = new THREE.BoxGeometry(nodeData.width, nodeData.height, nodeData.depth)
+    const geom = new THREE.BoxGeometry(buildWidth, buildHeight, buildWidth)
     geometryCache.set(key.replace('building_', ''), geom)
-    collectEdges(geom, x, y + nodeData.height / 2, z)
+    collectEdges(geom, x, y + buildHeight / 2, z)
   } else {
-    collectEdges(geometry, x, y + nodeData.height / 2, z)
+    collectEdges(geometry, x, y + buildHeight / 2, z)
   }
 }
 
