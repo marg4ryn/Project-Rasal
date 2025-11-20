@@ -29,9 +29,9 @@ export function layoutInRows(children: ProcessedNodeData[]): LayoutResult {
   let bestLayout = null
   let bestWaste = Infinity
   
-  const minWidth = targetWidth * 0.8
-  const maxWidth = targetWidth * 1.2
-  const steps = 16
+  const minWidth = targetWidth * 0.6
+  const maxWidth = targetWidth * 1.4 // Conajmniej około 1.4, bo są problemy z platformami z 2 plikami małymi
+  const steps = 15
   
   for (let i = 0; i <= steps; i++) {
     const testWidth = minWidth + (maxWidth - minWidth) * (i / steps)
@@ -64,48 +64,66 @@ function skylineLayout(
   const positions: Array<{ x: number; z: number; rowDepth: number }> = new Array(children.length)
   
   children.forEach((child, index) => {
-    const childWidth = child.width + SPACING
-    const childDepth = child.depth + SPACING
+    const childWidthWithSpacing = child.width + SPACING
+    const childDepthWithSpacing = child.depth + SPACING
     
-    const placement = findBestSkylinePosition(skyline, childWidth, childDepth, containerWidth)
-    
+    const placement = findBestSkylinePosition(skyline, childWidthWithSpacing, childDepthWithSpacing, containerWidth)
+
     if (placement) {
       positions[index] = {
         x: placement.x + child.width / 2,
         z: placement.z + child.depth / 2,
-        rowDepth: childDepth
+        rowDepth: childDepthWithSpacing
       }
       
-      updateSkyline(skyline, placement.x, placement.z + childDepth, childWidth)
+      updateSkyline(skyline, placement.x, placement.z + childDepthWithSpacing, childWidthWithSpacing)
     } else {
       // Fallback - dodaj najniżej jak się da
       const maxZ = Math.max(...skyline.map(s => s.z + SPACING))
       positions[index] = {
         x: SPACING + child.width / 2,
         z: maxZ + child.depth / 2,
-        rowDepth: childDepth
+        rowDepth: childDepthWithSpacing
       }
       
-      updateSkyline(skyline, SPACING, maxZ + childDepth, childWidth)
+      updateSkyline(skyline, SPACING, maxZ + childDepthWithSpacing, childWidthWithSpacing)
     }
   })
   
   // Oblicz finalne wymiary
-  let maxUsedWidth = 0
-  let maxUsedDepth = 0
+  let minUsedX = Infinity
+  let maxUsedX = -Infinity
+  let minUsedZ = Infinity
+  let maxUsedZ = -Infinity
   
   positions.forEach((pos, idx) => {
     if (pos) {
       const child = children[idx]
-      maxUsedWidth = Math.max(maxUsedWidth, pos.x + child.width / 2 + SPACING)
-      maxUsedDepth = Math.max(maxUsedDepth, pos.z + child.depth / 2 + SPACING)
+      minUsedX = Math.min(minUsedX, pos.x - child.width / 2)
+      maxUsedX = Math.max(maxUsedX, pos.x + child.width / 2)
+      minUsedZ = Math.min(minUsedZ, pos.z - child.depth / 2)
+      maxUsedZ = Math.max(maxUsedZ, pos.z + child.depth / 2)
     }
   })
   
+  const offsetX = SPACING - minUsedX
+  const offsetZ = SPACING - minUsedZ
+  
+  positions.forEach(pos => {
+    if (pos) {
+      pos.x += offsetX
+      pos.z += offsetZ
+    }
+  })
+  
+  // Oblicz finalne wymiary ze SPACING z obu stron
+  const totalWidth = (maxUsedX - minUsedX) + SPACING * 2
+  const totalDepth = (maxUsedZ - minUsedZ) + SPACING * 2
+  
   return {
     positions,
-    totalWidth: maxUsedWidth,
-    totalDepth: maxUsedDepth
+    totalWidth,
+    totalDepth
   }
 }
 
