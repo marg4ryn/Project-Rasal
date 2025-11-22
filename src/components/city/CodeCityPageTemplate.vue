@@ -41,7 +41,7 @@
             <span
               v-if="item.displayValue !== undefined"
               class="item-value"
-              :style="{ color: getIntensityColor(item.normalizedValue) }"
+              :style="{ color: getIntensityColor(item.normalizedValue ?? 0) }"
             >
               {{ item.displayValue }}%
             </span>
