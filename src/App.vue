@@ -30,10 +30,9 @@
 <script setup lang="ts">
   import { useUIStore } from '@/stores/uiStore'
   import { RouterView } from 'vue-router'
-  import { computed, onMounted } from 'vue'
+  import { computed, onBeforeUnmount } from 'vue'
   import { useUserSettingsStore } from './stores/userSettingsStore'
-  import { onBeforeUnmount } from 'vue'
-  import { useConnectionStore } from '@/stores/connectionsStore'
+  import { useNotificationsStore } from './stores/notificationsStore'
   import { useToast } from '@/composables/useToast'
 
   import AppBar from '@/components/sections/appbar/AppBar.vue'
@@ -45,18 +44,14 @@
 
   const uiStore = useUIStore()
   const userSettings = useUserSettingsStore()
-  const connectionStore = useConnectionStore()
+  const notificationsStore = useNotificationsStore()
   const { toasts, removeToast } = useToast()
 
   const isNavBarVisible = computed(() => uiStore.isNavBarVisible)
   const isAppBarVisible = computed(() => uiStore.isAppBarVisible)
 
-  onMounted(() => {
-    connectionStore.resumeInterruptedAnalyses()
-  })
-
   onBeforeUnmount(() => {
-    connectionStore.closeAllConnections()
+    notificationsStore.clearAll()
   })
 </script>
 

@@ -13,7 +13,7 @@
     <AppSearchBar
       class="search-bar-wrapper"
       type="normal"
-      :file-list="fileList"
+      :fileMap="filesComputed"
       :placeholder="$t('search.placeholder')"
       @select="handleSearchSelect"
       @hover="handleSearchHover"
@@ -27,14 +27,24 @@
         :class="{ 'has-second-panel': secondLeftPanelConfig }"
         :label="leftPanelConfig.label"
         :items="leftPanelConfig.items"
+        :sortBy="leftPanelConfig.sortBy"
+        :sortOrder="leftPanelConfig.sortOrder"
         :selectedPath="selectedPath"
         :handleFileSelect="handleCityNodeSelect"
         :handleFileHover="handleCityNodeHover"
+        :handleFileCancelHover="handleCityNodeCancelHover"
         :showInfo="leftPanelConfig.showInfo"
       >
         <template #item="{ item }">
           <slot name="leftPanelItem" :item="item">
-            {{ item.name }}
+            <span class="item-name">{{ item.name }}</span>
+            <span
+              v-if="item.displayValue !== undefined"
+              class="item-value"
+              :style="{ color: getIntensityColor(item.normalizedValue) }"
+            >
+              {{ item.displayValue }}%
+            </span>
           </slot>
         </template>
       </LeftPanel>
@@ -44,13 +54,17 @@
         class="left-panel second-panel"
         :label="secondLeftPanelConfig.label"
         :items="secondLeftPanelConfig.items"
+        :sortBy="secondLeftPanelConfig.sortBy"
+        :sortOrder="secondLeftPanelConfig.sortOrder"
         :selectedPath="selectedPath"
         :handleFileSelect="handleCityNodeSelect"
+        :handleFileHover="handleCityNodeHover"
+        :handleFileCancelHover="handleCityNodeCancelHover"
         :showInfo="secondLeftPanelConfig.showInfo"
       >
         <template #item="{ item }">
           <slot name="secondLeftPanelItem" :item="item">
-            {{ item.name }}
+            <span class="item-name">{{ item.name }}</span>
           </slot>
         </template>
       </LeftPanel>
@@ -58,7 +72,7 @@
 
     <CodeCity
       class="code-city"
-      :data="cityData"
+      :data="cityDataComputed"
       :colorData="colorData"
       @cityNodeClick="handleCityNodeClick"
       @cityNodeHover="handleCityNodeHover"
@@ -74,7 +88,6 @@
       :handleCityNodeSelect="handleCityNodeSelect"
       :handleCityNodeHover="handleCityNodeHover"
       :handleCityNodeCancelHover="handleCityNodeCancelHover"
-      :showFindCoupling="rightPanelConfig.showFindCoupling"
       :metric-types="rightPanelConfig.metricTypes"
     />
   </div>
@@ -84,12 +97,8 @@
   import { ref, computed, onMounted, onUnmounted } from 'vue'
   import { useLogger } from '@/composables/useLogger'
   import { useCodeCityController } from '@/composables/useCodeCityController'
-  import { useCityStore } from '@/stores/cityStore'
-  import { useApiStore } from '@/stores/apiStore'
-  import { useApi } from '@/composables/useApi'
-  import { useConnectionStore } from '@/stores/connectionsStore'
-  import { MetricType, CityNode } from '@/types'
-  import type { FileListItem } from '@/types/api'
+  import { useRestApi } from '@/composables/useRestApi'
+  import { MetricType, CityNode, FileListItem } from '@/types'
 
   import TabNavigation from '@/components/city/TabNavigation.vue'
   import AppSearchBar from '@/components/common/AppSearchBar.vue'
@@ -99,13 +108,20 @@
 
   interface LeftPanelConfig {
     label: string
-    items: any[]
+    items: Array<{
+      path: string
+      name: string
+      normalizedValue?: number
+      displayValue?: number
+      [key: string]: any
+    }>
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
     showInfo?: boolean
   }
 
   interface RightPanelConfig {
     metricTypes?: MetricType[]
-    showFindCoupling?: boolean
   }
 
   interface Props {
@@ -123,11 +139,12 @@
   })
 
   const { selectCityNode, setCityNodeHoverByPath } = useCodeCityController()
-  const { fileList, fetchFileList } = useApi()
-  const connectionStore = useConnectionStore()
+  const { structure, fileMap } = useRestApi()
+
+  const filesComputed = fileMap()
+  const cityDataComputed = structure()
+
   const log = useLogger('CodeCityPageTemplate')
-  const cityStore = useCityStore()
-  const apiStore = useApiStore()
 
   const selectedPath = ref<string>('')
   const hoveredPath = ref<string>('')
@@ -135,31 +152,38 @@
   const mouseY = ref(0)
   const showToolbar = ref(true)
 
-  const isEmpty = Object.keys(apiStore.structure).length === 0
-  const cityData = !isEmpty ? apiStore.structure : cityStore.cityData
-
   const selectedItem = computed(() => {
-    return findNodeByPath(selectedPath.value, cityData)
+    const rootData = cityDataComputed.value
+    if (!rootData) {
+      return null
+    }
+    return findNodeByPath(selectedPath.value, rootData)
   })
 
   const hoveredItem = computed(() => {
-    return findNodeByPath(hoveredPath.value, cityData)
+    const rootData = cityDataComputed.value
+    if (!rootData) {
+      return null
+    }
+    return findNodeByPath(hoveredPath.value, rootData)
   })
 
   onMounted(async () => {
     window.addEventListener('mousemove', handleMouseMove)
-
-    const analysis = connectionStore.analyses.get('/system-overview')
-    if (analysis?.result?.data) {
-      const analysisId = analysis.result.data
-      await fetchFileList(analysisId)
-      log.info(`File list loaded: ${fileList.value.length} files`)
-    }
   })
 
   onUnmounted(() => {
     window.removeEventListener('mousemove', handleMouseMove)
   })
+
+  function getIntensityColor(normalizedValue: number): string {
+    const percent = normalizedValue * 100
+    if (percent >= 80) return '#ff4444'
+    if (percent >= 60) return '#ff8844'
+    if (percent >= 40) return '#ffaa44'
+    if (percent >= 20) return '#ffcc44'
+    return '#ffee44'
+  }
 
   function findNodeByPath(path: string, root: CityNode): CityNode | null {
     if (root.path === path) return root

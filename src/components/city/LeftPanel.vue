@@ -15,6 +15,7 @@
         </svg>
       </button>
     </div>
+
     <AppSearchBar
       class="search-bar-wrapper"
       type="mini"
@@ -22,9 +23,10 @@
       :items="items || []"
       @filtered="handleFiltered"
     />
+
     <div class="item-list">
       <div
-        v-for="item in sortedFilteredItems"
+        v-for="item in displayItems"
         :key="item.path"
         class="file-item"
         :class="{ active: props.selectedPath === item.path }"
@@ -35,11 +37,11 @@
         <slot name="item" :item="item">
           <span class="item-name">{{ item.name }}</span>
           <span
-            v-if="item.normalizedValue !== undefined"
+            v-if="item.displayValue !== undefined"
             class="item-value"
-            :style="{ color: getIntensityColor(item.normalizedValue) }"
+            :style="{ color: getIntensityColor(item.normalizedValue || 0) }"
           >
-            {{ Math.round(item.normalizedValue * 100) }}%
+            {{ item.displayValue }}%
           </span>
         </slot>
       </div>
@@ -51,33 +53,69 @@
   import { ref, computed, watch } from 'vue'
   import AppSearchBar from '@/components/common/AppSearchBar.vue'
 
-  const props = defineProps<{
-    items: Array<{
-      path: string
-      name?: string
-      normalizedValue?: number
-      [key: string]: any
-    }>
-    label: string
-    selectedPath?: string
-    handleFileSelect?: (path: string) => void
-    handleFileHover?: (path: string) => void
-    handleFileCancelHover?: () => void
-    showInfo?: boolean
-    onInfoHover?: () => void
-    maxHeight?: string
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      items: Array<{
+        path: string
+        name: string
+        normalizedValue?: number
+        displayValue?: number
+        [key: string]: any
+      }>
+      label: string
+      sortBy?: string
+      sortOrder?: 'asc' | 'desc'
+      selectedPath?: string
+      handleFileSelect?: (path: string) => void
+      handleFileHover?: (path: string) => void
+      handleFileCancelHover?: () => void
+      showInfo?: boolean
+      onInfoHover?: () => void
+      maxHeight?: string
+    }>(),
+    {
+      sortOrder: 'desc',
+      maxHeight: '100%',
+    }
+  )
 
-  const maxHeight = computed(() => props.maxHeight || '100%')
+  const maxHeight = computed(() => props.maxHeight)
+  const filteredItems = ref<typeof props.items>([])
 
-  const filteredItems = ref<typeof props.items>(props.items || [])
+  const sortedItems = computed(() => {
+    if (!props.sortBy) {
+      return props.items
+    }
+
+    return [...props.items].sort((a, b) => {
+      const aVal = a[props.sortBy!]
+      const bVal = b[props.sortBy!]
+
+      if (aVal === undefined || bVal === undefined) return 0
+
+      const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0
+      return props.sortOrder === 'desc' ? -comparison : comparison
+    })
+  })
 
   const sortedFilteredItems = computed(() => {
+    if (!props.sortBy || filteredItems.value.length === 0) {
+      return filteredItems.value
+    }
+
     return [...filteredItems.value].sort((a, b) => {
-      const valA = a.normalizedValue ?? 0
-      const valB = b.normalizedValue ?? 0
-      return valB - valA // malejąco
+      const aVal = a[props.sortBy!]
+      const bVal = b[props.sortBy!]
+
+      if (aVal === undefined || bVal === undefined) return 0
+
+      const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0
+      return props.sortOrder === 'desc' ? -comparison : comparison
     })
+  })
+
+  const displayItems = computed(() => {
+    return filteredItems.value.length > 0 ? sortedFilteredItems.value : sortedItems.value
   })
 
   watch(
@@ -93,7 +131,6 @@
   }
 
   function getIntensityColor(normalizedValue: number): string {
-    // normalizedValue jest 0-1, więc mnożymy przez 100
     const percent = normalizedValue * 100
     if (percent >= 80) return '#ff4444'
     if (percent >= 60) return '#ff8844'
@@ -187,12 +224,14 @@
 
     .item-name {
       flex: 1;
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     .item-value {
+      flex: 0.5;
       font-weight: 600;
       font-size: $font-size-base;
     }

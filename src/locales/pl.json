@@ -51,7 +51,6 @@
       "failed": "Proces '{screen}' nie powiódł się: {error}.",
       "start-failed": "Nie udało się rozpocząć procesu '{screen}': {error}.",
       "cancelled": "Proces '{screen}' został anulowany",
-      "repo-download": "Analiza repozytorium",
       "interrupted": "Analiza {screen} została przerwana przez odświeżenie strony i zostanie wznowiona"
     }
   },
@@ -99,12 +98,19 @@
     "toDateBeforeFromDate": "Data 'Do' musi być późniejsza niż data 'Od'"
   },
 
-  "status": {
-    "downloading": "Pobieranie repozytorium...",
-    "processingData": "Przetwarzanie danych...",
-    "analyzing": "Rozpoczynanie analizy...",
-    "sonar": "Analizowanie...",
-    "unknown": "Nieznany status"
+  "sse": {
+    "status": {
+      "queued": "Oczekuje w kolejce",
+      "cloning": "Klonowanie",
+      "updating": "Aktualizowanie repozytorium",
+      "processing-data": "Przetwarzanie danych",
+      "analyzing": "Analiza",
+      "finalizing": "Finalizowanie",
+      "unknown": "Nieznany status"
+    },
+    "analysis": {
+      "repo-download": "Analiza repozytorium"
+    }
   },
 
   "errors": {
@@ -117,13 +123,13 @@
     "timeout": "Przekroczono limit czasu",
     "requestTimeout": "Żądanie trwało zbyt długo",
     "noAnalysisId": "Nie podano ID analizy",
-    "fetchStructureFailed": "Nie udało się załadować struktury"
+    "fetchStructureFailed": "Nie udało się załadować struktury",
+    "connectionFailed": "Błąd połączenia"
   },
 
   "rightPanel": {
     "selectFile": "Wybierz plik",
     "fileMetrics": "METRYKI PLIKU",
-    "findCoupling": "Znajdź powiązania",
     "xray": "X-Ray",
     "sourceCode": "Kod źródłowy",
     "directoryContents": "ZAWARTOŚĆ KATALOGU",
@@ -142,7 +148,7 @@
     "totalLines": "Łączna liczba linii",
     "codeLines": "Linie kodu",
     "commentLines": "Linie komentarzy",
-    "blankLines": "Puste linie",
+    "blankLines": "Linie puste",
     "totalCommits": "Łączna liczba commitów",
     "firstCommitDate": "Pierwszy commit",
     "lastCommitDate": "Ostatni commit",

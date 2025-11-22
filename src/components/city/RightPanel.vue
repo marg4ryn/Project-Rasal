@@ -37,15 +37,12 @@
     <div v-if="selectedItem && selectedItem.type === 'file'" class="file-details">
       <h3>{{ $t('rightPanel.fileMetrics') }}</h3>
 
-      <div v-if="isLoadingMetrics" class="metrics-loading">
+      <div v-if="isDataLoading" class="metrics-loading">
         <span>{{ $t('common.loading') }}</span>
       </div>
 
       <div v-else-if="metricsError" class="metrics-error">
         <span>{{ metricsError }}</span>
-        <button @click="retryLoadMetrics" class="retry-button">
-          {{ $t('rightPanel.retry') }}
-        </button>
       </div>
 
       <div v-else-if="displayMetrics && displayMetrics.length" class="metrics-container">
@@ -67,7 +64,7 @@
           <span
             class="metric-value"
             :class="{ 'metric-unavailable': isMetricUnavailable(metric) }"
-            :style="metric.getStyle ? metric.getStyle(selectedItem, metricsStore) : {}"
+            :style="metric.getStyle ? metric.getStyle(selectedItem, metricsStoreAdapter) : {}"
           >
             {{ getMetricDisplayValue(metric) }}
           </span>
@@ -75,12 +72,6 @@
       </div>
 
       <div class="action-buttons">
-        <AppButton
-          v-if="showFindCoupling"
-          :label="$t('rightPanel.findCoupling')"
-          variant="primary"
-          @click="onFindCoupling"
-        />
         <AppButton :label="$t('rightPanel.xray')" variant="primary" @click="onXRay" />
         <SourceCodeButton @click="onSourceCode" />
       </div>
@@ -143,10 +134,15 @@
 
 <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
-  import { CityNode } from '@/types'
-  import { MetricType, MetricsStore, MetricItem, getMetricsByTypes, requiresApiData } from '@/types'
-  import { useApi } from '@/composables/useApi'
-  import { useConnectionStore } from '@/stores/connectionsStore'
+  import { CityNode, FileDetails } from '@/types'
+  import {
+    MetricType,
+    MetricsStore, // Twój interfejs
+    MetricItem,
+    getMetricsByTypes,
+    requiresApiData,
+  } from '@/types'
+  import { useRestApi } from '@/composables/useRestApi'
   import SourceCodeButton from '@/components/city/SourceCodeButton.vue'
   import AppButton from '@/components/common/AppButton.vue'
   import AppSearchBar from '@/components/common/AppSearchBar.vue'
@@ -159,18 +155,45 @@
     handleCityNodeHover?: (path: string) => void
     handleCityNodeCancelHover?: (path: string) => void
     metricTypes?: MetricType[]
-    showFindCoupling?: boolean
   }>()
 
-  const connectionStore = useConnectionStore()
-  const { fileDetails, fetchFileDetails, errors } = useApi()
+  // Pobieramy funkcję dostępową ze store'a
+  const { fileDetails } = useRestApi()
+  const metricsError = ref<string | null>(null)
 
-  const metricsStore = ref<MetricsStore>({
-    fileDetails: new Map(),
+  // 1. Reaktywne źródło danych dla AKTUALNIE wybranego pliku
+  // Gdy store w Pinia się zaktualizuje (po przyjściu danych z API), to computed też się odświeży.
+  const currentFileDetails = computed<FileDetails | null>(() => {
+    if (!props.selectedItem || props.selectedItem.type !== 'file') return null
+    // Pobieramy .value z useRestApi, co podpina nas pod reaktywność store'a
+    return fileDetails(props.selectedItem.path).value || null
   })
 
-  const isLoadingMetrics = ref(false)
-  const metricsError = ref<string | null>(null)
+  // 2. KLUCZOWY ADAPTER: Tworzymy obiekt zgodny z Twoim interfejsem MetricsStore w locie.
+  // Twoje funkcje `getValue` robią: metrics?.fileDetails?.get(node.path)
+  // Więc tutaj dostarczamy im Mapę, która zawiera dane dla aktualnego pliku.
+  const metricsStoreAdapter = computed<MetricsStore>(() => {
+    const map = new Map<string, FileDetails>()
+
+    // Jeśli mamy wybrany plik i dane dla niego są już w store:
+    if (props.selectedItem && currentFileDetails.value) {
+      map.set(props.selectedItem.path, currentFileDetails.value)
+    }
+
+    return {
+      fileDetails: map,
+      // hotspots: ... (można dodać analogicznie jeśli potrzebne)
+    }
+  })
+
+  // 3. Stan ładowania
+  // Jest true, jeśli wybrano plik, ale w naszym adapterze mapa jest pusta dla tej ścieżki
+  const isDataLoading = computed(() => {
+    if (!props.selectedItem || props.selectedItem.type !== 'file') return false
+
+    // Jeśli adapter nie ma danych dla tej ścieżki, znaczy że czekamy na API
+    return !metricsStoreAdapter.value.fileDetails?.has(props.selectedItem.path)
+  })
 
   const displayMetrics = computed(() => {
     if (!props.metricTypes || props.metricTypes.length === 0) {
@@ -179,96 +202,64 @@
     return getMetricsByTypes(props.metricTypes)
   })
 
-  const filteredChildren = ref<CityNode[]>([])
-
-  const sortedChildren = computed(() => {
-    return [...filteredChildren.value].sort((a, b) => {
-      if (a.type !== b.type) {
-        return a.type === 'dir' ? -1 : 1
-      }
-      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-    })
-  })
-
-  watch(
-    () => fileDetails.value,
-    (newDetails) => {
-      metricsStore.value.fileDetails = new Map(Object.entries(newDetails))
-    },
-    { deep: true, immediate: true }
-  )
-
+  // Watcher służy TYLKO do "kopnięcia" API, żeby zaczęło pobierać dane.
+  // Nie aktualizuje on żadnych lokalnych zmiennych - od tego jest computed powyżej.
   watch(
     () => props.selectedItem,
     async (newItem) => {
-      if (!newItem || newItem.type !== 'file') {
-        metricsError.value = null
-        return
-      }
+      metricsError.value = null
 
-      if (!props.metricTypes || !requiresApiData(props.metricTypes)) {
-        return
-      }
+      if (!newItem || newItem.type !== 'file') return
+      if (!props.metricTypes || !requiresApiData(props.metricTypes)) return
 
-      if (metricsStore.value.fileDetails?.has(newItem.path)) {
-        return
-      }
-
-      await loadFileMetrics(newItem.path)
+      // Wywołanie fileDetails() sprawdza cache i w razie braku strzela do API.
+      // Gdy promise się rozwiąże, Pinia zaktualizuje stan, a `currentFileDetails` zareaguje automatycznie.
+      fileDetails(newItem.path)
     },
     { immediate: true }
   )
+
+  // --- Funkcje pomocnicze wykorzystujące Twój mechanizm getValue ---
+
+  function isMetricUnavailable(metric: MetricItem): boolean {
+    if (!props.selectedItem) return true
+    // Przekazujemy nasz adapter (metricsStoreAdapter.value) jako argument `metrics`
+    const value = metric.getValue(props.selectedItem, metricsStoreAdapter.value)
+    return value === null || value === undefined
+  }
+
+  function getMetricDisplayValue(metric: MetricItem): string {
+    if (!props.selectedItem) return '-'
+
+    // Przekazujemy adapter
+    const value = metric.getValue(props.selectedItem, metricsStoreAdapter.value)
+
+    // Jeśli wartość jest pusta, ale wciąż ładujemy - wyświetlamy placeholder (opcjonalnie)
+    // Ale dzięki v-if="isDataLoading" w template, użytkownik i tak widzi spinner.
+
+    if (value === null || value === undefined) return '-'
+    return String(value)
+  }
+
+  // --- Reszta bez zmian ---
+
+  const filteredChildren = ref<CityNode[]>([])
+  const sortedChildren = computed(() => {
+    return [...filteredChildren.value].sort((a, b) => {
+      if (a.type !== b.type) return a.type === 'dir' ? -1 : 1
+      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    })
+  })
 
   function handleSelect(path: string): void {
     props.handleCityNodeCancelHover?.(path)
     props.handleCityNodeSelect(path)
   }
 
-  async function loadFileMetrics(filePath: string) {
-    const analysis = connectionStore.analyses.get('/system-overview')
-
-    if (!analysis?.result?.data) {
-      metricsError.value = 'Analysis ID not found'
-      return
-    }
-
-    const analysisId = analysis.result.data
-    isLoadingMetrics.value = true
-    metricsError.value = null
-
-    const success = await fetchFileDetails(analysisId, filePath)
-
-    isLoadingMetrics.value = false
-
-    if (!success) {
-      metricsError.value = errors.value.fileDetails || 'Failed to load metrics'
-    }
-  }
-
-  async function retryLoadMetrics() {
-    if (props.selectedItem?.path) {
-      await loadFileMetrics(props.selectedItem.path)
-    }
-  }
-
-  function isMetricUnavailable(metric: MetricItem): boolean {
-    if (!props.selectedItem) return true
-    const value = metric.getValue(props.selectedItem, metricsStore.value)
-    return value === null || value === undefined
-  }
-
-  function getMetricDisplayValue(metric: MetricItem): string {
-    if (!props.selectedItem) return '-'
-    const value = metric.getValue(props.selectedItem, metricsStore.value)
-    if (value === null || value === undefined) return '-'
-    return String(value)
-  }
-
   function getChildrenCount(node: CityNode): number {
     return node.children?.length || 0
   }
 
-  function onFindCoupling() {}
   function onXRay() {}
   function onSourceCode() {}
 </script>
@@ -293,20 +284,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-  }
-
-  .retry-button {
-    padding: 0.5rem 1rem;
-    background-color: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .retry-button:hover {
-    opacity: 0.8;
   }
 
   .metric-unavailable {

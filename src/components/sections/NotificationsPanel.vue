@@ -172,7 +172,7 @@
       border-left-color: $color-success;
 
       .notification-item__message {
-        color: var(--color-text-primary);
+        color: var(--color-text-secondary);
       }
     }
 
@@ -180,7 +180,7 @@
       border-left-color: $color-error;
 
       .notification-item__message {
-        color: $color-error-text;
+        color: var(--color-text-secondary);
       }
     }
 
@@ -196,7 +196,7 @@
       border-left-color: $color-warning;
 
       .notification-item__message {
-        color: $color-warning-text;
+        color: var(--color-text-secondary);
       }
     }
 

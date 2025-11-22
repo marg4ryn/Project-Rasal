@@ -84,20 +84,19 @@
 
 <script setup lang="ts">
   import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-  import type { FileListItem } from '@/types/api'
+  import type { FileListItem } from '@/types/restApi'
 
   const props = withDefaults(
     defineProps<{
       placeholder?: string
       type?: 'normal' | 'mini'
       items?: any[]
-      fileList?: FileListItem[]
+      fileMap?: Map<string, { path: string; name: string }>
       maxResults?: number
     }>(),
     {
       type: 'normal',
       items: () => [],
-      fileList: () => [],
       maxResults: 10,
     }
   )
@@ -115,7 +114,10 @@
   const selectedIndex = ref(-1)
 
   const sourceItems = computed(() => {
-    return props.type === 'normal' ? props.fileList : props.items
+    if (props.fileMap && props.fileMap.size > 0) {
+      return Array.from(props.fileMap.values())
+    }
+    return props.items
   })
 
   const filteredItems = computed(() => {

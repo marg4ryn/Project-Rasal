@@ -51,7 +51,6 @@
       "failed": "Process '{screen}' failed: {error}.",
       "start-failed": "Process '{screen}' failed to start: {error}.",
       "cancelled": "Process '{screen}' was cancelled",
-      "repo-download": "Repository analysis",
       "interrupted": "Analysis {screen} was interrupted by page refresh and will be resumed"
     }
   },
@@ -99,12 +98,19 @@
     "toDateBeforeFromDate": "'To' date must be after 'From' date"
   },
 
-  "status": {
-    "downloading": "Downloading repository...",
-    "processingData": "Processing data...",
-    "analyzing": "Starting analysis...",
-    "sonar": "Performing analysis...",
-    "unknown": "Unknown status"
+  "sse": {
+    "status": {
+      "queued": "Queued",
+      "cloning": "Cloning",
+      "updating": "Updating repository",
+      "processing-data": "Processing data",
+      "analyzing": "Analyzing",
+      "finalizing": "Finalizing",
+      "unknown": "Unknown status"
+    },
+    "analysis": {
+      "repo-download": "Repository analysis"
+    }
   },
 
   "errors": {
@@ -117,13 +123,13 @@
     "timeout": "Request timeout",
     "requestTimeout": "The request took too long to complete",
     "noAnalysisId": "No analysis ID provided",
-    "fetchStructureFailed": "Failed to load structure"
+    "fetchStructureFailed": "Failed to load structure",
+    "connectionFailed": "Connection failed"
   },
 
   "rightPanel": {
     "selectFile": "Select a file",
     "fileMetrics": "FILE METRICS",
-    "findCoupling": "Find Coupling",
     "xray": "X-Ray",
     "sourceCode": "Source Code",
     "directoryContents": "DIRECTORY CONTENTS",

@@ -24,7 +24,6 @@ export interface FileInfo {
   firstCommitDate: string
   lastCommitDate: string
   codeAgeDays: number
-  codeAgeMonths: number
 }
 
 export interface CoupledFile {

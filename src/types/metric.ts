@@ -1,5 +1,5 @@
 import { CityNode } from '@/types'
-import type { FileDetails } from '@/types/api'
+import type { FileDetails } from '@/types/restApi'
 
 export interface MetricsStore {
   hotspots?: Map<string, HotspotsMetrics>

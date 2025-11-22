@@ -1,7 +1,7 @@
 <template>
   <section class="welcome-screen">
     <LoadingBar
-      :show="isBusy"
+      :show="isRunning"
       :label="statusLabel || 'welcomePage.loading'"
       :show-cancel-button="true"
       :on-cancel="handleCancelAnalysis"
@@ -26,7 +26,6 @@
             :placeholder="t('welcomePage.repoPlaceholder')"
             class="repo-input"
             :class="{ error: validationError }"
-            :disabled="isBusy"
             @input="validateLink"
             @blur="validateLink"
           />
@@ -35,12 +34,7 @@
 
         <div class="checkbox-section">
           <label class="checkbox-label">
-            <input
-              type="checkbox"
-              v-model="showDateInputs"
-              :disabled="isBusy"
-              class="checkbox-input"
-            />
+            <input type="checkbox" v-model="showDateInputs" class="checkbox-input" />
             <span>{{ t('welcomePage.customDateRange') }}</span>
           </label>
         </div>
@@ -57,7 +51,6 @@
                   v-model="fromDate"
                   :min="MIN_DATE"
                   :max="MAX_DATE"
-                  :disabled="isBusy"
                   @change="handleFromDateChange"
                   @blur="validateFromDate"
                 />
@@ -72,7 +65,6 @@
                   v-model="toDate"
                   :min="MIN_DATE"
                   :max="MAX_DATE"
-                  :disabled="isBusy"
                   @change="handleToDateChange"
                   @blur="validateToDate"
                 />
@@ -87,7 +79,6 @@
           style="margin-top: 20px"
           :label="t('welcomePage.buttonStart')"
           variant="primary"
-          @click="onSubmit"
         />
       </form>
     </div>
@@ -95,13 +86,13 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed, watch, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useNewAnalysisStore } from '@/stores/newAnalysisStore'
   import { useUserSettingsStore } from '@/stores/userSettingsStore'
-  import { useConnection } from '@/composables/useConnection'
-  import { useApi } from '@/composables/useApi'
+  import { useSseConnector } from '@/composables/useSseConnector'
+  import { useRestApi } from '@/composables/useRestApi'
   import { useLogger } from '@/composables/useLogger'
   import AppButton from '@/components/common/AppButton.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
@@ -118,7 +109,6 @@
   const MIN_DATE = '2005-01-01'
   const today = new Date().toISOString().split('T')[0]
   const MAX_DATE = today
-
   const link = ref(newAnalysisStore.link || '')
   const validationError = ref('')
   const isLinkValid = ref(false)
@@ -128,11 +118,15 @@
   const fromDateError = ref('')
   const toDateError = ref('')
 
-  const { isBusy, isCompleted, statusLabel, start, stop } = useConnection(
+  onMounted(() => {
+    useRestApi().clearAll()
+  })
+
+  const { isRunning, isCompleted, statusLabel, start, stop } = useSseConnector(
+    'download-repository',
     '/system-overview',
-    'notifications.analysis.repo-download'
+    'sse.analysis.repo-download'
   )
-  const { fetchCodeCity } = useApi()
 
   const logoSrc = computed(() => {
     switch (userSettingsStore.selectedColor) {
@@ -281,7 +275,7 @@
       newAnalysisStore.setToDate(MAX_DATE)
     }
 
-    await start({
+    start({
       repositoryUrl: link.value.trim(),
       startDate: fromDate.value,
       endDate: toDate.value,
@@ -290,7 +284,6 @@
 
   watch(isCompleted, async (newValue) => {
     if (newValue) {
-      await fetchCodeCity()
       resetNewAnalysisStore()
       router.push('/system-overview')
     }

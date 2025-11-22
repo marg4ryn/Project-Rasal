@@ -1,5 +1,5 @@
 export * from './notification'
 export * from './city'
-export * from './connection'
+export * from './sseConnection'
 export * from './metric'
-export * from './api'
+export * from './restApi'
