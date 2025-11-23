@@ -129,6 +129,27 @@ export function useRestApi() {
     return computed(() => store.hotspotsDetails)
   }
 
+  function codeAgeDetails() {
+    if (store.codeAgeDetails) {
+      log.info('Returning cached code age details')
+      return computed(() => store.codeAgeDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchCodeAgeDetails(analysisId)
+          store.setCodeAgeDetails(data)
+        },
+        'codeAgeDetails',
+        'Code age details fetched successfully'
+      )
+    }
+
+    return computed(() => store.codeAgeDetails)
+  }
+
   const isLoading = computed(() => Object.values(store.loading).some((v) => v))
 
   return {
@@ -136,6 +157,7 @@ export function useRestApi() {
     fileMap,
     fileDetails,
     hotspotsDetails,
+    codeAgeDetails,
 
     isLoading,
     errors: computed(() => store.errors),

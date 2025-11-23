@@ -158,15 +158,6 @@
     window.removeEventListener('mousemove', handleMouseMove)
   })
 
-  function getIntensityColor(normalizedValue: number): string {
-    const percent = normalizedValue * 100
-    if (percent >= 80) return '#ff4444'
-    if (percent >= 60) return '#ff8844'
-    if (percent >= 40) return '#ffaa44'
-    if (percent >= 20) return '#ffcc44'
-    return '#ffee44'
-  }
-
   function findNodeByPath(path: string, root: CityNode): CityNode | null {
     if (root.path === path) return root
 

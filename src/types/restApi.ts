@@ -69,6 +69,14 @@ export interface HotspotsDetails {
   normalizedValue: number
 }
 
+export interface CodeAgeDetails {
+  path: string
+  name: string
+  codeAgeDays: number
+  normalizedValue: number
+}
+
 export type FileListResponse = FileListItem[]
 export type FileDetailsResponse = FileDetails
 export type HotspotsResponse = HotspotsDetails
+export type CodeAgeResponse = CodeAgeDetails

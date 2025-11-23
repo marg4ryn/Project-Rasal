@@ -4,7 +4,7 @@
       <h2>{{ $t(props.labelKey) }}</h2>
 
       <button v-if="props.infoKey" class="info-button" :title="$t(props.infoKey)">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" />
           <path
             d="M8 7V11M8 5V5.5"
@@ -114,6 +114,7 @@
 
     h2 {
       font-size: 0.75rem;
+      padding: 8px;
       font-weight: 700;
       letter-spacing: 0.1em;
       color: var(--color-text-tertiary);

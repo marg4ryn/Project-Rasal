@@ -6,7 +6,6 @@
     "system-overview": "Przegląd repozytorium",
     "technical-sprawl": "Rozszerzenia plików",
     "hotspots": "Hotspoty",
-    "complexity-trends": "Trendy złożoności",
     "code-age": "Wiek kodu",
     "developer-view": "Główni deweloperzy",
     "team-view": "Aktywność zespołu",
@@ -31,7 +30,6 @@
     "system-overview": "Przegląd repozytorium",
     "technical-sprawl": "Rozszerzenia plików",
     "hotspots": "Hotspoty",
-    "complexity-trends": "Trendy złożoności",
     "code-age": "Wiek kodu",
     "developer-view": "Główni deweloperzy",
     "team-view": "Aktywność zespołu",
@@ -142,6 +140,10 @@
     "hotspots": {
       "header": "PODEJRZANE PLIKI",
       "info": "Pliki podejrzane o bycie punktami krytycznymi systemu. Zalecana jest ich refaktoryzacja."
+    },
+    "code-age": {
+      "header": "NAJNOWSZE ZMIANY",
+      "days": "dni"
     }
   },
 
@@ -162,13 +164,21 @@
     "commitsLastMonth": "Commity (ostatni miesiąc)",
     "commitsLastYear": "Commity (ostatni rok)",
     "leadAuthor": "Główny autor",
-    "leadAuthorInfo": "Informacje o głównym autorze",
+    "leadAuthorInfo": "Osoba, która napisała przynajmniej 60% pliku.",
     "activeAuthors": "Aktywni autorzy",
-    "activeAuthorsInfo": "Informacje o aktywnych autorach",
+    "activeAuthorsInfo": "Osoby, które wprowadziły zmianę do repozytorium w ciągu ostatnich 6 miesięcy.",
     "knowledgeRisk": "Ryzyko wiedzy",
-    "knowledgeRiskInfo": "Informacje o ryzyku wiedzy",
+    "knowledgeRiskInfo": "Kategoria rozproszenia wiedzy o pliku na podstawie liczby jego autorów.",
     "knowledgeLoss": "Utrata wiedzy",
-    "knowledgeLossInfo": "Informacje o utracie wiedzy"
+    "knowledgeLossInfo": "Procent pliku napisany przez nieaktywnych autorów.",
+    "daysAgo": "{count} dni temu",
+    "knowledgeRiskEnum": {
+      "abandoned": "OPUSZCZONY",
+      "singleOwner": "POJEDYNCZY WŁAŚCICIEL",
+      "balanced": "ZRÓWNOWAŻONY",
+      "diffused": "ROZPROSZONY",
+      "unknown": "NIEZNANY"
+    }
   },
 
   "common": {

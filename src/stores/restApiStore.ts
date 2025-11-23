@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import type { CityNode, FileListResponse, FileDetailsResponse, HotspotsResponse } from '@/types'
+import type {
+  CityNode,
+  FileListResponse,
+  FileDetailsResponse,
+  HotspotsResponse,
+  CodeAgeResponse,
+} from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
 const log = useLogger('apiStore')
@@ -11,6 +17,7 @@ interface ApiStoreState {
   fileMap: Array<[string, { path: string; name: string }]> | null
   fileDetails: Record<string, FileDetailsResponse>
   hotspotsDetails: HotspotsResponse | null
+  codeAgeDetails: CodeAgeResponse | null
   loading: Record<string, boolean>
   errors: Record<string, string | null>
 }
@@ -20,6 +27,7 @@ export const useRestApiStore = defineStore('api', () => {
   const fileMap = ref<Map<string, { path: string; name: string }>>(new Map())
   const fileDetails = ref<Record<string, FileDetailsResponse>>({})
   const hotspotsDetails = ref<HotspotsResponse | null>(null)
+  const codeAgeDetails = ref<CodeAgeResponse | null>(null)
 
   const loading = ref<Record<string, boolean>>({})
   const errors = ref<Record<string, string | null>>({})
@@ -33,6 +41,7 @@ export const useRestApiStore = defineStore('api', () => {
         fileMap.value = data.fileMap ? new Map(data.fileMap) : new Map()
         fileDetails.value = data.fileDetails || {}
         hotspotsDetails.value = data.hotspotsDetails || null
+        codeAgeDetails.value = data.codeAgeDetails || null
         loading.value = data.loading || {}
         errors.value = data.errors || {}
         log.info('Data loaded from localStorage')
@@ -49,6 +58,7 @@ export const useRestApiStore = defineStore('api', () => {
         fileMap: fileMap.value.size > 0 ? Array.from(fileMap.value.entries()) : null,
         fileDetails: fileDetails.value,
         hotspotsDetails: hotspotsDetails.value,
+        codeAgeDetails: codeAgeDetails.value,
         loading: loading.value,
         errors: errors.value,
       }
@@ -60,7 +70,7 @@ export const useRestApiStore = defineStore('api', () => {
   }
 
   watch(
-    [structure, fileMap, fileDetails, hotspotsDetails, loading, errors],
+    [structure, fileMap, fileDetails, hotspotsDetails, codeAgeDetails, loading, errors],
     () => saveToStorage(),
     { deep: true }
   )
@@ -93,8 +103,16 @@ export const useRestApiStore = defineStore('api', () => {
     hotspotsDetails.value = data
   }
 
+  function setCodeAgeDetails(data: CodeAgeResponse) {
+    codeAgeDetails.value = data
+  }
+
   function getHotspotsDetails(): HotspotsResponse | null {
     return hotspotsDetails.value
+  }
+
+  function getCodeAgeDetails(): CodeAgeResponse | null {
+    return codeAgeDetails.value
   }
 
   function getFileDetails(path: string): FileDetailsResponse | undefined {
@@ -121,6 +139,7 @@ export const useRestApiStore = defineStore('api', () => {
     fileMap.value = new Map()
     fileDetails.value = {}
     hotspotsDetails.value = null
+    codeAgeDetails.value = null
     loading.value = {}
     errors.value = {}
     localStorage.removeItem(STORAGE_KEY)
@@ -135,6 +154,7 @@ export const useRestApiStore = defineStore('api', () => {
     fileMap,
     fileDetails,
     hotspotsDetails,
+    codeAgeDetails,
     loading,
     errors,
 
@@ -143,12 +163,14 @@ export const useRestApiStore = defineStore('api', () => {
     setFileMap,
     setFileDetails,
     setHotspotsDetails,
+    setCodeAgeDetails,
 
     // Getters
     getFileByPath,
     hasFile,
     getAllFiles,
     getHotspotsDetails,
+    getCodeAgeDetails,
     getFileDetails,
     hasFileDetails,
 

@@ -11,7 +11,6 @@ const DeveloperRelationships = () => import('@/views/relationships/DeveloperRela
 
 const TechnicalSprawl = () => import('@/views/cities/TechnicalSprawlPage.vue')
 const Hotspots = () => import('@/views/cities/HotspotsPage.vue')
-const ComplexityTrends = () => import('@/views/cities/ComplexityTrendsPage.vue')
 const CodeAge = () => import('@/views/cities/CodeAgePage.vue')
 const ChangeCoupling = () => import('@/views/cities/ChangeCouplingPage.vue')
 const DeveloperView = () => import('@/views/cities/DeveloperViewPage.vue')
@@ -78,16 +77,6 @@ export default function (): Router {
         showAppBar: true,
       },
       component: Hotspots,
-    },
-    {
-      path: '/complexity-trends',
-      name: 'complexity-trends',
-      meta: {
-        titleKey: 'title.complexity-trends',
-        showNavBar: true,
-        showAppBar: true,
-      },
-      component: ComplexityTrends,
     },
     {
       path: '/code-age',

@@ -1,7 +1,7 @@
 <template>
   <CodeCityPageTemplate
     :tabs="tabs"
-    :colorData="hotspotsColorData"
+    :colorData="colorData"
     :leftPanelConfig="leftPanelConfig"
     :rightPanelConfig="rightPanelConfig"
   >
@@ -34,10 +34,8 @@
     metricTypes: [
       'name',
       'path',
-      'height',
-      'width',
-      'fileSize',
       'fileType',
+      'fileSize',
       'totalLines',
       'codeLines',
       'commentLines',
@@ -57,12 +55,11 @@
 
   const tabs = [
     { id: 'hotspots', label: 'navbar.hotspots', route: '/hotspots' },
-    { id: 'complexity-trends', label: 'navbar.complexity-trends', route: '/complexity-trends' },
     { id: 'code-age', label: 'navbar.code-age', route: '/code-age' },
     { id: 'change-coupling', label: 'navbar.change-coupling', route: '/change-coupling' },
   ]
 
-  const hotspotsColorData = computed(() => {
+  const colorData = computed(() => {
     const data = detailsRef.value
 
     if (!data || !Array.isArray(data)) {
@@ -76,7 +73,7 @@
     }))
   })
 
-  const hotspotsItems = computed(() => {
+  const items = computed(() => {
     const data = detailsRef.value
     const fileMap = fileMapRef.value
 
@@ -100,7 +97,7 @@
   const leftPanelConfig = computed(() => ({
     labelKey: 'leftPanel.hotspots.header',
     infoKey: 'leftPanel.hotspots.info',
-    items: hotspotsItems.value,
+    items: items.value,
   }))
 
   function getIntensityColor(normalizedValue: number): string {

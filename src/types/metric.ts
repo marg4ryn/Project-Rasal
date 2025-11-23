@@ -1,13 +1,11 @@
+import { i18n } from '@/i18n'
 import { CityNode } from '@/types'
 import type { FileDetails } from '@/types/restApi'
 
-export interface MetricsStore {
-  hotspots?: Map<string, HotspotsMetrics>
-  fileDetails?: Map<string, FileDetails>
-}
+const t = i18n.global.t
 
-interface HotspotsMetrics {
-  intensity: number
+export interface MetricsStore {
+  fileDetails?: Map<string, FileDetails>
 }
 
 export type MetricType =
@@ -140,7 +138,10 @@ export const allMetrics: MetricItem[] = [
     label: 'metrics.firstCommitDate',
     getValue: (node: CityNode, metrics?: MetricsStore) => {
       const details = metrics?.fileDetails?.get(node.path)
-      return details?.info?.firstCommitDate ?? null
+      const date = details?.info?.firstCommitDate
+      if (!date) return null
+      const daysAgo = Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24))
+      return `${date} (${t('metrics.daysAgo', { count: daysAgo })})`
     },
     requiresApi: true,
   },
@@ -149,7 +150,10 @@ export const allMetrics: MetricItem[] = [
     label: 'metrics.lastCommitDate',
     getValue: (node: CityNode, metrics?: MetricsStore) => {
       const details = metrics?.fileDetails?.get(node.path)
-      return details?.info?.lastCommitDate ?? null
+      const date = details?.info?.lastCommitDate
+      if (!date) return null
+      const daysAgo = Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24))
+      return `${date} (${t('metrics.daysAgo', { count: daysAgo })})`
     },
     requiresApi: true,
   },
@@ -189,7 +193,17 @@ export const allMetrics: MetricItem[] = [
     label: 'metrics.knowledgeRisk',
     getValue: (node: CityNode, metrics?: MetricsStore) => {
       const details = metrics?.fileDetails?.get(node.path)
-      return details?.knowledge?.knowledgeRisk ?? null
+      if (!details?.knowledge?.knowledgeRisk) return null
+
+      const riskLabels = {
+        ABANDONED: t('metrics.knowledgeRiskEnum.abandoned'),
+        SINGLE_OWNER: t('metrics.knowledgeRiskEnum.singleOwner'),
+        BALANCED: t('metrics.knowledgeRiskEnum.balanced'),
+        DIFFUSED: t('metrics.knowledgeRiskEnum.diffused'),
+        UNKNOWN: t('metrics.knowledgeRiskEnum.unknown'),
+      }
+
+      return riskLabels[details.knowledge.knowledgeRisk as keyof typeof riskLabels]
     },
     requiresApi: true,
     description: 'metrics.knowledgeRiskInfo',

@@ -51,7 +51,6 @@
       icon: '/icons/cardiogram.png',
       submenu: [
         { label: t('navbar.hotspots'), to: '/hotspots' },
-        { label: t('navbar.complexity-trends'), to: '/complexity-trends' },
         { label: t('navbar.code-age'), to: '/code-age' },
         { label: t('navbar.change-coupling'), to: '/change-coupling' },
       ],

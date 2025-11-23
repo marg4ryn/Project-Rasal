@@ -6,7 +6,6 @@
     "system-overview": "Repository Overview",
     "technical-sprawl": "File Extensions",
     "hotspots": "Hotspots",
-    "complexity-trends": "Complexity Trends",
     "code-age": "Code Age",
     "developer-view": "Lead Developers",
     "team-view": "Team Activity",
@@ -31,7 +30,6 @@
     "system-overview": "Repository Overview",
     "technical-sprawl": "File Extensions",
     "hotspots": "Hotspots",
-    "complexity-trends": "Complexity Trends",
     "code-age": "Code Age",
     "developer-view": "Lead Developers",
     "team-view": "Team Activity",
@@ -142,6 +140,10 @@
     "hotspots": {
       "header": "SUSPICIOUS FILES",
       "info": "Files suspected of being system critical. Refactoring is recommended."
+    },
+    "code-age": {
+      "header": "LATEST CHANGES",
+      "days": "days"
     }
   },
 
@@ -173,13 +175,21 @@
     "commitsLastMonth": "Commits (Last Month)",
     "commitsLastYear": "Commits (Last Year)",
     "leadAuthor": "Lead Author",
-    "leadAuthorInfo": "Lead Author Info",
+    "leadAuthorInfo": "The person who wrote at least 60% of the file.",
     "activeAuthors": "Active Authors",
-    "activeAuthorsInfo": "Active Authors Info",
+    "activeAuthorsInfo": "Persons who has made a change in the repository in the last 6 months.",
     "knowledgeRisk": "Knowledge Risk",
-    "knowledgeRiskInfo": "knowledge Risk Info",
+    "knowledgeRiskInfo": "Category of knowledge dispersion about a file based on the number of its authors.",
     "knowledgeLoss": "Knowledge Loss",
-    "knowledgeLossInfo": "Knowledge Loss Info"
+    "knowledgeLossInfo": "Percentage of a file written by inactive authors.",
+    "daysAgo": "{count} days ago",
+    "knowledgeRiskEnum": {
+      "abandoned": "ABANDONED",
+      "singleOwner": "SINGLE OWNER",
+      "balanced": "BALANCED",
+      "diffused": "DIFFUSED",
+      "unknown": "UNKNOWN"
+    }
   },
 
   "search": {
