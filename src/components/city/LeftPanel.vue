@@ -25,6 +25,10 @@
     />
 
     <div class="item-list">
+      <div v-if="displayItems.length === 0" class="empty-state">
+        <p class="empty-message">{{ $t('common.noFiles') }}</p>
+      </div>
+
       <div
         v-for="item in displayItems"
         :key="item.path"
@@ -175,6 +179,26 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+  }
+  .empty-state {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid $color-none;
+    font-size: $font-size-sm;
+
+    .empty-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      color: var(--color-text-muted);
+      text-align: center;
     }
   }
 </style>

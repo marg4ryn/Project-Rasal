@@ -135,13 +135,7 @@
 <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
   import { CityNode, FileDetails } from '@/types'
-  import {
-    MetricType,
-    MetricsStore, // Twój interfejs
-    MetricItem,
-    getMetricsByTypes,
-    requiresApiData,
-  } from '@/types'
+  import { MetricType, MetricsStore, MetricItem, getMetricsByTypes, requiresApiData } from '@/types'
   import { useRestApi } from '@/composables/useRestApi'
   import SourceCodeButton from '@/components/city/SourceCodeButton.vue'
   import AppButton from '@/components/common/AppButton.vue'
@@ -157,41 +151,28 @@
     metricTypes?: MetricType[]
   }>()
 
-  // Pobieramy funkcję dostępową ze store'a
   const { fileDetails } = useRestApi()
   const metricsError = ref<string | null>(null)
 
-  // 1. Reaktywne źródło danych dla AKTUALNIE wybranego pliku
-  // Gdy store w Pinia się zaktualizuje (po przyjściu danych z API), to computed też się odświeży.
   const currentFileDetails = computed<FileDetails | null>(() => {
     if (!props.selectedItem || props.selectedItem.type !== 'file') return null
-    // Pobieramy .value z useRestApi, co podpina nas pod reaktywność store'a
     return fileDetails(props.selectedItem.path).value || null
   })
 
-  // 2. KLUCZOWY ADAPTER: Tworzymy obiekt zgodny z Twoim interfejsem MetricsStore w locie.
-  // Twoje funkcje `getValue` robią: metrics?.fileDetails?.get(node.path)
-  // Więc tutaj dostarczamy im Mapę, która zawiera dane dla aktualnego pliku.
   const metricsStoreAdapter = computed<MetricsStore>(() => {
     const map = new Map<string, FileDetails>()
 
-    // Jeśli mamy wybrany plik i dane dla niego są już w store:
     if (props.selectedItem && currentFileDetails.value) {
       map.set(props.selectedItem.path, currentFileDetails.value)
     }
 
     return {
       fileDetails: map,
-      // hotspots: ... (można dodać analogicznie jeśli potrzebne)
     }
   })
 
-  // 3. Stan ładowania
-  // Jest true, jeśli wybrano plik, ale w naszym adapterze mapa jest pusta dla tej ścieżki
   const isDataLoading = computed(() => {
     if (!props.selectedItem || props.selectedItem.type !== 'file') return false
-
-    // Jeśli adapter nie ma danych dla tej ścieżki, znaczy że czekamy na API
     return !metricsStoreAdapter.value.fileDetails?.has(props.selectedItem.path)
   })
 
@@ -202,8 +183,6 @@
     return getMetricsByTypes(props.metricTypes)
   })
 
-  // Watcher służy TYLKO do "kopnięcia" API, żeby zaczęło pobierać dane.
-  // Nie aktualizuje on żadnych lokalnych zmiennych - od tego jest computed powyżej.
   watch(
     () => props.selectedItem,
     async (newItem) => {
@@ -212,18 +191,13 @@
       if (!newItem || newItem.type !== 'file') return
       if (!props.metricTypes || !requiresApiData(props.metricTypes)) return
 
-      // Wywołanie fileDetails() sprawdza cache i w razie braku strzela do API.
-      // Gdy promise się rozwiąże, Pinia zaktualizuje stan, a `currentFileDetails` zareaguje automatycznie.
       fileDetails(newItem.path)
     },
     { immediate: true }
   )
 
-  // --- Funkcje pomocnicze wykorzystujące Twój mechanizm getValue ---
-
   function isMetricUnavailable(metric: MetricItem): boolean {
     if (!props.selectedItem) return true
-    // Przekazujemy nasz adapter (metricsStoreAdapter.value) jako argument `metrics`
     const value = metric.getValue(props.selectedItem, metricsStoreAdapter.value)
     return value === null || value === undefined
   }
@@ -231,19 +205,14 @@
   function getMetricDisplayValue(metric: MetricItem): string {
     if (!props.selectedItem) return '-'
 
-    // Przekazujemy adapter
     const value = metric.getValue(props.selectedItem, metricsStoreAdapter.value)
-
-    // Jeśli wartość jest pusta, ale wciąż ładujemy - wyświetlamy placeholder (opcjonalnie)
-    // Ale dzięki v-if="isDataLoading" w template, użytkownik i tak widzi spinner.
 
     if (value === null || value === undefined) return '-'
     return String(value)
   }
 
-  // --- Reszta bez zmian ---
-
   const filteredChildren = ref<CityNode[]>([])
+
   const sortedChildren = computed(() => {
     return [...filteredChildren.value].sort((a, b) => {
       if (a.type !== b.type) return a.type === 'dir' ? -1 : 1

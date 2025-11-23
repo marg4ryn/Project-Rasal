@@ -28,6 +28,11 @@ export type MetricType =
   | 'activeAuthors'
   | 'knowledgeRisk'
   | 'knowledgeLoss'
+  | 'bugs'
+  | 'vulnerabilities'
+  | 'codeSmells'
+  | 'complexity'
+  | 'duplicatedLinesDensity'
 
 export interface MetricItem {
   type: MetricType
@@ -231,6 +236,51 @@ export const allMetrics: MetricItem[] = [
     },
     requiresApi: true,
     description: 'metrics.activeAuthorsInfo',
+  },
+  {
+    type: 'bugs',
+    label: 'metrics.bugs',
+    getValue: (node: CityNode, metrics?: MetricsStore) => {
+      const details = metrics?.fileDetails?.get(node.path)
+      return details?.staticAnalysis?.bugs ?? null
+    },
+    requiresApi: true,
+  },
+  {
+    type: 'vulnerabilities',
+    label: 'metrics.vulnerabilities',
+    getValue: (node: CityNode, metrics?: MetricsStore) => {
+      const details = metrics?.fileDetails?.get(node.path)
+      return details?.staticAnalysis?.vulnerabilities ?? null
+    },
+    requiresApi: true,
+  },
+  {
+    type: 'codeSmells',
+    label: 'metrics.codeSmells',
+    getValue: (node: CityNode, metrics?: MetricsStore) => {
+      const details = metrics?.fileDetails?.get(node.path)
+      return details?.staticAnalysis?.codeSmells ?? null
+    },
+    requiresApi: true,
+  },
+  {
+    type: 'complexity',
+    label: 'metrics.complexity',
+    getValue: (node: CityNode, metrics?: MetricsStore) => {
+      const details = metrics?.fileDetails?.get(node.path)
+      return details?.staticAnalysis?.complexity ?? null
+    },
+    requiresApi: true,
+  },
+  {
+    type: 'duplicatedLinesDensity',
+    label: 'metrics.duplicatedLinesDensity',
+    getValue: (node: CityNode, metrics?: MetricsStore) => {
+      const details = metrics?.fileDetails?.get(node.path)
+      return details?.staticAnalysis?.duplicatedLinesDensity ?? null
+    },
+    requiresApi: true,
   },
 ]
 

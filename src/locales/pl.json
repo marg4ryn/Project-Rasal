@@ -144,6 +144,14 @@
     "code-age": {
       "header": "NAJNOWSZE ZMIANY",
       "days": "dni"
+    },
+    "changeCoupling": {
+      "header1": "PLIKI Z POWIĄZANIAMI",
+      "info1": "Pliki, które często zmieniają się wraz z innymi plikami.",
+      "header2": "POWIĄZANE PLIKI",
+      "info2": "Metryki: liczba wspólnych commitów, procent wszystkich commitów.",
+      "coupledFiles": "plików",
+      "commits": "com"
     }
   },
 
@@ -172,6 +180,11 @@
     "knowledgeLoss": "Utrata wiedzy",
     "knowledgeLossInfo": "Procent pliku napisany przez nieaktywnych autorów.",
     "daysAgo": "{count} dni temu",
+    "bugs": "Błędy",
+    "vulnerabilities": "Słabe punkty",
+    "codeSmells": "Zapachy kodu",
+    "complexity": "Złożoność",
+    "duplicatedLinesDensity": "Gęstość powielonych linii",
     "knowledgeRiskEnum": {
       "abandoned": "OPUSZCZONY",
       "singleOwner": "POJEDYNCZY WŁAŚCICIEL",
@@ -189,7 +202,8 @@
     "abort": "Przerwij",
     "confirm": "Potwierdź",
     "tryAgain": "Spróbuj ponownie",
-    "loading": "Wczytywanie..."
+    "loading": "Wczytywanie...",
+    "noFiles": "Brak plików do wyświetlenia"
   },
 
   "search": {

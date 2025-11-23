@@ -219,6 +219,10 @@
     )
     showToolbar.value = !isOverPanel
   }
+
+  defineExpose({
+    selectedPath,
+  })
 </script>
 
 <style scoped lang="scss">

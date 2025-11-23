@@ -49,8 +49,12 @@
       'leadAuthor',
       'knowledgeRisk',
       'knowledgeLoss',
+      'bugs',
+      'vulnerabilities',
+      'codeSmells',
+      'complexity',
+      'duplicatedLinesDensity',
     ] as MetricType[],
-    showFindCoupling: false,
   })
 
   const tabs = [
@@ -68,8 +72,9 @@
 
     return data.map((item: CodeAgeDetails) => ({
       path: item.path,
-      color: 0x1e90ff,
-      intensity: item.normalizedValue,
+      color:
+        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0x1e90ff : 0xf0f0f0,
+      intensity: item.normalizedValue ?? 1,
     }))
   })
 
@@ -120,6 +125,6 @@
 
   .item-value {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 </style>

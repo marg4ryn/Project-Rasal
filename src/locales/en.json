@@ -2,7 +2,7 @@
   "title": {
     "settings": "Settings",
     "about": "About",
-    "change-coupling": "Change Coupling",
+    "change-coupling": "Files Coupling",
     "system-overview": "Repository Overview",
     "technical-sprawl": "File Extensions",
     "hotspots": "Hotspots",
@@ -25,7 +25,7 @@
   "navbar": {
     "summary": "Summary",
     "code-health": "Code Health",
-    "change-coupling": "Change Coupling",
+    "change-coupling": "Files Coupling",
     "developers": "Developers",
     "system-overview": "Repository Overview",
     "technical-sprawl": "File Extensions",
@@ -144,6 +144,14 @@
     "code-age": {
       "header": "LATEST CHANGES",
       "days": "days"
+    },
+    "changeCoupling": {
+      "header1": "FILES WITH COUPLING",
+      "info1": "Files that change frequently along with other files.",
+      "header2": "COUPLED FILES",
+      "info2": "Metrics: number of shared commits, percentage of all commits.",
+      "coupledFiles": "files",
+      "commits": "com"
     }
   },
 
@@ -155,7 +163,8 @@
     "abort": "Abort",
     "confirm": "Confirm",
     "tryAgain": "Try Again",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "noFiles": "No files to display"
   },
 
   "metrics": {
@@ -183,6 +192,11 @@
     "knowledgeLoss": "Knowledge Loss",
     "knowledgeLossInfo": "Percentage of a file written by inactive authors.",
     "daysAgo": "{count} days ago",
+    "bugs": "Bugs",
+    "vulnerabilities": "Vulnerabilities",
+    "codeSmells": "Code Smells",
+    "complexity": "Complexity",
+    "duplicatedLinesDensity": "Duplicated Lines Density",
     "knowledgeRiskEnum": {
       "abandoned": "ABANDONED",
       "singleOwner": "SINGLE OWNER",

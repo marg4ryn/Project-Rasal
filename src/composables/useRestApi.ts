@@ -150,6 +150,27 @@ export function useRestApi() {
     return computed(() => store.codeAgeDetails)
   }
 
+  function fileCouplingDetails() {
+    if (store.fileCouplingDetails) {
+      log.info('Returning cached file coupling details')
+      return computed(() => store.fileCouplingDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchFileCouplingDetails(analysisId)
+          store.setFileCouplingDetails(data)
+        },
+        'codeAgeDetails',
+        'File coupling details fetched successfully'
+      )
+    }
+
+    return computed(() => store.fileCouplingDetails)
+  }
+
   const isLoading = computed(() => Object.values(store.loading).some((v) => v))
 
   return {
@@ -158,6 +179,7 @@ export function useRestApi() {
     fileDetails,
     hotspotsDetails,
     codeAgeDetails,
+    fileCouplingDetails,
 
     isLoading,
     errors: computed(() => store.errors),

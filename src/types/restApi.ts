@@ -4,11 +4,6 @@ export interface ApiError {
   errorCode: number
 }
 
-export interface FileListItem {
-  path: string
-  name: string
-}
-
 export interface FileInfo {
   path: string
   name: string
@@ -24,17 +19,6 @@ export interface FileInfo {
   firstCommitDate: string
   lastCommitDate: string
   codeAgeDays: number
-}
-
-export interface CoupledFile {
-  path: string
-  sharedCommits: number
-  percentage: number
-}
-
-export interface FileCoupling {
-  path: string
-  coupledFiles: CoupledFile[]
 }
 
 export interface AuthorContribution {
@@ -55,10 +39,23 @@ export interface FileKnowledge {
   contributions: AuthorContribution[]
 }
 
+export interface StaticAnalysis {
+  bugs: number
+  vulnerabilities: number
+  codeSmells: number
+  complexity: number
+  duplicatedLinesDensity: number
+}
+
 export interface FileDetails {
   info: FileInfo
-  coupling: FileCoupling | null
   knowledge: FileKnowledge | null
+  staticAnalysis: StaticAnalysis | null
+}
+
+export interface FileListItem {
+  path: string
+  name: string
 }
 
 export interface HotspotsDetails {
@@ -71,12 +68,23 @@ export interface HotspotsDetails {
 
 export interface CodeAgeDetails {
   path: string
-  name: string
   codeAgeDays: number
   normalizedValue: number
+}
+
+export interface CoupledFile {
+  path: string
+  sharedCommits: number
+  percentage: number
+}
+
+export interface FileCouplingDetails {
+  path: string
+  coupledFiles: CoupledFile[]
 }
 
 export type FileListResponse = FileListItem[]
 export type FileDetailsResponse = FileDetails
 export type HotspotsResponse = HotspotsDetails
 export type CodeAgeResponse = CodeAgeDetails
+export type FileCouplingResponse = FileCouplingDetails

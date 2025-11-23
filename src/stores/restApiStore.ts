@@ -6,6 +6,7 @@ import type {
   FileDetailsResponse,
   HotspotsResponse,
   CodeAgeResponse,
+  FileCouplingResponse,
 } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
@@ -18,6 +19,7 @@ interface ApiStoreState {
   fileDetails: Record<string, FileDetailsResponse>
   hotspotsDetails: HotspotsResponse | null
   codeAgeDetails: CodeAgeResponse | null
+  fileCouplingDetails: FileCouplingResponse | null
   loading: Record<string, boolean>
   errors: Record<string, string | null>
 }
@@ -28,7 +30,7 @@ export const useRestApiStore = defineStore('api', () => {
   const fileDetails = ref<Record<string, FileDetailsResponse>>({})
   const hotspotsDetails = ref<HotspotsResponse | null>(null)
   const codeAgeDetails = ref<CodeAgeResponse | null>(null)
-
+  const fileCouplingDetails = ref<FileCouplingResponse | null>(null)
   const loading = ref<Record<string, boolean>>({})
   const errors = ref<Record<string, string | null>>({})
 
@@ -42,6 +44,7 @@ export const useRestApiStore = defineStore('api', () => {
         fileDetails.value = data.fileDetails || {}
         hotspotsDetails.value = data.hotspotsDetails || null
         codeAgeDetails.value = data.codeAgeDetails || null
+        fileCouplingDetails.value = data.fileCouplingDetails || null
         loading.value = data.loading || {}
         errors.value = data.errors || {}
         log.info('Data loaded from localStorage')
@@ -59,6 +62,7 @@ export const useRestApiStore = defineStore('api', () => {
         fileDetails: fileDetails.value,
         hotspotsDetails: hotspotsDetails.value,
         codeAgeDetails: codeAgeDetails.value,
+        fileCouplingDetails: fileCouplingDetails.value,
         loading: loading.value,
         errors: errors.value,
       }
@@ -70,7 +74,16 @@ export const useRestApiStore = defineStore('api', () => {
   }
 
   watch(
-    [structure, fileMap, fileDetails, hotspotsDetails, codeAgeDetails, loading, errors],
+    [
+      structure,
+      fileMap,
+      fileDetails,
+      hotspotsDetails,
+      codeAgeDetails,
+      fileCouplingDetails,
+      loading,
+      errors,
+    ],
     () => saveToStorage(),
     { deep: true }
   )
@@ -107,12 +120,20 @@ export const useRestApiStore = defineStore('api', () => {
     codeAgeDetails.value = data
   }
 
+  function setFileCouplingDetails(data: FileCouplingResponse) {
+    fileCouplingDetails.value = data
+  }
+
   function getHotspotsDetails(): HotspotsResponse | null {
     return hotspotsDetails.value
   }
 
   function getCodeAgeDetails(): CodeAgeResponse | null {
     return codeAgeDetails.value
+  }
+
+  function getFileCouplingDetails(): FileCouplingResponse | null {
+    return fileCouplingDetails.value
   }
 
   function getFileDetails(path: string): FileDetailsResponse | undefined {
@@ -140,6 +161,7 @@ export const useRestApiStore = defineStore('api', () => {
     fileDetails.value = {}
     hotspotsDetails.value = null
     codeAgeDetails.value = null
+    fileCouplingDetails.value = null
     loading.value = {}
     errors.value = {}
     localStorage.removeItem(STORAGE_KEY)
@@ -155,6 +177,7 @@ export const useRestApiStore = defineStore('api', () => {
     fileDetails,
     hotspotsDetails,
     codeAgeDetails,
+    fileCouplingDetails,
     loading,
     errors,
 
@@ -164,6 +187,7 @@ export const useRestApiStore = defineStore('api', () => {
     setFileDetails,
     setHotspotsDetails,
     setCodeAgeDetails,
+    setFileCouplingDetails,
 
     // Getters
     getFileByPath,
@@ -171,6 +195,7 @@ export const useRestApiStore = defineStore('api', () => {
     getAllFiles,
     getHotspotsDetails,
     getCodeAgeDetails,
+    getFileCouplingDetails,
     getFileDetails,
     hasFileDetails,
 

@@ -49,8 +49,12 @@
       'leadAuthor',
       'knowledgeRisk',
       'knowledgeLoss',
+      'bugs',
+      'vulnerabilities',
+      'codeSmells',
+      'complexity',
+      'duplicatedLinesDensity',
     ] as MetricType[],
-    showFindCoupling: false,
   })
 
   const tabs = [
@@ -68,8 +72,9 @@
 
     return data.map((item: HotspotsDetails) => ({
       path: item.path,
-      color: 0xbf1b1b,
-      intensity: item.normalizedValue,
+      color:
+        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0xbf1b1b : 0xf0f0f0,
+      intensity: item.normalizedValue ?? 1,
     }))
   })
 
