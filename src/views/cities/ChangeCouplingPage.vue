@@ -190,7 +190,7 @@
           percentage: coupled.percentage,
         }
       })
-      .sort((a, b) => b.percentage - a.percentage)
+      .sort((a: { percentage: number }, b: { percentage: number }) => b.percentage - a.percentage)
 
     return {
       labelKey: 'leftPanel.changeCoupling.header2',
