@@ -114,7 +114,7 @@
         return {
           path: item.path,
           color: isActive ? 0xbf1b1b : 0xf0f0f0,
-          intensity: isActive ? intensity : 0.1,
+          intensity: isActive ? intensity : 1,
         }
       })
     }
@@ -122,7 +122,7 @@
     return data.map((item: FileCouplingDetails) => ({
       path: item.path,
       color: item.coupledFiles.length > 0 ? 0xbf1b1b : 0xf0f0f0,
-      intensity: item.coupledFiles.length > 0 ? 1 : 0.3,
+      intensity: 1,
     }))
   })
 

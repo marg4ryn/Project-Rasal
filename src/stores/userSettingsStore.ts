@@ -2,142 +2,83 @@ import { defineStore } from 'pinia'
 import { ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+function getStorageItem<T>(key: string, defaultValue: T): T {
+  const item = localStorage.getItem(key)
+  if (!item) return defaultValue
+
+  try {
+    return JSON.parse(item) as T
+  } catch {
+    return item as T
+  }
+}
+
+function setStorageItem<T>(key: string, value: T): void {
+  if (typeof value === 'string') {
+    localStorage.setItem(key, value)
+  } else {
+    localStorage.setItem(key, JSON.stringify(value))
+  }
+}
+
 export const useUserSettingsStore = defineStore('userSettings', () => {
-  const selectedColor = ref<'#bc1922' | '#28abf2'>(
-    (localStorage.getItem('selectedColor') as '#bc1922' | '#28abf2') || '#bc1922'
-  )
-
-  const selectedTheme = ref<'light' | 'dark' | 'system'>(
-    (localStorage.getItem('selectedTheme') as 'light' | 'dark' | 'system') || 'dark'
-  )
-
-  const selectedLanguage = ref<'en' | 'pl' | 'system'>(
-    (localStorage.getItem('selectedLanguage') as 'en' | 'pl' | 'system') || 'system'
-  )
-
-  const isGradientOn = ref<'on' | 'off'>(
-    (localStorage.getItem('isGradientOn') as 'on' | 'off') || 'on'
-  )
-
-  const colorPrimary = ref('')
-  const colorSecondary = ref('')
-
   const { locale } = useI18n()
 
-  function setColor(color: '#bc1922' | '#28abf2') {
-    selectedColor.value = color
-  }
+  const selectedColor = ref<'#bc1922' | '#28abf2'>(getStorageItem('selectedColor', '#bc1922'))
+  const selectedLanguage = ref<'en' | 'pl' | 'system'>(getStorageItem('selectedLanguage', 'system'))
+  const isGradientOn = ref<'on' | 'off'>(getStorageItem('isGradientOn', 'on'))
+  const isAutoRotateOn = ref(getStorageItem('isAutoRotateOn', true))
 
-  function setTheme(theme: 'light' | 'dark' | 'system') {
-    selectedTheme.value = theme
-  }
+  const colorPrimary = ref('')
 
-  function setLanguage(language: 'pl' | 'en' | 'system') {
-    selectedLanguage.value = language
-  }
-
-  function setIsGradientOn(option: 'on' | 'off') {
-    isGradientOn.value = option
-  }
-
-  async function applyMainColor(color: string) {
+  async function applyColor(color: string) {
     document.documentElement.style.setProperty('--color-primary', color)
 
-    const favicon = document.querySelector("link[rel='icon']")
+    const favicon = document.querySelector("link[rel='icon']") as HTMLLinkElement
     if (favicon) {
-      switch (color) {
-        case '#bc1922':
-          favicon.setAttribute('href', `/logo_red.png`)
-          break
-        case '#28abf2':
-          favicon.setAttribute('href', `/logo_blue.png`)
-          break
-        default:
-          favicon.setAttribute('href', `/logo_red.png`)
-      }
+      favicon.href = color === '#28abf2' ? '/logo_blue.png' : '/logo_red.png'
     }
-
     await nextTick()
     colorPrimary.value = getComputedStyle(document.documentElement)
       .getPropertyValue('--color-primary')
-      .trim()
-  }
-
-  async function applyTheme(theme: 'light' | 'dark' | 'system') {
-    let resolvedTheme = theme
-
-    if (theme === 'system') {
-      resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-
-    document.documentElement.setAttribute('data-theme', resolvedTheme)
-
-    await nextTick()
-    colorPrimary.value = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-primary')
-      .trim()
-    colorSecondary.value = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-bg-secondary')
       .trim()
   }
 
   function applyLanguage(language: 'pl' | 'en' | 'system') {
-    let resolvedLang = language
-
-    if (language === 'system') {
-      const browserLang = navigator.language.startsWith('pl') ? 'pl' : 'en'
-      resolvedLang = browserLang
-    }
+    const resolvedLang =
+      language === 'system' ? (navigator.language.startsWith('pl') ? 'pl' : 'en') : language
 
     locale.value = resolvedLang
     document.documentElement.setAttribute('lang', resolvedLang)
   }
 
-  applyMainColor(selectedColor.value)
-  applyTheme(selectedTheme.value)
+  applyColor(selectedColor.value)
   applyLanguage(selectedLanguage.value)
+  document.documentElement.setAttribute('data-theme', 'dark')
 
-  watch(
-    selectedColor,
-    async (newColor) => {
-      localStorage.setItem('selectedColor', newColor)
-      await applyMainColor(newColor)
-    },
-    { immediate: true }
-  )
+  watch(selectedColor, (value) => {
+    setStorageItem('selectedColor', value)
+    applyColor(value)
+  })
 
-  watch(
-    selectedTheme,
-    async (newTheme) => {
-      localStorage.setItem('selectedTheme', newTheme)
-      await applyTheme(newTheme)
-    },
-    { immediate: true }
-  )
-
-  watch(
-    selectedLanguage,
-    (newLanguage) => {
-      localStorage.setItem('selectedLanguage', newLanguage)
-      applyLanguage(newLanguage)
-    },
-    { immediate: true }
-  )
+  watch(selectedLanguage, (value) => {
+    setStorageItem('selectedLanguage', value)
+    applyLanguage(value)
+  })
 
   watch(isGradientOn, (value) => {
-    localStorage.setItem('isGradientOn', value)
+    setStorageItem('isGradientOn', value)
+  })
+
+  watch(isAutoRotateOn, (value) => {
+    setStorageItem('isAutoRotateOn', value)
   })
 
   return {
     selectedColor,
-    selectedTheme,
     selectedLanguage,
     isGradientOn,
-    setColor,
-    setTheme,
-    setLanguage,
-    setIsGradientOn,
+    isAutoRotateOn,
     colorPrimary,
-    colorSecondary,
   }
 })

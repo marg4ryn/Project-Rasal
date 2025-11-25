@@ -3,7 +3,7 @@
     <MeshGradient
       v-if="userSettings.isGradientOn === 'on'"
       :primary-color="userSettings.colorPrimary"
-      :secondary-color="userSettings.colorSecondary"
+      :secondary-color="'#08040c'"
       class="background-gradient"
     />
     <AppBar v-if="isAppBarVisible" />

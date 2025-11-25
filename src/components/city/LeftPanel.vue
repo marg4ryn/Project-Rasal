@@ -31,7 +31,7 @@
         v-for="item in displayItems"
         :key="item.path"
         class="file-item"
-        :class="{ active: props.selectedPath === item.path }"
+        :class="{ active: props.selectedPath === item.path || props.hoveredPath === item.path }"
         @click="props.handleFileSelect?.(item.path)"
         @mouseenter="props.handleFileHover?.(item.path)"
         @mouseleave="props.handleFileCancelHover?.()"
@@ -59,6 +59,7 @@
       labelKey: string
       infoKey?: string
       selectedPath?: string
+      hoveredPath?: string
       handleFileSelect?: (path: string) => void
       handleFileHover?: (path: string) => void
       handleFileCancelHover?: () => void

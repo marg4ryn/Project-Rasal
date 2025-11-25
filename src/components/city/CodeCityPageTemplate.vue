@@ -29,6 +29,7 @@
         :infoKey="leftPanelConfig.infoKey"
         :items="leftPanelConfig.items"
         :selectedPath="selectedPath"
+        :hoveredPath="hoveredPath"
         :handleFileSelect="handleCityNodeSelect"
         :handleFileHover="handleCityNodeHover"
         :handleFileCancelHover="handleCityNodeCancelHover"
@@ -45,6 +46,7 @@
         :infoKey="secondLeftPanelConfig.infoKey"
         :items="secondLeftPanelConfig.items"
         :selectedPath="selectedPath"
+        :hoveredPath="hoveredPath"
         :handleFileSelect="handleCityNodeSelect"
         :handleFileHover="handleCityNodeHover"
         :handleFileCancelHover="handleCityNodeCancelHover"
@@ -60,11 +62,13 @@
       class="code-city"
       :data="cityDataComputed"
       :colorData="colorData"
-      :autoRotate="autoRotate"
+      :autoRotate="userSettingsStore.isAutoRotateOn"
       @cityNodeClick="handleCityNodeClick"
       @cityNodeHover="handleCityNodeHover"
       @cityNodeCancelHover="handleCityNodeCancelHover"
     />
+
+    <PlayPauseButton class="play-button" v-model:autoRotate="userSettingsStore.isAutoRotateOn" />
 
     <RightPanel
       v-if="rightPanelConfig"
@@ -86,12 +90,14 @@
   import { useCodeCityController } from '@/composables/useCodeCityController'
   import { useRestApi } from '@/composables/useRestApi'
   import { MetricType, CityNode, FileListItem } from '@/types'
+  import { useUserSettingsStore } from '@/stores/userSettingsStore'
 
   import TabNavigation from '@/components/city/TabNavigation.vue'
   import AppSearchBar from '@/components/common/AppSearchBar.vue'
   import LeftPanel from '@/components/city/LeftPanel.vue'
   import RightPanel from '@/components/city/RightPanel.vue'
   import CodeCity from '@/components/visuals/CodeCity.vue'
+  import PlayPauseButton from '@/components/city/PlayPauseButton.vue'
 
   interface LeftPanelConfig {
     labelKey: string
@@ -128,13 +134,13 @@
   const cityDataComputed = structure()
 
   const log = useLogger('CodeCityPageTemplate')
+  const userSettingsStore = useUserSettingsStore()
 
   const selectedPath = ref<string>('')
   const hoveredPath = ref<string>('')
   const mouseX = ref(0)
   const mouseY = ref(0)
   const showToolbar = ref(true)
-  const autoRotate = ref(true)
 
   const selectedItem = computed(() => {
     const rootData = cityDataComputed.value
@@ -181,10 +187,10 @@
   }
 
   function handleCityNodeHover(path: string) {
-    const start = performance.now()
+    //const start = performance.now()
     hoveredPath.value = path
-    const end = performance.now()
-    log.info(`lookup time: ${(end - start).toFixed(4)} ms, path: "${hoveredPath.value}"`)
+    //const end = performance.now()
+    //log.info(`lookup time: ${(end - start).toFixed(4)} ms, path: "${hoveredPath.value}"`)
     setCityNodeHoverByPath(path)
   }
 
@@ -298,6 +304,13 @@
     right: 1rem;
     bottom: 1rem;
     z-index: 5;
+  }
+
+  .play-button {
+    position: absolute;
+    right: calc(2rem + 320px);
+    bottom: 1rem;
+    z-index: 6;
   }
 
   .code-city {

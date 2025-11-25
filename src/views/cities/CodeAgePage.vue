@@ -75,7 +75,7 @@
     return data.map((item: CodeAgeDetails) => ({
       path: item.path,
       color:
-        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0x1e90ff : 0xf0f0f0,
+        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0x00a3ff : 0xf0f0f0,
       intensity: item.normalizedValue ?? 1,
     }))
   })
@@ -109,11 +109,11 @@
 
   function getIntensityColor(normalizedValue: number): string {
     const percent = normalizedValue * 100
-    if (percent >= 80) return '#1e90ff'
-    if (percent >= 60) return '#40A1FF'
-    if (percent >= 40) return '#62B1FF'
-    if (percent >= 20) return '#8EC7FF'
-    return '#BCDEFF'
+    if (percent >= 80) return '#00A3FF'
+    if (percent >= 60) return '#33B8FF'
+    if (percent >= 40) return '#66CCFF'
+    if (percent >= 20) return '#99DFFF'
+    return '#CCEFFF'
   }
 </script>
 

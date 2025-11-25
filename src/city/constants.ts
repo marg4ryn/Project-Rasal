@@ -10,14 +10,14 @@ export const AUTO_ROTATE_SPEED = 0.0015
 export const BUILDING_ZOOM = 100
 export const PLATFORM_ZOOM_MULT = 4
 export const MIN_CAMERA_ROTATION_X = 0
-export const MAX_CAMERA_ROTATION_X = Math.PI / 2  // 90 stopni
+export const MAX_CAMERA_ROTATION_X = Math.PI / 2 // 90 stopni
 export const HOVER_CHECK_INTERVAL = 2 // w klatkach
 
 export const COLORS = {
   building: 0xf0f0f0,
   platform: 0xf0f0f0,
   emissiveColor: 0x666666,
-  hover: 0xe6cc00,
+  hover: 0xefff00,
   selected: 0xe6b400,
   edge: 0x000000,
 } as const
