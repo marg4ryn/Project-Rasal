@@ -211,7 +211,8 @@
     "tryAgain": "Spróbuj ponownie",
     "loading": "Ładowanie...",
     "noFiles": "Brak plików do wyświetlenia",
-    "infoAria": "Informacja"
+    "infoAria": "Informacja",
+    "indicatedObject": "Wskazany obiekt"
   },
 
   "search": {

@@ -165,7 +165,8 @@
     "tryAgain": "Try Again",
     "loading": "Loading...",
     "noFiles": "No files to display",
-    "infoAria": "Informacja"
+    "infoAria": "Informacja",
+    "indicatedObject": "Indicated object"
   },
 
   "metrics": {

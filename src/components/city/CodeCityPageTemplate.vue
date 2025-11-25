@@ -1,7 +1,7 @@
 <template>
   <div class="code-city-page" @mousemove="handleMouseMove">
     <div class="info-panel">
-      <div class="info-label">Wskazany obiekt:</div>
+      <div class="info-label">{{ $t('common.indicatedObject') }}:</div>
       <div class="info-value">
         {{ hoveredItem && showToolbar ? hoveredItem.name : '' }}
       </div>
@@ -242,7 +242,7 @@
 
   .info-panel {
     position: absolute;
-    top: 20px;
+    top: 1rem;
     left: calc(2rem + 320px);
     background: var(--color-bg-primary);
     padding: 12px 16px;
@@ -271,14 +271,9 @@
     opacity: 0.8;
   }
 
-  .info-value:not(:empty) {
-    font-style: normal;
-    opacity: 1;
-  }
-
   .tab-nav {
     position: absolute;
-    top: 1.5rem;
+    top: 1rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;

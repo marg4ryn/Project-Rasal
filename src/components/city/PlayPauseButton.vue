@@ -28,7 +28,7 @@
   .play-pause-btn {
     width: 3.5rem;
     height: 3.5rem;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.5);
     border: 2px solid var(--color-border);
     border-radius: 50%;
     backdrop-filter: blur(4px);
