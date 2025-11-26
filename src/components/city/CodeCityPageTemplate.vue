@@ -24,6 +24,7 @@
         v-if="leftPanelConfig"
         class="left-panel"
         :class="{ 'has-second-panel': secondLeftPanelConfig }"
+        :itemType="leftPanelConfig.itemType || 'file'"
         :labelKey="leftPanelConfig.labelKey"
         :infoKey="leftPanelConfig.infoKey"
         :items="leftPanelConfig.items"
@@ -32,6 +33,11 @@
         :handleFileSelect="handleCityNodeSelect"
         :handleFileHover="handleCityNodeHover"
         :handleFileCancelHover="handleCityNodeCancelHover"
+        :selectedAuthor="selectedAuthor"
+        :hoveredAuthor="hoveredAuthor"
+        :handleAuthorSelect="handleAuthorSelect"
+        :handleAuthorHover="handleAuthorHover"
+        :handleAuthorCancelHover="handleAuthorCancelHover"
       >
         <template #item="{ item }">
           <slot name="leftPanelItem" :item="item" />
@@ -41,6 +47,7 @@
       <LeftPanel
         v-if="secondLeftPanelConfig"
         class="left-panel second-panel"
+        :itemType="secondLeftPanelConfig.itemType || 'file'"
         :labelKey="secondLeftPanelConfig.labelKey"
         :infoKey="secondLeftPanelConfig.infoKey"
         :items="secondLeftPanelConfig.items"
@@ -49,6 +56,11 @@
         :handleFileSelect="handleCityNodeSelect"
         :handleFileHover="handleCityNodeHover"
         :handleFileCancelHover="handleCityNodeCancelHover"
+        :selectedAuthor="selectedAuthor"
+        :hoveredAuthor="hoveredAuthor"
+        :handleAuthorSelect="handleAuthorSelect"
+        :handleAuthorHover="handleAuthorHover"
+        :handleAuthorCancelHover="handleAuthorCancelHover"
       >
         <template #item="{ item }">
           <slot name="secondLeftPanelItem" :item="item" />
@@ -98,11 +110,14 @@
   import CodeCity from '@/components/visuals/CodeCity.vue'
   import PlayPauseButton from '@/components/city/PlayPauseButton.vue'
 
+  type ItemType = 'file' | 'author'
+
   interface LeftPanelConfig {
     labelKey: string
     infoKey?: string
+    itemType?: ItemType
     items: Array<{
-      path: string
+      path?: string
       name: string
       [key: string]: any
     }>
@@ -137,6 +152,8 @@
 
   const selectedPath = ref<string>('')
   const hoveredPath = ref<string>('')
+  const selectedAuthor = ref<string>('')
+  const hoveredAuthor = ref<string>('')
   const mouseX = ref(0)
   const mouseY = ref(0)
   const showToolbar = ref(true)
@@ -195,6 +212,20 @@
     setCityNodeHoverByPath('')
   }
 
+  function handleAuthorSelect(name: string) {
+    selectedAuthor.value = name
+    //log.info('Selected author:', name)
+  }
+
+  function handleAuthorHover(name: string) {
+    hoveredAuthor.value = name
+    //log.info('Hovered author:', name)
+  }
+
+  function handleAuthorCancelHover() {
+    hoveredAuthor.value = ''
+  }
+
   function handleSearchSelect(item: FileListItem) {
     handleCityNodeSelect(item.path)
   }
@@ -225,6 +256,7 @@
 
   defineExpose({
     selectedPath,
+    selectedAuthor,
   })
 </script>
 
@@ -248,7 +280,7 @@
     padding: 12px 16px;
     border-radius: $radius-xl;
     border: 1px solid var(--color-border);
-    z-index: 1000;
+    z-index: 11;
     pointer-events: none;
     min-width: 260px;
     height: 60px;

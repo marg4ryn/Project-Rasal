@@ -15,7 +15,7 @@
         class="item-value"
         :style="{ color: getIntensityColorForFiles(item.coupledFilesCount ?? 0) }"
       >
-        {{ item.coupledFilesCount }} {{ $t('leftPanel.changeCoupling.coupledFiles') }}
+        {{ item.coupledFilesCount }} {{ $t('common.files') }}
       </span>
     </template>
 

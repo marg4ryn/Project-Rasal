@@ -131,12 +131,14 @@
     "xray": "X-Ray",
     "sourceCode": "Kod źródłowy",
     "directoryContents": "ZAWARTOŚĆ KATALOGU",
-    "searchPlaceholder": "Szukaj w katalogu...",
+    "searchPlaceholder": "Szukaj plików...",
     "items": "elementów",
     "noSelection": "Wybierz plik lub katalog, aby zobaczyć szczegóły"
   },
 
   "leftPanel": {
+    "searchFilesPlaceholder": "Szukaj plików...",
+    "searchAuthorsPlaceholder": "Szukaj autorów...",
     "hotspots": {
       "header": "PODEJRZANE PLIKI",
       "info": "Pliki podejrzane o bycie punktami krytycznymi systemu (hotspotami). Zalecana jest ich refaktoryzacja."
@@ -150,9 +152,40 @@
       "header1": "PLIKI Z POWIĄZANIAMI",
       "info1": "Pliki, które są często modyfikowane razem z innymi. Pomaga to wykrywać zależności w kodzie.",
       "header2": "POWIĄZANE PLIKI",
-      "info2": "Pliki najczęściej współwystępujące w tych samych commitach z wybranym plikiem.\nWyświetlane wartości: liczba wspólnych commitów i ich udział w commitach wybranego pliku.",
-      "coupledFiles": "plików"
+      "info2": "Pliki najczęściej współwystępujące w tych samych commitach z wybranym plikiem.\nWyświetlane wartości: liczba wspólnych commitów i ich udział w commitach wybranego pliku."
+    },
+    "abandoned-code": {
+      "header1": "PORZUCONE PLIKI",
+      "info1": "Pliki, które były współtworzone przez nieaktywnych autorów.",
+      "header2": "NIEAKTYWNI DEWELOPERZY",
+      "info2": "Deweloperzy, którzy nie wprowadzili zmiany do repozytorium w ciągu ostatnich 6 miesięcy i liczba plików, których są głównym autorem."
+    },
+    "responsibility-diffusion": {
+      "header1": "PLIKI BEZ WŁAŚCICIELA",
+      "info1": "Pliki, które nie mają jednego głównego autora.",
+      "header2": "AUTORZY PLIKU",
+      "info2": "Deweloperzy współtworzący plik oraz udział procentowy historycznych linii ich autorstwa."
+    },
+    "developer-view": {
+      "header": "GŁÓWNI DEWELOPERZY",
+      "info": "Główni autorzy plików w repozytorium i liczba plików, których są głównym autorem."
     }
+  },
+
+  "common": {
+    "inDevelopmentLabel": "W trakcie rozwoju",
+    "close": "Zamknij",
+    "cancel": "Anuluj",
+    "back": "Wstecz",
+    "abort": "Przerwij",
+    "confirm": "Potwierdź",
+    "tryAgain": "Spróbuj ponownie",
+    "loading": "Ładowanie...",
+    "noFiles": "Brak plików do wyświetlenia",
+    "noAuthors": "Brak autorów do wyświetlenia",
+    "infoAria": "Informacja",
+    "indicatedObject": "Wskazany obiekt",
+    "files": "plików"
   },
 
   "metrics": {
@@ -199,20 +232,6 @@
       "unknown": "NIEZNANY"
     },
     "dateInfo": "Stan na dzień kończący analizowany okres."
-  },
-
-  "common": {
-    "inDevelopmentLabel": "W trakcie rozwoju",
-    "close": "Zamknij",
-    "cancel": "Anuluj",
-    "back": "Wstecz",
-    "abort": "Przerwij",
-    "confirm": "Potwierdź",
-    "tryAgain": "Spróbuj ponownie",
-    "loading": "Ładowanie...",
-    "noFiles": "Brak plików do wyświetlenia",
-    "infoAria": "Informacja",
-    "indicatedObject": "Wskazany obiekt"
   },
 
   "search": {

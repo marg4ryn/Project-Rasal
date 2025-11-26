@@ -131,12 +131,14 @@
     "xray": "X-Ray",
     "sourceCode": "Source Code",
     "directoryContents": "DIRECTORY CONTENTS",
-    "searchPlaceholder": "Search in directory...",
+    "searchPlaceholder": "Search files...",
     "items": "items",
     "noSelection": "Select a file or directory to view details"
   },
 
   "leftPanel": {
+    "searchFilesPlaceholder": "Search files...",
+    "searchAuthorsPlaceholder": "Search for authors...",
     "hotspots": {
       "header": "SUSPICIOUS FILES",
       "info": "Files suspected of being system hotspots. Refactoring is recommended."
@@ -150,8 +152,23 @@
       "header1": "FILES WITH COUPLING",
       "info1": "Files that are frequently modified together with others. This helps detect dependencies in the code.",
       "header2": "COUPLED FILES",
-      "info2": "Files most frequently co-occurring in the same commits as the selected file.\nDisplayed values: number of shared commits and their share in the selected file's commits.",
-      "coupledFiles": "files"
+      "info2": "Files most frequently co-occurring in the same commits as the selected file.\nDisplayed values: number of shared commits and their share in the selected file's commits."
+    },
+    "abandoned-code": {
+      "header1": "ABANDONED FILES",
+      "info1": "Files that were co-created by inactive authors.",
+      "header2": "INACTIVE DEVELOPERS",
+      "info2": "Developers who have not committed a change to the repository in the last 6 months and the number of files for which they are the lead author."
+    },
+    "responsibility-diffusion": {
+      "header1": "FILES WITHOUT OWNER",
+      "info1": "Files that do not have a single lead author.",
+      "header2": "FILE AUTHORS",
+      "info2": "Developers contributing to the file and the percentage of historical lines they contributed."
+    },
+    "developer-view": {
+      "header": "LEAD DEVELOPERS",
+      "info": "The lead authors of files in the repository and the number of files for which they are the primary author."
     }
   },
 
@@ -165,8 +182,10 @@
     "tryAgain": "Try Again",
     "loading": "Loading...",
     "noFiles": "No files to display",
+    "noAuthors": "No authors to display",
     "infoAria": "Informacja",
-    "indicatedObject": "Indicated object"
+    "indicatedObject": "Indicated object",
+    "files": "files"
   },
 
   "metrics": {

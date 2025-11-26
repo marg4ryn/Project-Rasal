@@ -23,8 +23,6 @@ export interface FileInfo {
 
 export interface AuthorContribution {
   name: string
-  linesAdded: number | null
-  commits: number
   percentage: number
 }
 
@@ -80,8 +78,37 @@ export interface FileCouplingDetails {
   coupledFiles: CoupledFile[]
 }
 
+export interface KnowledgeLossDetails {
+  path: string
+  knowledgeRisk: string
+  knowledgeLoss: number
+  normalizedValue: number
+}
+
+export interface AuthorsStatisticsDetails {
+  name: string
+  emails: string[]
+  firstCommitDate: Date
+  lastCommitDate: Date
+  isActive: boolean
+  daysSinceLastCommit: number
+  commits: number
+  linesAdded: number
+  linesDeleted: number
+  existingFilesModified: number
+  filesAsLeadAuthor: number
+}
+
+export interface LeadAuthorsDetails {
+  path: string
+  leadAuthor: string
+}
+
 export type FileListResponse = FileListItem[]
 export type FileDetailsResponse = FileDetails
 export type HotspotsResponse = HotspotsDetails
 export type CodeAgeResponse = CodeAgeDetails
 export type FileCouplingResponse = FileCouplingDetails
+export type KnowledgeLossResponse = KnowledgeLossDetails
+export type AuthorsStatisticsResponse = AuthorsStatisticsDetails
+export type LeadAuthorsResponse = LeadAuthorsDetails

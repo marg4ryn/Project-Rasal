@@ -1,9 +1,183 @@
 <template>
-  <InDevelopmentLabel />
+  <LoadingBar :show="isGeneralLoading" :label="'common.loading'" :show-cancel-button="false" />
+  <CodeCityPageTemplate
+    :tabs="tabs"
+    :colorData="colorData"
+    :leftPanelConfig="leftPanelConfig"
+    :secondLeftPanelConfig="secondLeftPanelConfig"
+    :rightPanelConfig="rightPanelConfig"
+  >
+    <template #leftPanelItem="{ item }">
+      <span class="item-name">{{ item.name }}</span>
+      <span
+        v-if="item.displayValue !== undefined"
+        class="item-value"
+        :style="{ color: getIntensityColor(item.normalizedValue ?? 0) }"
+      >
+        {{ item.displayValue }}%
+      </span>
+    </template>
+
+    <template #secondLeftPanelItem="{ item }">
+      <span class="item-name">{{ item.name }}</span>
+      <span class="item-value"> {{ item.displayValue }} {{ $t('common.files') }}</span>
+    </template>
+  </CodeCityPageTemplate>
 </template>
 
 <script setup lang="ts">
-  import InDevelopmentLabel from '@/components/common/InDevelopmentLabel.vue'
+  import { ref, computed } from 'vue'
+  import { useRestApi } from '@/composables/useRestApi'
+  import { MetricType } from '@/types'
+  import type { KnowledgeLossDetails, AuthorsStatisticsDetails } from '@/types'
+  import CodeCityPageTemplate from '@/components/city/CodeCityPageTemplate.vue'
+  import LoadingBar from '@/components/sections/LoadingBar.vue'
+
+  const { knowledgeLossDetails, authorsStatisticsDetails, fileMap, isGeneralLoading } = useRestApi()
+
+  const detailsRef = knowledgeLossDetails()
+  const authorsDetails = authorsStatisticsDetails()
+  const fileMapRef = fileMap()
+
+  const rightPanelConfig = ref({
+    metricTypes: [
+      'name',
+      'path',
+      'fileType',
+      'fileSize',
+      'totalLines',
+      'codeLines',
+      'blankLines',
+      'commentLines',
+      'totalLinesAdded',
+      'duplicatedLinesDensity',
+      'totalCommits',
+      'commitsLastMonth',
+      'commitsLastYear',
+      'firstCommitDate',
+      'lastCommitDate',
+      'activeAuthors',
+      'leadAuthor',
+      'knowledgeRisk',
+      'knowledgeLoss',
+      'bugs',
+      'vulnerabilities',
+      'codeSmells',
+      'complexity',
+    ] as MetricType[],
+  })
+
+  const tabs = [
+    { id: 'developer-view', label: 'navbar.developer-view', route: '/developer-view' },
+    { id: 'team-view', label: 'navbar.team-view', route: '/team-view' },
+    { id: 'abandoned-code', label: 'navbar.abandoned-code', route: '/abandoned-code' },
+    {
+      id: 'responsibility-diffusion',
+      label: 'navbar.responsibility-diffusion',
+      route: '/responsibility-diffusion',
+    },
+    {
+      id: 'developer-relationships',
+      label: 'navbar.developer-relationships',
+      route: '/developer-relationships',
+    },
+  ]
+
+  const colorData = computed(() => {
+    const data = detailsRef.value
+
+    if (!data || !Array.isArray(data)) {
+      return []
+    }
+
+    return data.map((item: KnowledgeLossDetails) => ({
+      path: item.path,
+      color:
+        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0xbf1b1b : 0xf0f0f0,
+      intensity: item.normalizedValue ?? 1,
+    }))
+  })
+
+  const leftPanelConfig = computed(() => {
+    const items = computed(() => {
+      const data = detailsRef.value
+      const fileMap = fileMapRef.value
+
+      if (!data || !Array.isArray(data) || !fileMap) {
+        return []
+      }
+
+      return data
+        .map((item: KnowledgeLossDetails) => {
+          const file = fileMap.get(item.path)
+          return {
+            path: item.path,
+            name: file?.name || item.path,
+            normalizedValue: item.normalizedValue,
+            displayValue: Math.round(item.normalizedValue * 100),
+          }
+        })
+        .filter((item) => item.normalizedValue !== 0)
+        .sort((a, b) => b.normalizedValue - a.normalizedValue)
+    })
+
+    return {
+      labelKey: 'leftPanel.abandoned-code.header1',
+      infoKey: 'leftPanel.abandoned-code.info1',
+      items: items.value,
+    }
+  })
+
+  const secondLeftPanelConfig = computed(() => {
+    const items = computed(() => {
+      const data = authorsDetails.value
+
+      if (!data || !Array.isArray(data)) {
+        return []
+      }
+
+      return data
+        .map((item: AuthorsStatisticsDetails) => {
+          return {
+            path: item.name,
+            name: item.name,
+            displayValue: item.filesAsLeadAuthor,
+            isActive: item.isActive,
+          }
+        })
+        .filter((item) => item.isActive === false)
+        .sort((a, b) => b.displayValue - a.displayValue)
+    })
+
+    return {
+      itemType: 'author' as const,
+      labelKey: 'leftPanel.abandoned-code.header2',
+      infoKey: 'leftPanel.abandoned-code.info2',
+      items: items.value,
+    }
+  })
+
+  function getIntensityColor(normalizedValue: number): string {
+    const percent = normalizedValue * 100
+    if (percent >= 80) return '#ff4444'
+    if (percent >= 60) return '#ff8844'
+    if (percent >= 40) return '#ffaa44'
+    if (percent >= 20) return '#ffcc44'
+    return '#ffee44'
+  }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+  .item-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .item-value {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+</style>

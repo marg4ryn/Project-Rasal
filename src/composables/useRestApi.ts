@@ -171,6 +171,69 @@ export function useRestApi() {
     return computed(() => store.fileCouplingDetails)
   }
 
+  function knowledgeLossDetails() {
+    if (store.knowledgeLossDetails) {
+      log.info('Returning cached knowledge loss details')
+      return computed(() => store.knowledgeLossDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchKnowledgeLossDetails(analysisId)
+          store.setKnowledgeLossDetails(data)
+        },
+        'knowledgeLossDetails',
+        'Knowledge loss details fetched successfully'
+      )
+    }
+
+    return computed(() => store.knowledgeLossDetails)
+  }
+
+  function authorsStatisticsDetails() {
+    if (store.authorsStatisticsDetails) {
+      log.info('Returning cached authors statistics details')
+      return computed(() => store.authorsStatisticsDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchAuthorsStatisticsDetails(analysisId)
+          store.setAuthorsStatisticsDetails(data)
+        },
+        'authorsStatisticsDetails',
+        'Authors statistics details fetched successfully'
+      )
+    }
+
+    return computed(() => store.authorsStatisticsDetails)
+  }
+
+  function leadAuthorsDetails() {
+    if (store.leadAuthorsDetails) {
+      log.info('Returning cached lead authors details')
+      return computed(() => store.leadAuthorsDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchLeadAuthorsDetails(analysisId)
+          store.setLeadAuthorsDetails(data)
+        },
+        'leadAuthorsDetails',
+        'Lead authors details fetched successfully'
+      )
+    }
+
+    return computed(() => store.leadAuthorsDetails)
+  }
+
   const loadingValue = computed(() => store.loading)
 
   const isFileDetailsLoading = computed(() => Boolean(loadingValue.value['fileDetails']))
@@ -188,6 +251,9 @@ export function useRestApi() {
     hotspotsDetails,
     codeAgeDetails,
     fileCouplingDetails,
+    knowledgeLossDetails,
+    authorsStatisticsDetails,
+    leadAuthorsDetails,
 
     isFileDetailsLoading,
     isGeneralLoading,

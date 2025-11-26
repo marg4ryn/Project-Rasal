@@ -17,27 +17,30 @@
     <AppSearchBar
       class="search-bar-wrapper"
       type="mini"
-      :placeholder="$t('rightPanel.searchPlaceholder')"
+      :placeholder="$t(searchPlaceholder)"
       :items="props.items || []"
       @filtered="handleFiltered"
     />
 
     <div class="item-list">
       <div v-if="displayItems.length === 0" class="empty-state">
-        <p class="empty-message">{{ $t('common.noFiles') }}</p>
+        <p class="empty-message">{{ $t(emptyMessage) }}</p>
       </div>
 
       <div
         v-for="item in displayItems"
-        :key="item.path"
+        :key="itemKey(item)"
         class="file-item"
-        :class="{ active: props.selectedPath === item.path || props.hoveredPath === item.path }"
-        @click="props.handleFileSelect?.(item.path)"
-        @mouseenter="props.handleFileHover?.(item.path)"
-        @mouseleave="props.handleFileCancelHover?.()"
+        :class="{
+          active: isItemActive(item),
+          'disable-interactions': props.itemType === 'author',
+        }"
+        @click="handleItemClick(item)"
+        @mouseenter="handleItemHover(item)"
+        @mouseleave="handleItemCancelHover()"
       >
         <slot name="item" :item="item">
-          <span class="item-name">{{ item.name }}</span>
+          <span class="item-name">{{ itemLabel(item) }}</span>
         </slot>
       </div>
     </div>
@@ -49,24 +52,42 @@
   import AppSearchBar from '@/components/common/AppSearchBar.vue'
   import InfoTooltip from '@/components/modals/InfoTooltip.vue'
 
+  type ItemType = 'file' | 'author'
+
+  interface BaseItem {
+    [key: string]: any
+  }
+
+  interface FileItem extends BaseItem {
+    path: string
+    name: string
+  }
+
+  interface AuthorItem extends BaseItem {
+    name: string
+  }
+
   const props = withDefaults(
     defineProps<{
-      items: Array<{
-        path: string
-        name: string
-        [key: string]: any
-      }>
+      items: Array<FileItem | AuthorItem>
       labelKey: string
       infoKey?: string
+      itemType?: ItemType
       selectedPath?: string
+      selectedAuthor?: string
       hoveredPath?: string
+      hoveredAuthor?: string
       handleFileSelect?: (path: string) => void
       handleFileHover?: (path: string) => void
       handleFileCancelHover?: () => void
+      handleAuthorSelect?: (name: string) => void
+      handleAuthorHover?: (name: string) => void
+      handleAuthorCancelHover?: () => void
       maxHeight?: string
     }>(),
     {
       maxHeight: '100%',
+      itemType: 'file',
     }
   )
 
@@ -75,6 +96,16 @@
 
   const displayItems = computed(() => {
     return filteredItems.value
+  })
+
+  const searchPlaceholder = computed(() => {
+    return props.itemType === 'author'
+      ? 'leftPanel.searchAuthorsPlaceholder'
+      : 'leftPanel.searchFilesPlaceholder'
+  })
+
+  const emptyMessage = computed(() => {
+    return props.itemType === 'author' ? 'common.noAuthors' : 'common.noFiles'
   })
 
   watch(
@@ -87,6 +118,50 @@
 
   function handleFiltered(filtered: typeof props.items) {
     filteredItems.value = filtered
+  }
+
+  function itemKey(item: FileItem | AuthorItem): string {
+    if (props.itemType === 'author') {
+      return (item as AuthorItem).name
+    }
+    return (item as FileItem).path
+  }
+
+  function itemLabel(item: FileItem | AuthorItem): string {
+    return item.name
+  }
+
+  function isItemActive(item: FileItem | AuthorItem): boolean {
+    if (props.itemType === 'author') {
+      const authorItem = item as AuthorItem
+      return props.selectedAuthor === authorItem.name || props.hoveredAuthor === authorItem.name
+    }
+    const fileItem = item as FileItem
+    return props.selectedPath === fileItem.path || props.hoveredPath === fileItem.path
+  }
+
+  function handleItemClick(item: FileItem | AuthorItem): void {
+    if (props.itemType === 'author') {
+      props.handleAuthorSelect?.((item as AuthorItem).name)
+    } else {
+      props.handleFileSelect?.((item as FileItem).path)
+    }
+  }
+
+  function handleItemHover(item: FileItem | AuthorItem): void {
+    if (props.itemType === 'author') {
+      props.handleAuthorHover?.((item as AuthorItem).name)
+    } else {
+      props.handleFileHover?.((item as FileItem).path)
+    }
+  }
+
+  function handleItemCancelHover(): void {
+    if (props.itemType === 'author') {
+      props.handleAuthorCancelHover?.()
+    } else {
+      props.handleFileCancelHover?.()
+    }
   }
 </script>
 
@@ -181,6 +256,16 @@
       white-space: nowrap;
     }
   }
+
+  .file-item.disable-interactions {
+    &.active,
+    &:hover {
+      background: var(--color-item-bg);
+      border-color: $color-none;
+      cursor: default;
+    }
+  }
+
   .empty-state {
     display: flex;
     justify-content: space-between;
