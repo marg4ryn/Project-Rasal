@@ -6,6 +6,9 @@ import type {
   HotspotsResponse,
   CodeAgeResponse,
   FileCouplingResponse,
+  KnowledgeLossResponse,
+  AuthorsStatisticsResponse,
+  LeadAuthorsResponse,
 } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
@@ -73,7 +76,7 @@ export const api = {
   },
 
   async fetchFileList(analysisId: string): Promise<FileListResponse> {
-    return request<FileListResponse>(`analysis/${analysisId}/files`)
+    return request<FileListResponse>(`analysis/${analysisId}/items`)
   },
 
   async fetchFileDetails(analysisId: string, filePath: string): Promise<FileDetailsResponse> {
@@ -91,6 +94,18 @@ export const api = {
 
   async fetchFileCouplingDetails(analysisId: string): Promise<FileCouplingResponse> {
     return request<FileCouplingResponse>(`analysis/${analysisId}/files/coupling`)
+  },
+
+  async fetchKnowledgeLossDetails(analysisId: string): Promise<KnowledgeLossResponse> {
+    return request<KnowledgeLossResponse>(`analysis/${analysisId}/files/knowledge-loss-risk`)
+  },
+
+  async fetchAuthorsStatisticsDetails(analysisId: string): Promise<AuthorsStatisticsResponse> {
+    return request<AuthorsStatisticsResponse>(`analysis/${analysisId}/authors/statistics`)
+  },
+
+  async fetchLeadAuthorsDetails(analysisId: string): Promise<LeadAuthorsResponse> {
+    return request<LeadAuthorsResponse>(`analysis/${analysisId}/files/lead-authors`)
   },
 
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {

@@ -1,6 +1,7 @@
 <template>
   <LoadingBar :show="isGeneralLoading" :label="'common.loading'" :show-cancel-button="false" />
   <CodeCityPageTemplate
+    ref="codeCityRef"
     :tabs="tabs"
     :colorData="colorData"
     :leftPanelConfig="leftPanelConfig"
@@ -9,35 +10,33 @@
   >
     <template #leftPanelItem="{ item }">
       <span class="item-name">{{ item.name }}</span>
-      <span
-        v-if="item.displayValue !== undefined"
-        class="item-value"
-        :style="{ color: getIntensityColor(item.normalizedValue ?? 0) }"
-      >
-        {{ item.displayValue }}%
+      <span class="item-value" :style="{ color: getStatusColor(item.displayValue) }">
+        {{ getTranslatedStatus(item.displayValue) }}
       </span>
     </template>
 
     <template #secondLeftPanelItem="{ item }">
       <span class="item-name">{{ item.name }}</span>
-      <span class="item-value"> {{ item.displayValue }} {{ $t('common.files') }}</span>
+      <span class="item-value"> {{ item.displayValue }}</span>
     </template>
   </CodeCityPageTemplate>
 </template>
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useRestApi } from '@/composables/useRestApi'
-  import { MetricType } from '@/types'
-  import type { KnowledgeLossDetails, AuthorsStatisticsDetails } from '@/types'
+  import { MetricType, AuthorContribution } from '@/types'
+  import type { KnowledgeLossDetails } from '@/types'
   import CodeCityPageTemplate from '@/components/city/CodeCityPageTemplate.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
-  const { knowledgeLossDetails, authorsStatisticsDetails, fileMap, isGeneralLoading } = useRestApi()
+  const { knowledgeLossDetails, fileMap, fileDetails, isGeneralLoading } = useRestApi()
 
+  const { t } = useI18n()
   const detailsRef = knowledgeLossDetails()
-  const authorsDetails = authorsStatisticsDetails()
   const fileMapRef = fileMap()
+  const codeCityRef = ref<InstanceType<typeof CodeCityPageTemplate>>()
 
   const rightPanelConfig = ref({
     metricTypes: [
@@ -73,6 +72,28 @@
     },
   ]
 
+  const statusColorMap: Record<string, string> = {
+    ABANDONED: '#000000',
+    SINGLE_OWNER: '#40E0D0',
+    BALANCED: '#32CD33',
+    DIFFUSED: '#BF1B1B',
+  }
+
+  const getTranslatedStatus = (status: string): string => {
+    const keyMap: Record<string, string> = {
+      ABANDONED: 'abandoned',
+      SINGLE_OWNER: 'singleOwner',
+      BALANCED: 'balanced',
+      DIFFUSED: 'diffused',
+    }
+    const key = keyMap[status] || 'unknown'
+    return t(`leftPanel.knowledge-risks.enum.${key}`)
+  }
+
+  const getStatusColor = (status: string): string => {
+    return statusColorMap[status] || '#F0F0F0'
+  }
+
   const colorData = computed(() => {
     const data = detailsRef.value
 
@@ -82,9 +103,8 @@
 
     return data.map((item: KnowledgeLossDetails) => ({
       path: item.path,
-      color:
-        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0xbf1b1b : 0xf0f0f0,
-      intensity: item.normalizedValue ?? 1,
+      color: getStatusColor(item.knowledgeRisk),
+      intensity: 1,
     }))
   })
 
@@ -103,59 +123,57 @@
           return {
             path: item.path,
             name: file?.name || item.path,
-            normalizedValue: item.normalizedValue,
-            displayValue: Math.round(item.normalizedValue * 100),
+            displayValue: item.knowledgeRisk,
           }
         })
-        .filter((item) => item.normalizedValue !== 0)
-        .sort((a, b) => b.normalizedValue - a.normalizedValue)
+        .sort((a, b) => a.name.localeCompare(b.name))
     })
 
     return {
-      labelKey: 'leftPanel.abandoned-code.header1',
-      infoKey: 'leftPanel.abandoned-code.info1',
+      labelKey: 'leftPanel.knowledge-risks.header1',
+      infoKey: 'leftPanel.knowledge-risks.info1',
       items: items.value,
     }
   })
 
   const secondLeftPanelConfig = computed(() => {
-    const items = computed(() => {
-      const data = authorsDetails.value
+    const selected = codeCityRef.value?.selectedPath
 
-      if (!data || !Array.isArray(data)) {
-        return []
+    if (!selected) {
+      return {
+        itemType: 'author' as const,
+        labelKey: 'leftPanel.knowledge-risks.header2',
+        infoKey: 'leftPanel.knowledge-risks.info2',
+        items: [],
       }
+    }
 
-      return data
-        .map((item: AuthorsStatisticsDetails) => {
-          return {
-            path: item.name,
-            name: item.name,
-            displayValue: item.existingFilesModified,
-            isActive: item.isActive,
-            filesEdited: item.existingFilesModified,
-          }
-        })
-        .filter((item) => item.isActive === false && item.filesEdited !== 0)
-        .sort((a, b) => b.displayValue - a.displayValue)
-    })
+    const details = fileDetails(selected).value
+
+    if (!details?.knowledge?.contributions) {
+      return {
+        itemType: 'author' as const,
+        labelKey: 'leftPanel.knowledge-risks.header2',
+        infoKey: 'leftPanel.knowledge-risks.info2',
+        items: [],
+      }
+    }
+
+    const items = details.knowledge.contributions
+      .map((author: AuthorContribution) => ({
+        path: author.name,
+        name: author.name,
+        displayValue: `${author.percentage.toFixed(1)}%`,
+      }))
+      .sort((a, b) => parseFloat(b.displayValue) - parseFloat(a.displayValue))
 
     return {
       itemType: 'author' as const,
-      labelKey: 'leftPanel.abandoned-code.header2',
-      infoKey: 'leftPanel.abandoned-code.info2',
-      items: items.value,
+      labelKey: 'leftPanel.knowledge-risks.header2',
+      infoKey: 'leftPanel.knowledge-risks.info2',
+      items,
     }
   })
-
-  function getIntensityColor(normalizedValue: number): string {
-    const percent = normalizedValue * 100
-    if (percent >= 80) return '#ff4444'
-    if (percent >= 60) return '#ff8844'
-    if (percent >= 40) return '#ffaa44'
-    if (percent >= 20) return '#ffcc44'
-    return '#ffee44'
-  }
 </script>
 
 <style scoped lang="scss">

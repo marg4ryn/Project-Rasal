@@ -2,15 +2,15 @@
   "title": {
     "settings": "Settings",
     "about": "About",
-    "change-coupling": "Files Coupling",
-    "system-overview": "Repository Overview",
-    "technical-sprawl": "File Extensions",
+    "files-coupling": "Files Coupling",
+    "repository-overview": "Repository Overview",
+    "file-extensions": "File Extensions",
     "hotspots": "Hotspots",
     "code-age": "Code Age",
-    "developer-view": "Lead Developers",
-    "team-view": "Team Activity",
+    "lead-developers": "Lead Developers",
+    "developers-list": "Developers List",
     "abandoned-code": "Abandoned Code",
-    "responsibility-diffusion": "Ownership Diffusion",
+    "knowledge-risks": "Knowledge Risks",
     "developer-relationships": "Relationships"
   },
 
@@ -25,16 +25,16 @@
   "navbar": {
     "summary": "Summary",
     "code-health": "Code Health",
-    "change-coupling": "Files Coupling",
+    "files-coupling": "Files Coupling",
     "developers": "Developers",
-    "system-overview": "Repository Overview",
-    "technical-sprawl": "File Extensions",
+    "repository-overview": "Repository Overview",
+    "file-extensions": "File Extensions",
     "hotspots": "Hotspots",
     "code-age": "Code Age",
-    "developer-view": "Lead Developers",
-    "team-view": "Team Activity",
+    "lead-developers": "Lead Developers",
+    "developers-list": "Developers List",
     "abandoned-code": "Abandoned Code",
-    "responsibility-diffusion": "Ownership Diffusion",
+    "knowledge-risks": "Knowledge Risks",
     "developer-relationships": "Relationships"
   },
 
@@ -131,12 +131,14 @@
     "xray": "X-Ray",
     "sourceCode": "Source Code",
     "directoryContents": "DIRECTORY CONTENTS",
-    "searchPlaceholder": "Search in directory...",
+    "searchPlaceholder": "Search files...",
     "items": "items",
     "noSelection": "Select a file or directory to view details"
   },
 
   "leftPanel": {
+    "searchFilesPlaceholder": "Search files...",
+    "searchAuthorsPlaceholder": "Search for authors...",
     "hotspots": {
       "header": "SUSPICIOUS FILES",
       "info": "Files suspected of being system hotspots. Refactoring is recommended."
@@ -146,12 +148,34 @@
       "info": "Lists recently modified files and shows the number of days that have passed since they were last modified, relative to the end date of the analyzed period.",
       "days": "days"
     },
-    "changeCoupling": {
+    "filesCoupling": {
       "header1": "FILES WITH COUPLING",
       "info1": "Files that are frequently modified together with others. This helps detect dependencies in the code.",
       "header2": "COUPLED FILES",
-      "info2": "Files most frequently co-occurring in the same commits as the selected file.\nDisplayed values: number of shared commits and their share in the selected file's commits.",
-      "coupledFiles": "files"
+      "info2": "Files most frequently co-occurring in the same commits as the selected file. Displayed values: number of shared commits and their share in the selected file's commits."
+    },
+    "abandoned-code": {
+      "header1": "ABANDONED FILES",
+      "info1": "Files that were co-created by inactive authors.",
+      "header2": "INACTIVE AUTHORS",
+      "info2": "Developers who have not committed a change to the repository in the last 6 months and the number of files they have co-authored."
+    },
+    "knowledge-risks": {
+      "header1": "FILE CATEGORY",
+      "info1": "The authorship distribution category of a file, determined by the number and activity of its co-authors.",
+      "header2": "FILE AUTHORS",
+      "info2": "Developers contributing to the file and the percentage of historical lines they contributed.",
+      "enum": {
+        "abandoned": "ABD",
+        "singleOwner": "SOW",
+        "balanced": "BAL",
+        "diffused": "DIF",
+        "unknown": "UNK"
+      }
+    },
+    "lead-developers": {
+      "header": "LEAD DEVELOPERS",
+      "info": "The lead authors of files in the repository and the number of files for which they are the primary author."
     }
   },
 
@@ -165,8 +189,10 @@
     "tryAgain": "Try Again",
     "loading": "Loading...",
     "noFiles": "No files to display",
+    "noAuthors": "No authors to display",
     "infoAria": "Informacja",
-    "indicatedObject": "Indicated object"
+    "indicatedObject": "Indicated object",
+    "files": "files"
   },
 
   "metrics": {
@@ -192,7 +218,7 @@
     "activeAuthors": "Active Authors",
     "activeAuthorsInfo": "Persons who has made a change in the repository in the last 6 months.",
     "knowledgeRisk": "Knowledge Distribution",
-    "knowledgeRiskInfo": "The authorship distribution category of a file, determined by the number and activity of its co-authors.",
+    "knowledgeRiskInfo": "The authorship distribution category of a file, determined by the number and activity of its co-authors (ABD - abandoned, SOW - single owner, BAL - balanced, DIF - diffused, UNK - unknown).",
     "knowledgeLoss": "Knowledge Loss",
     "knowledgeLossInfo": "The percentage of the file's total historical lines that come from inactive authors.",
     "daysAgo": "{count} days ago",
@@ -216,7 +242,7 @@
   },
 
   "search": {
-    "placeholder": "Search files...",
+    "placeholder": "Search the repository...",
     "noResults": "No files found",
     "results": "{count} results",
     "moreResults": "more results"

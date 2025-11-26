@@ -299,7 +299,7 @@
 
     &.normal {
       width: 100%;
-      background: rgba(0, 0, 0, 0.25);
+      background-color: rgba(0, 0, 0, 0.25);
     }
 
     &.mini {
@@ -309,7 +309,6 @@
     }
 
     &:hover {
-      background: rgba(0, 0, 0, 0.25);
       border-color: var(--color-input-border-hover);
     }
 
