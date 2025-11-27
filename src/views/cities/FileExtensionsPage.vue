@@ -94,8 +94,9 @@
     }
 
     data.forEach((item: FilesExtensionsDetails) => {
-      const currentCount = counts.get(item.type) || 0
-      counts.set(item.type, currentCount + 1)
+      const type = item.type ?? '-'
+      const currentCount = counts.get(type) || 0
+      counts.set(type, currentCount + 1)
     })
 
     return counts
@@ -106,6 +107,7 @@
     const uniqueExtensions = Array.from(extensionCounts.value.keys())
 
     uniqueExtensions.forEach((extension, index) => {
+      if (extension === '-') return
       map.set(extension, getRandomColor(index))
     })
 

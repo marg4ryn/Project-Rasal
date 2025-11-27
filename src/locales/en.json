@@ -180,8 +180,47 @@
     },
     "file-extensions": {
       "header": "FILE EXTENSIONS",
-      "info": "File types present in the repository (some extensions are omitted during analysis)."
+      "info": "File types present in the repository. Some extensions are skipped during analysis. The value '-' refers to files that have been analyzed but have an unknown extension."
     }
+  },
+
+  "table": {
+    "headers": {
+      "author": "Author",
+      "commits": "Commits",
+      "added": "Added",
+      "deleted": "Deleted",
+      "lastCommit": "Last commit",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "details": {
+      "contact": "Contact",
+      "emails": "Emails",
+      "activity": "Activity",
+      "firstCommit": "First commit",
+      "lastCommit": "Last commit",
+      "daysSinceLast": "Days since last commit",
+      "days": "days",
+      "statistics": "Statistics",
+      "modifiedFiles": "Modified files",
+      "filesAsLead": "Files as lead author",
+      "lineBalance": "Line balance"
+    },
+
+    "noData": "No author data"
+  },
+
+  "dates": {
+    "today": "Today",
+    "dayAgo": "1 day ago",
+    "daysAgo": "{count} days ago",
+    "weeksAgo": "{count} weeks ago",
+    "monthsAgo": "{count} months ago",
+    "yearsAgo": "{count} years ago"
   },
 
   "common": {

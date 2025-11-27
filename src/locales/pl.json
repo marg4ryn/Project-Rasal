@@ -180,8 +180,46 @@
     },
     "file-extensions": {
       "header": "ROZSZERZENIA PLIKÓW",
-      "info": "Typy plików obecne w repozytorium (część rozszerzeń jest pomijana podczas analizy)."
+      "info": "Typy plików obecne w repozytorium. Część rozszerzeń jest pomijana podczas analizy. Wartość '-' odnosi się do plików przeanalizowanych, ale z nieznanym rozszerzeniem."
     }
+  },
+
+  "table": {
+    "headers": {
+      "author": "Autor",
+      "commits": "Commity",
+      "added": "Dodane",
+      "deleted": "Usunięte",
+      "lastCommit": "Ostatni commit",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Aktywny",
+      "inactive": "Nieaktywny"
+    },
+    "details": {
+      "contact": "Kontakt",
+      "emails": "Emaile",
+      "activity": "Aktywność",
+      "firstCommit": "Pierwszy commit",
+      "lastCommit": "Ostatni commit",
+      "daysSinceLast": "Dni od ostatniego commita",
+      "days": "dni",
+      "statistics": "Statystyki",
+      "modifiedFiles": "Zmodyfikowane pliki",
+      "filesAsLead": "Pliki jako główny autor",
+      "lineBalance": "Bilans linii"
+    },
+    "noData": "Brak danych o autorach"
+  },
+
+  "dates": {
+    "today": "Dzisiaj",
+    "dayAgo": "1 dzień temu",
+    "daysAgo": "{count} dni temu",
+    "weeksAgo": "{count} tyg. temu",
+    "monthsAgo": "{count} mies. temu",
+    "yearsAgo": "{count} lat temu"
   },
 
   "common": {
