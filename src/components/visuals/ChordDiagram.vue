@@ -10,6 +10,25 @@
 <script setup lang="ts">
   import { ref, onMounted, onUnmounted, watch } from 'vue'
   import * as d3 from 'd3'
+  import { useLogger } from '@/composables/useLogger'
+
+  // Stałe
+  const DIAGRAM_SIZE = 0.35
+
+  const ARC_TRANSPARENCY_NORMAL = 1.0
+  const ARC_TRANSPARENCY_DISABLED = 0.1
+  const ARC_THICKNESS = 0.85 // mniej = grubsze
+  const ARC_GAP_SIZE = 0.1
+
+  const LABEL_TRANSPARENCY_NORMAL = 1.0
+  const LABEL_TRANSPARENCY_DISABLED = 0.1
+  const LABEL_DISTANCE = 15 // odległość labela od diagramu
+
+  const RIBBON_TRANSPARENCY_NORMAL = 0.7
+  const RIBBON_TRANSPARENCY_HIGHLIGHT = 1.0
+  const RIBBON_TRANSPARENCY_DISABELD = 0.1
+
+  const log = useLogger('ChordDiagram')
 
   interface CoupledAuthor {
     name: string
@@ -53,18 +72,13 @@
     const height = container.clientHeight
     
     if (width < 100 || height < 100) {
-      console.warn('Container too small for chord diagram')
+      log.warn('Container too small for chord diagram')
       return
     }
     
     const minDimension = Math.min(width, height)
-    const outerRadius = minDimension * 0.35
-    const innerRadius = outerRadius * 0.85
-    
-    if (innerRadius <= 0 || outerRadius <= 0) {
-      console.warn('Invalid radius calculated')
-      return
-    }
+    const outerRadius = minDimension * DIAGRAM_SIZE
+    const innerRadius = outerRadius * ARC_THICKNESS
 
     svgGroup = d3
       .select(container)
@@ -75,16 +89,16 @@
       .attr('transform', `translate(${width / 2}, ${height / 2})`)
 
     const authors = props.data.map((d) => d.name)
-    const n = authors.length
-    const matrix: number[][] = Array(n)
+    const authors_count = authors.length
+    const matrix: number[][] = Array(authors_count)
       .fill(0)
-      .map(() => Array(n).fill(0))
+      .map(() => Array(authors_count).fill(0))
 
     props.data.forEach((author, i) => {
       author.coupledAuthors.forEach((coupled) => {
         const j = authors.indexOf(coupled.name)
         if (j !== -1) {
-          matrix[i][j] = coupled.sharedChanges
+          matrix[i][j] = coupled.sharedChanges // Czy na pewno sharedChanges?
         }
       })
     })
@@ -92,7 +106,7 @@
     // Chord layout
     const chord = d3
       .chord()
-      .padAngle(0.05)
+      .padAngle(ARC_GAP_SIZE)
       .sortSubgroups(d3.descending)
 
     const chords = chord(matrix)
@@ -104,7 +118,7 @@
       .enter()
       .append('g')
 
-    // łuki 
+    // Łuki (Arcs)
     const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius)
 
     group
@@ -114,60 +128,85 @@
       .attr('d', arc as any)
       .style('cursor', 'pointer')
       .on('mouseover', function (event, d) {
-        // Podświetl połączenia
+        // Znajdź wszystkich developerów połączonych z aktualnym
+        const connectedIndices = new Set<number>()
+        connectedIndices.add(d.index)
+        
+        chords.forEach((chord: any) => {
+          if (chord.source.index === d.index) {
+            connectedIndices.add(chord.target.index)
+          }
+          if (chord.target.index === d.index) {
+            connectedIndices.add(chord.source.index)
+          }
+        })
+        
+        // Przyciemnij wszystkie arcs i labele oprócz połączonych
         if (svgGroup) {
+          svgGroup
+            .selectAll('g > path')
+            .style('opacity', function(this: any, arcData: any) {
+              return connectedIndices.has(arcData.index) ? ARC_TRANSPARENCY_NORMAL : ARC_TRANSPARENCY_DISABLED
+            })
+          
+          svgGroup
+            .selectAll('g > text')
+            .style('opacity', function(this: any, arcData: any) {
+              return connectedIndices.has(arcData.index) ? LABEL_TRANSPARENCY_NORMAL : LABEL_TRANSPARENCY_DISABLED
+            })
+          
+          // Podświetl odpowiednie ribbony
           svgGroup
             .selectAll('.chord')
             .style('opacity', function(this: any, chord: any) {
-              return chord.source.index === d.index || chord.target.index === d.index ? 0.8 : 0.1
+              return chord.source.index === d.index || chord.target.index === d.index ? RIBBON_TRANSPARENCY_HIGHLIGHT : RIBBON_TRANSPARENCY_DISABELD
             })
         }
-        
-        d3.select(this).style('opacity', '0.8')
         
         emit('authorHover', authors[d.index])
       })
       .on('mouseout', function () {
         if (svgGroup) {
-          svgGroup.selectAll('.chord').style('opacity', '0.6')
+          // Przywróć przezroczystość
+          svgGroup.selectAll('g > path').style('opacity', ARC_TRANSPARENCY_NORMAL)
+          svgGroup.selectAll('g > text').style('opacity', LABEL_TRANSPARENCY_NORMAL)
+          svgGroup.selectAll('.chord').style('opacity', RIBBON_TRANSPARENCY_NORMAL)
         }
-        d3.select(this).style('opacity', '1')
         emit('authorHover', null)
       })
-      .on('click', (event, d) => {
-        emit('authorClick', authors[d.index])
-      })
 
-    // Etykiety
-    const labelRadius = outerRadius + 15
-    
+    // Etykiety (Labels)
+    const labelRadius = outerRadius + LABEL_DISTANCE
+
     group
       .append('text')
       .each((d: any) => {
         d.angle = (d.startAngle + d.endAngle) / 2
       })
       .attr('dy', '.35em')
+      .attr('text-anchor', (d: any) => {
+        const degrees = (d.angle * 180) / Math.PI
+        return degrees > 0 && degrees < 180 ? 'start' : 'end'
+      })
       .attr('transform', (d: any) => {
         const angle = (d.angle * 180) / Math.PI - 90
+        const rotate = angle > 90 ? angle + 180 : angle
         const x = Math.cos((d.angle - Math.PI / 2)) * labelRadius
         const y = Math.sin((d.angle - Math.PI / 2)) * labelRadius
-        return `translate(${x}, ${y}) rotate(${angle > 90 ? angle + 180 : angle})`
-      })
-      .attr('text-anchor', (d: any) => {
-        return (d.angle * 180) / Math.PI > 90 ? 'end' : 'start'
+        return `translate(${x}, ${y}) rotate(${rotate})`
       })
       .text((d) => authors[d.index])
-      .style('font-size', `${Math.max(10, minDimension * 0.02)}px`)
+      .style('font-size', `${Math.max(10, minDimension * 0.03)}px`)
       .style('fill', (d) => colors[d.index % colors.length])
       .style('font-weight', 'bold')
       .style('pointer-events', 'none')
 
-    // Połączenia
+    // Połączenia (Ribbons)
     const ribbon = d3.ribbon().radius(innerRadius)
 
     svgGroup
       .append('g')
-      .attr('fill-opacity', 0.6)
+      .attr('fill-opacity', RIBBON_TRANSPARENCY_NORMAL)
       .selectAll('path')
       .data(chords)
       .enter()
@@ -176,25 +215,25 @@
       .attr('d', ribbon as any)
       .style('fill', (d) => colors[d.source.index % colors.length])
       .style('stroke', (d) => d3.rgb(colors[d.source.index % colors.length]).darker().toString())
-      .style('opacity', '0.6')
+      .style('opacity', RIBBON_TRANSPARENCY_NORMAL)
       .style('cursor', 'pointer')
       .on('mouseover', function (event, d) {
-        d3.select(this).style('opacity', '1')
+        d3.select(this).style('opacity', RIBBON_TRANSPARENCY_HIGHLIGHT)
         
         const sourceAuthor = authors[d.source.index]
         const targetAuthor = authors[d.target.index]
         
-        emit('authorHover', `${sourceAuthor} ↔ ${targetAuthor}`)
+        emit('authorHover', `${sourceAuthor}; ${targetAuthor}`)
       })
       .on('mouseout', function () {
-        d3.select(this).style('opacity', '0.6')
+        d3.select(this).style('opacity', RIBBON_TRANSPARENCY_NORMAL)
         emit('authorHover', null)
       })
       .append('title')
       .text((d) => {
         const sourceAuthor = authors[d.source.index]
         const targetAuthor = authors[d.target.index]
-        return `${sourceAuthor} → ${targetAuthor}: ${d.source.value} changes`
+        return `${sourceAuthor} → ${targetAuthor}: ${d.source.value}`
       })
   }
 

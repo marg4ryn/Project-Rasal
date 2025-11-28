@@ -13,7 +13,7 @@
   import ChordDiagram from '@/components/visuals/ChordDiagram.vue'
   import { useLogger } from '@/composables/useLogger'
 
-  const log = useLogger('CodeCityPageTemplate')
+  const log = useLogger('DeveloperRelationshipsPage')
 
   // Przykładowe dane do testowania
   const sampleData = ref([
