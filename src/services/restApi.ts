@@ -1,7 +1,7 @@
 import type {
   ApiError,
   CityNode,
-  FileListResponse,
+  ItemsListResponse,
   FileDetailsResponse,
   HotspotsResponse,
   CodeAgeResponse,
@@ -9,6 +9,7 @@ import type {
   KnowledgeLossResponse,
   AuthorsStatisticsResponse,
   LeadAuthorsResponse,
+  FilesExtensionsResponse,
 } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
@@ -75,8 +76,8 @@ export const api = {
     return request<CityNode>(`analysis/${analysisId}/structure`)
   },
 
-  async fetchFileList(analysisId: string): Promise<FileListResponse> {
-    return request<FileListResponse>(`analysis/${analysisId}/items`)
+  async fetchItemsList(analysisId: string): Promise<ItemsListResponse> {
+    return request<ItemsListResponse>(`analysis/${analysisId}/items`)
   },
 
   async fetchFileDetails(analysisId: string, filePath: string): Promise<FileDetailsResponse> {
@@ -106,6 +107,10 @@ export const api = {
 
   async fetchLeadAuthorsDetails(analysisId: string): Promise<LeadAuthorsResponse> {
     return request<LeadAuthorsResponse>(`analysis/${analysisId}/files/lead-authors`)
+  },
+
+  async fetchFilesExtensionsDetails(analysisId: string): Promise<FilesExtensionsResponse> {
+    return request<FilesExtensionsResponse>(`analysis/${analysisId}/files/types`)
   },
 
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {

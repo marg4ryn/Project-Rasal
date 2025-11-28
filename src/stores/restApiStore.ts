@@ -1,15 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import type {
-  CityNode,
-  FileListResponse,
-  FileDetailsResponse,
-  HotspotsResponse,
-  CodeAgeResponse,
-  FileCouplingResponse,
-  KnowledgeLossResponse,
-  AuthorsStatisticsResponse,
-  LeadAuthorsResponse,
+import {
+  type CityNode,
+  type ItemsListItem,
+  type ItemsListResponse,
+  type FileDetailsResponse,
+  type HotspotsResponse,
+  type CodeAgeResponse,
+  type FileCouplingResponse,
+  type KnowledgeLossResponse,
+  type AuthorsStatisticsResponse,
+  type LeadAuthorsResponse,
+  type FilesExtensionsResponse,
 } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
@@ -53,7 +55,7 @@ async function deleteCacheItem(key: string): Promise<void> {
 
 export const useRestApiStore = defineStore('api', () => {
   const structure = ref<CityNode | null>(null)
-  const fileMap = ref<Map<string, { path: string; name: string }>>(new Map())
+  const itemsMap = ref<Map<string, ItemsListItem>>(new Map())
   const fileDetails = ref<Record<string, FileDetailsResponse>>({})
   const hotspotsDetails = ref<HotspotsResponse | null>(null)
   const codeAgeDetails = ref<CodeAgeResponse | null>(null)
@@ -61,6 +63,7 @@ export const useRestApiStore = defineStore('api', () => {
   const knowledgeLossDetails = ref<KnowledgeLossResponse | null>(null)
   const authorsStatisticsDetails = ref<AuthorsStatisticsResponse | null>(null)
   const leadAuthorsDetails = ref<LeadAuthorsResponse | null>(null)
+  const filesExtensionsDetails = ref<FilesExtensionsResponse | null>(null)
   const loading = ref<Record<string, boolean>>({})
   const errors = ref<Record<string, string | null>>({})
 
@@ -68,7 +71,7 @@ export const useRestApiStore = defineStore('api', () => {
     try {
       const [
         cachedStructure,
-        cachedFileMap,
+        cachedItemsMap,
         cachedFileDetailsList,
         cachedHotspots,
         cachedCodeAge,
@@ -76,9 +79,10 @@ export const useRestApiStore = defineStore('api', () => {
         cachedKnowledgeLoss,
         cachedAuthorsStatistics,
         cachedLeadAuthors,
+        cachedFilesExtensions,
       ] = await Promise.all([
         getCacheItem<CityNode>('structure'),
-        getCacheItem<Array<[string, { path: string; name: string }]>>('fileMap'),
+        getCacheItem<Array<[string, ItemsListItem]>>('itemsMap'),
         getCacheItem<FileDetailsResponse[]>('fileDetailsList'),
         getCacheItem<HotspotsResponse>('hotspots'),
         getCacheItem<CodeAgeResponse>('codeAge'),
@@ -86,10 +90,11 @@ export const useRestApiStore = defineStore('api', () => {
         getCacheItem<KnowledgeLossResponse>('knowledgeLoss'),
         getCacheItem<AuthorsStatisticsResponse>('authorsStatistics'),
         getCacheItem<LeadAuthorsResponse>('leadAuthors'),
+        getCacheItem<FilesExtensionsResponse>('filesExtensions'),
       ])
 
       structure.value = cachedStructure
-      fileMap.value = cachedFileMap ? new Map(cachedFileMap) : new Map()
+      itemsMap.value = cachedItemsMap ? new Map(cachedItemsMap) : new Map()
 
       if (cachedFileDetailsList) {
         fileDetails.value = {}
@@ -106,6 +111,7 @@ export const useRestApiStore = defineStore('api', () => {
       knowledgeLossDetails.value = cachedKnowledgeLoss
       authorsStatisticsDetails.value = cachedAuthorsStatistics
       leadAuthorsDetails.value = cachedLeadAuthors
+      filesExtensionsDetails.value = cachedFilesExtensions
 
       log.info('Data loaded from Cache API')
     } catch (error) {
@@ -126,12 +132,12 @@ export const useRestApiStore = defineStore('api', () => {
   )
 
   watch(
-    fileMap,
+    itemsMap,
     (value) => {
       if (value.size > 0) {
-        setCacheItem('fileMap', Array.from(value.entries()))
+        setCacheItem('itemsMap', Array.from(value.entries()))
       } else {
-        deleteCacheItem('fileMap')
+        deleteCacheItem('itemsMap')
       }
     },
     { deep: true }
@@ -204,24 +210,33 @@ export const useRestApiStore = defineStore('api', () => {
     { deep: true }
   )
 
+  watch(
+    filesExtensionsDetails,
+    (value) => {
+      if (value) setCacheItem('filesExtensions', value)
+      else deleteCacheItem('filesExtensions')
+    },
+    { deep: true }
+  )
+
   function setStructure(data: CityNode) {
     structure.value = data
   }
 
-  function setFileMap(data: FileListResponse) {
-    fileMap.value = new Map(data.map((file) => [file.path, file]))
+  function setItemsMap(data: ItemsListResponse) {
+    itemsMap.value = new Map(data.map((item) => [item.path, item]))
   }
 
-  function getFileByPath(path: string): { path: string; name: string } | undefined {
-    return fileMap.value.get(path)
+  function getItemByPath(path: string): ItemsListItem | undefined {
+    return itemsMap.value.get(path)
   }
 
-  function hasFile(path: string): boolean {
-    return fileMap.value.has(path)
+  function hasItem(path: string): boolean {
+    return itemsMap.value.has(path)
   }
 
-  function getAllFiles(): Array<{ path: string; name: string }> {
-    return Array.from(fileMap.value.values())
+  function getAllItems(): ItemsListItem[] {
+    return Array.from(itemsMap.value.values())
   }
 
   function setFileDetails(path: string, data: FileDetailsResponse) {
@@ -252,6 +267,10 @@ export const useRestApiStore = defineStore('api', () => {
     leadAuthorsDetails.value = data
   }
 
+  function setFilesExtensionsDetails(data: FilesExtensionsResponse) {
+    filesExtensionsDetails.value = data
+  }
+
   function getHotspotsDetails(): HotspotsResponse | null {
     return hotspotsDetails.value
   }
@@ -280,6 +299,10 @@ export const useRestApiStore = defineStore('api', () => {
     return leadAuthorsDetails.value
   }
 
+  function getFilesExtensionsDetails(): FilesExtensionsResponse | null {
+    return filesExtensionsDetails.value
+  }
+
   function hasFileDetails(path: string): boolean {
     return path in fileDetails.value
   }
@@ -297,7 +320,7 @@ export const useRestApiStore = defineStore('api', () => {
 
   async function clearAll() {
     structure.value = null
-    fileMap.value = new Map()
+    itemsMap.value = new Map()
     fileDetails.value = {}
     hotspotsDetails.value = null
     codeAgeDetails.value = null
@@ -305,6 +328,7 @@ export const useRestApiStore = defineStore('api', () => {
     knowledgeLossDetails.value = null
     authorsStatisticsDetails.value = null
     leadAuthorsDetails.value = null
+    filesExtensionsDetails.value = null
     loading.value = {}
     errors.value = {}
 
@@ -321,7 +345,7 @@ export const useRestApiStore = defineStore('api', () => {
   return {
     // State
     structure,
-    fileMap,
+    itemsMap,
     fileDetails,
     hotspotsDetails,
     codeAgeDetails,
@@ -329,12 +353,13 @@ export const useRestApiStore = defineStore('api', () => {
     knowledgeLossDetails,
     authorsStatisticsDetails,
     leadAuthorsDetails,
+    filesExtensionsDetails,
     loading,
     errors,
 
     // Setters
     setStructure,
-    setFileMap,
+    setItemsMap,
     setFileDetails,
     setHotspotsDetails,
     setCodeAgeDetails,
@@ -342,11 +367,12 @@ export const useRestApiStore = defineStore('api', () => {
     setKnowledgeLossDetails,
     setAuthorsStatisticsDetails,
     setLeadAuthorsDetails,
+    setFilesExtensionsDetails,
 
     // Getters
-    getFileByPath,
-    hasFile,
-    getAllFiles,
+    getItemByPath,
+    hasItem,
+    getAllItems,
     getHotspotsDetails,
     getCodeAgeDetails,
     getFileCouplingDetails,
@@ -354,6 +380,7 @@ export const useRestApiStore = defineStore('api', () => {
     getKnowledgeLossDetails,
     getAuthorsStatisticsDetails,
     getLeadAuthorsDetails,
+    getFilesExtensionsDetails,
     hasFileDetails,
 
     // State management
