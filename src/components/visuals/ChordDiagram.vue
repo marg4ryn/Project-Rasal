@@ -32,15 +32,11 @@
 
   interface CoupledAuthor {
     name: string
-    sharedFilesChanged: number
     sharedChanges: number
-    percentage: number
   }
 
   interface AuthorData {
     name: string
-    filesChanged: number
-    totalChanges: number
     coupledAuthors: CoupledAuthor[]
   }
 
