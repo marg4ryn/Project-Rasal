@@ -37,8 +37,8 @@
   const CHART_CONFIG = {
     lineWidth: 2,
     lineTension: 0.4,
-    pointRadius: 4,
-    pointHoverRadius: 6,
+    pointRadius: 0,
+    pointHoverRadius: 0,
     pointBorderWidth: 2,
     maxTicksLimit: 8,
     tooltipPadding: 12,
@@ -56,13 +56,14 @@
     Filler
   )
 
-  interface CommitData {
+  interface ChartData {
     date: string // yyyy-mm-dd
-    commits: number
+    value: number
   }
 
   interface Props {
-    data: CommitData[] | null
+    data: ChartData[] | null
+    tooltipDesc: string
   }
 
   const props = defineProps<Props>()
@@ -92,8 +93,7 @@
         labels: sortedData.map(d => d.date),
         datasets: [
           {
-            label: 'Commits',
-            data: sortedData.map(d => d.commits),
+            data: sortedData.map(d => d.value),
             borderColor: CHART_COLORS.line,
             backgroundColor: CHART_COLORS.fill,
             borderWidth: CHART_CONFIG.lineWidth,
@@ -137,7 +137,7 @@
                 })
               },
               label: (context) => {
-                return `Commits: ${context.parsed.y}`
+                return `${props.tooltipDesc}: ${context.parsed.y}`
               }
             }
           },

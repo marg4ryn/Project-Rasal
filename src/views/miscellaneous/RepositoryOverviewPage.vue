@@ -1,35 +1,36 @@
 <template>
   <div style="width: 600px; height: 300px;">
-    <CommitTimelineChart
+    <TimelineChart
       :data="commitData"
+      tooltipDesc="Commits"
     />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref } from 'vue'
-  import CommitTimelineChart from '@/components/visuals/CommitTimelineChart.vue'
+  import TimelineChart from '@/components/visuals/TimelineChart.vue'
 
   // Przykładowe dane
   const commitData = ref([
-    { date: '2024-07-01', commits: 65 },
-    { date: '2024-07-08', commits: 145 },
-    { date: '2024-07-15', commits: 210 },
-    { date: '2024-07-22', commits: 190 },
-    { date: '2024-07-29', commits: 250 },
-    { date: '2024-08-05', commits: 180 },
-    { date: '2024-08-12', commits: 120 },
-    { date: '2024-08-19', commits: 135 },
-    { date: '2024-08-26', commits: 145 },
-    { date: '2024-09-02', commits: 125 },
-    { date: '2024-09-09', commits: 110 },
-    { date: '2024-09-16', commits: 220 },
-    { date: '2024-09-23', commits: 185 },
-    { date: '2024-09-30', commits: 175 },
-    { date: '2024-10-07', commits: 165 },
-    { date: '2024-10-14', commits: 190 },
-    { date: '2024-10-21', commits: 210 },
-    { date: '2024-10-28', commits: 155 },
+    { date: '2024-07-01', value: 65 },
+    { date: '2024-07-08', value: 145 },
+    { date: '2024-07-15', value: 210 },
+    { date: '2024-07-22', value: 190 },
+    { date: '2024-07-29', value: 250 },
+    { date: '2024-08-05', value: 180 },
+    { date: '2024-08-12', value: 120 },
+    { date: '2024-08-19', value: 135 },
+    { date: '2024-08-26', value: 145 },
+    { date: '2024-09-02', value: 125 },
+    { date: '2024-09-09', value: 110 },
+    { date: '2024-09-16', value: 220 },
+    { date: '2024-09-23', value: 185 },
+    { date: '2024-09-30', value: 175 },
+    { date: '2024-10-07', value: 165 },
+    { date: '2024-10-14', value: 190 },
+    { date: '2024-10-21', value: 210 },
+    { date: '2024-10-28', value: 155 },
   ])
 </script>
 
