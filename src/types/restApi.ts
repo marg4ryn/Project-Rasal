@@ -111,6 +111,16 @@ export interface FilesExtensionsDetails {
   type: string
 }
 
+export interface CoupledAuthor {
+  name: string
+  sharedChanges: number
+}
+
+export interface AuthorData {
+  name: string
+  coupledAuthors: CoupledAuthor[]
+}
+
 export type ItemsListResponse = ItemsListItem[]
 export type FileDetailsResponse = FileDetails
 export type HotspotsResponse = HotspotsDetails
@@ -120,3 +130,4 @@ export type KnowledgeLossResponse = KnowledgeLossDetails
 export type AuthorsStatisticsResponse = AuthorsStatisticsDetails
 export type LeadAuthorsResponse = LeadAuthorsDetails
 export type FilesExtensionsResponse = FilesExtensionsDetails
+export type AuthorCouplingResponse = AuthorData

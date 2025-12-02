@@ -5,7 +5,6 @@
     :tabs="tabs"
     :colorData="colorData"
     :leftPanelConfig="leftPanelConfig"
-    :secondLeftPanelConfig="secondLeftPanelConfig"
     :rightPanelConfig="rightPanelConfig"
   >
     <template #leftPanelItem="{ item }">
@@ -14,32 +13,18 @@
       }}</span>
       <span class="item-value"> {{ item.filesCount }} {{ $t('common.files') }} </span>
     </template>
-    <template #secondLeftPanelItem="{ item }">
-      <span class="item-name">{{ item.name }}</span>
-      <span class="item-value" :style="{ color: getOwnershipColor(item.displayValue) }">
-        {{ item.displayValue }}%</span
-      >
-    </template>
   </CodeCityPageTemplate>
 </template>
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
-  import { useRestApiStore } from '@/stores/restApiStore'
-  import type {
-    MetricType,
-    AuthorsStatisticsDetails,
-    LeadAuthorsDetails,
-    AuthorContribution,
-  } from '@/types'
+  import type { MetricType, AuthorsStatisticsDetails, LeadAuthorsDetails } from '@/types'
   import CodeCityPageTemplate from '@/components/city/CodeCityPageTemplate.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
-  const { authorsStatisticsDetails, leadAuthorsDetails, fileDetails, isGeneralLoading } =
-    useRestApi()
+  const { authorsStatisticsDetails, leadAuthorsDetails, isGeneralLoading } = useRestApi()
 
-  const restApiStore = useRestApiStore()
   const authorsRef = authorsStatisticsDetails()
   const detailsRef = leadAuthorsDetails()
   const codeCityRef = ref<InstanceType<typeof CodeCityPageTemplate>>()
@@ -106,7 +91,9 @@
       return map
     }
 
-    data.forEach((author: AuthorsStatisticsDetails, index: number) => {
+    const topAuthors = data.sort((a, b) => b.filesAsLeadAuthor - a.filesAsLeadAuthor).slice(0, 20)
+
+    topAuthors.forEach((author: AuthorsStatisticsDetails, index: number) => {
       map.set(author.name, getRandomColor(index))
     })
 
@@ -148,6 +135,7 @@
       }))
       .filter((item) => item.filesCount !== 0)
       .sort((a, b) => b.filesCount - a.filesCount)
+      .slice(0, 20)
   })
 
   const leftPanelConfig = computed(() => ({
@@ -157,53 +145,6 @@
     allowLoading: false,
     items: items.value,
   }))
-
-  const secondLeftPanelConfig = computed(() => {
-    const selected = codeCityRef.value?.selectedPath
-
-    if (!selected || restApiStore.getItemByPath(selected)?.type === 'dir') {
-      return {
-        itemType: 'author' as const,
-        labelKey: 'leftPanel.knowledge-risks.header2',
-        infoKey: 'leftPanel.knowledge-risks.info2',
-        items: [],
-      }
-    }
-
-    const details = fileDetails(selected).value
-
-    if (!details?.knowledge?.contributions) {
-      return {
-        itemType: 'author' as const,
-        labelKey: 'leftPanel.knowledge-risks.header2',
-        infoKey: 'leftPanel.knowledge-risks.info2',
-        items: [],
-      }
-    }
-
-    const items = details.knowledge.contributions
-      .map((author: AuthorContribution) => ({
-        path: author.name,
-        name: author.name,
-        displayValue: author.percentage.toFixed(1),
-      }))
-      .sort((a, b) => parseFloat(b.displayValue) - parseFloat(a.displayValue))
-
-    return {
-      itemType: 'author' as const,
-      labelKey: 'leftPanel.knowledge-risks.header2',
-      infoKey: 'leftPanel.knowledge-risks.info2',
-      items,
-    }
-  })
-
-  function getOwnershipColor(percent: number): string {
-    if (percent < 20) return '#064e3b'
-    if (percent < 40) return '#0f6f4a'
-    if (percent < 60) return '#0fa15c'
-    if (percent < 80) return '#07c86d'
-    return '#00f47a'
-  }
 </script>
 
 <style scoped lang="scss">

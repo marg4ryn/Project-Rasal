@@ -255,6 +255,27 @@ export function useRestApi() {
     return computed(() => store.filesExtensionsDetails)
   }
 
+  function authorCouplingDetails() {
+    if (store.authorCouplingDetails) {
+      log.info('Returning cached author coupling details')
+      return computed(() => store.authorCouplingDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchAuthorCouplingDetails(analysisId)
+          store.setAuthorCouplingDetails(data)
+        },
+        'authorCouplingDetails',
+        'Author coupling details fetched successfully'
+      )
+    }
+
+    return computed(() => store.authorCouplingDetails)
+  }
+
   const loadingValue = computed(() => store.loading)
 
   const isFileDetailsLoading = computed(() => Boolean(loadingValue.value['fileDetails']))
@@ -276,6 +297,7 @@ export function useRestApi() {
     authorsStatisticsDetails,
     leadAuthorsDetails,
     filesExtensionsDetails,
+    authorCouplingDetails,
 
     isFileDetailsLoading,
     isGeneralLoading,

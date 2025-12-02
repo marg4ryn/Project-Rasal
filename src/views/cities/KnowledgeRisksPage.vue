@@ -195,11 +195,13 @@
   })
 
   function getOwnershipColor(percent: number): string {
-    if (percent < 20) return '#064e3b'
-    if (percent < 40) return '#0f6f4a'
-    if (percent < 60) return '#0fa15c'
-    if (percent < 80) return '#07c86d'
-    return '#00f47a'
+    const t = Math.min(Math.max(percent / 100, 0), 1)
+
+    const r = Math.round(255 * (1 - t))
+    const g = 255
+    const b = Math.round(255 * (1 - t))
+
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
   }
 </script>
 

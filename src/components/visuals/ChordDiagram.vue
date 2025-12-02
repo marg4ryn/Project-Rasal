@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
   import { ref, onMounted, onUnmounted, watch } from 'vue'
+  import { AuthorData } from '@/types'
   import * as d3 from 'd3'
   import { useLogger } from '@/composables/useLogger'
 
@@ -29,16 +30,6 @@
   const RIBBON_TRANSPARENCY_DISABELD = 0.1
 
   const log = useLogger('ChordDiagram')
-
-  interface CoupledAuthor {
-    name: string
-    sharedChanges: number
-  }
-
-  interface AuthorData {
-    name: string
-    coupledAuthors: CoupledAuthor[]
-  }
 
   interface Props {
     data: AuthorData[] | null
@@ -65,12 +56,12 @@
     const container = containerRef.value
     const width = container.clientWidth
     const height = container.clientHeight
-    
+
     if (width < 100 || height < 100) {
       log.warn('Container too small for chord diagram')
       return
     }
-    
+
     const minDimension = Math.min(width, height)
     const outerRadius = minDimension * DIAGRAM_SIZE
     const innerRadius = outerRadius * ARC_THICKNESS
@@ -115,19 +106,11 @@
     })
 
     // Chord layout
-    const chord = d3
-      .chord()
-      .padAngle(ARC_GAP_SIZE)
-      .sortSubgroups(d3.descending)
+    const chord = d3.chord().padAngle(ARC_GAP_SIZE).sortSubgroups(d3.descending)
 
     const chords = chord(matrix)
 
-    const group = svgGroup
-      .append('g')
-      .selectAll('g')
-      .data(chords.groups)
-      .enter()
-      .append('g')
+    const group = svgGroup.append('g').selectAll('g').data(chords.groups).enter().append('g')
 
     // Łuki (Arcs)
     const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius)
@@ -135,14 +118,19 @@
     group
       .append('path')
       .style('fill', (d) => colors[d.index % colors.length])
-      .style('stroke', (d) => d3.rgb(colors[d.index % colors.length]).darker().toString())
+      .style('stroke', (d) =>
+        d3
+          .rgb(colors[d.index % colors.length])
+          .darker()
+          .toString()
+      )
       .attr('d', arc as any)
       .style('cursor', 'pointer')
       .on('mouseover', function (event, d) {
         // Znajdź wszystkich developerów połączonych z aktualnym
         const connectedIndices = new Set<number>()
         connectedIndices.add(d.index)
-        
+
         chords.forEach((chord: any) => {
           if (chord.source.index === d.index) {
             connectedIndices.add(chord.target.index)
@@ -151,29 +139,29 @@
             connectedIndices.add(chord.source.index)
           }
         })
-        
+
         // Przyciemnij wszystkie arcs i labele oprócz połączonych
         if (svgGroup) {
-          svgGroup
-            .selectAll('g > path')
-            .style('opacity', function(this: any, arcData: any) {
-              return connectedIndices.has(arcData.index) ? ARC_TRANSPARENCY_NORMAL : ARC_TRANSPARENCY_DISABLED
-            })
-          
-          svgGroup
-            .selectAll('g > text')
-            .style('opacity', function(this: any, arcData: any) {
-              return connectedIndices.has(arcData.index) ? LABEL_TRANSPARENCY_NORMAL : LABEL_TRANSPARENCY_DISABLED
-            })
-          
+          svgGroup.selectAll('g > path').style('opacity', function (this: any, arcData: any) {
+            return connectedIndices.has(arcData.index)
+              ? ARC_TRANSPARENCY_NORMAL
+              : ARC_TRANSPARENCY_DISABLED
+          })
+
+          svgGroup.selectAll('g > text').style('opacity', function (this: any, arcData: any) {
+            return connectedIndices.has(arcData.index)
+              ? LABEL_TRANSPARENCY_NORMAL
+              : LABEL_TRANSPARENCY_DISABLED
+          })
+
           // Podświetl odpowiednie ribbony
-          svgGroup
-            .selectAll('.chord')
-            .style('opacity', function(this: any, chord: any) {
-              return chord.source.index === d.index || chord.target.index === d.index ? RIBBON_TRANSPARENCY_HIGHLIGHT : RIBBON_TRANSPARENCY_DISABELD
-            })
+          svgGroup.selectAll('.chord').style('opacity', function (this: any, chord: any) {
+            return chord.source.index === d.index || chord.target.index === d.index
+              ? RIBBON_TRANSPARENCY_HIGHLIGHT
+              : RIBBON_TRANSPARENCY_DISABELD
+          })
         }
-        
+
         emit('authorHover', authors[d.index])
       })
       .on('mouseout', function () {
@@ -202,8 +190,8 @@
       .attr('transform', (d: any) => {
         const angle = (d.angle * 180) / Math.PI - 90
         const rotate = angle > 90 ? angle + 180 : angle
-        const x = Math.cos((d.angle - Math.PI / 2)) * labelRadius
-        const y = Math.sin((d.angle - Math.PI / 2)) * labelRadius
+        const x = Math.cos(d.angle - Math.PI / 2) * labelRadius
+        const y = Math.sin(d.angle - Math.PI / 2) * labelRadius
         return `translate(${x}, ${y}) rotate(${rotate})`
       })
       .text((d) => authors[d.index])
@@ -226,15 +214,20 @@
       .attr('class', 'chord')
       .attr('d', ribbon as any)
       .style('fill', (d) => colors[d.source.index % colors.length])
-      .style('stroke', (d) => d3.rgb(colors[d.source.index % colors.length]).darker().toString())
+      .style('stroke', (d) =>
+        d3
+          .rgb(colors[d.source.index % colors.length])
+          .darker()
+          .toString()
+      )
       .style('opacity', RIBBON_TRANSPARENCY_NORMAL)
       .style('cursor', 'pointer')
       .on('mouseover', function (event, d) {
         d3.select(this).style('opacity', RIBBON_TRANSPARENCY_HIGHLIGHT)
-        
+
         const sourceAuthor = authors[d.source.index]
         const targetAuthor = authors[d.target.index]
-        
+
         emit('authorHover', `${sourceAuthor}; ${targetAuthor}`)
       })
       .on('mouseout', function () {
@@ -272,7 +265,7 @@
       window.removeEventListener('resize', resizeHandler)
       resizeHandler = null
     }
-    
+
     if (containerRef.value) {
       d3.select(containerRef.value).selectAll('*').remove()
     }
@@ -280,32 +273,30 @@
 </script>
 
 <style scoped>
-.code-city-wrapper {
-  width: 100%;
-  height: 100%;
-  min-height: 400px;
-  min-width: 400px;
-  position: relative;
-  overflow: hidden;
-  background: transparent;
-}
+  .code-city-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+  }
 
-.chord-diagram-container {
-  width: 100%;
-  height: 100%;
-}
+  .chord-diagram-container {
+    width: 100%;
+    height: 100%;
+  }
 
-.placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #999;
-  font-size: 1.2rem;
-}
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-size: 1.2rem;
+  }
 
-:deep(svg) {
-  display: block;
-  background: transparent;
-}
+  :deep(svg) {
+    display: block;
+    background: transparent;
+  }
 </style>

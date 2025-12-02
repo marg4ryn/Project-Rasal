@@ -5,7 +5,6 @@
     :tabs="tabs"
     :colorData="colorData"
     :leftPanelConfig="leftPanelConfig"
-    :secondLeftPanelConfig="secondLeftPanelConfig"
     :rightPanelConfig="rightPanelConfig"
   >
     <template #leftPanelItem="{ item }">
@@ -18,26 +17,18 @@
         {{ item.displayValue }} {{ $t('leftPanel.code-age.days') }}
       </span>
     </template>
-    <template #secondLeftPanelItem="{ item }">
-      <span class="item-name">{{ item.name }}</span>
-      <span class="item-value" :style="{ color: getOwnershipColor(item.displayValue) }">
-        {{ item.displayValue }}%</span
-      >
-    </template>
   </CodeCityPageTemplate>
 </template>
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
-  import { useRestApiStore } from '@/stores/restApiStore'
-  import { MetricType, CodeAgeDetails, AuthorContribution } from '@/types'
+  import { MetricType, CodeAgeDetails } from '@/types'
   import CodeCityPageTemplate from '@/components/city/CodeCityPageTemplate.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
-  const { codeAgeDetails, itemsMap, fileDetails, isGeneralLoading } = useRestApi()
+  const { codeAgeDetails, itemsMap, isGeneralLoading } = useRestApi()
 
-  const restApiStore = useRestApiStore()
   const detailsRef = codeAgeDetails()
   const itemsMapRef = itemsMap()
   const codeCityRef = ref<InstanceType<typeof CodeCityPageTemplate>>()
@@ -76,7 +67,7 @@
     return data.map((item: CodeAgeDetails) => ({
       path: item.path,
       color:
-        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0x00bfff : 0xf0f0f0,
+        item.normalizedValue !== null && item.normalizedValue !== undefined ? 0x1e90ff : 0xf0f0f0,
       intensity: item.normalizedValue ?? 1,
     }))
   })
@@ -107,66 +98,22 @@
     infoKey: 'leftPanel.code-age.info',
     items: items.value,
   }))
-
   function getIntensityColor(normalizedValue: number): string {
     const value = Math.min(1, Math.max(0, normalizedValue))
 
-    const r = Math.round(255 * (1 - value * (255 / 255)))
-    const g = Math.round(255 * (1 - value * (64 / 255)))
-    const b = 255
+    const targetR = 30
+    const targetG = 144
+    const targetB = 255
+
+    const r = Math.round(255 + (targetR - 255) * value)
+    const g = Math.round(255 + (targetG - 255) * value)
+    const b = Math.round(255 + (targetB - 255) * value)
 
     const rHex = r.toString(16).padStart(2, '0')
     const gHex = g.toString(16).padStart(2, '0')
     const bHex = b.toString(16).padStart(2, '0')
 
     return `#${rHex}${gHex}${bHex}`
-  }
-
-  const secondLeftPanelConfig = computed(() => {
-    const selected = codeCityRef.value?.selectedPath
-
-    if (!selected || restApiStore.getItemByPath(selected)?.type === 'dir') {
-      return {
-        itemType: 'author' as const,
-        labelKey: 'leftPanel.knowledge-risks.header2',
-        infoKey: 'leftPanel.knowledge-risks.info2',
-        items: [],
-      }
-    }
-
-    const details = fileDetails(selected).value
-
-    if (!details?.knowledge?.contributions) {
-      return {
-        itemType: 'author' as const,
-        labelKey: 'leftPanel.knowledge-risks.header2',
-        infoKey: 'leftPanel.knowledge-risks.info2',
-        items: [],
-      }
-    }
-
-    const items = details.knowledge.contributions
-      .map((author: AuthorContribution) => ({
-        path: author.name,
-        name: author.name,
-        displayValue: author.percentage.toFixed(1),
-      }))
-      .sort((a, b) => parseFloat(b.displayValue) - parseFloat(a.displayValue))
-
-    return {
-      itemType: 'author' as const,
-      labelKey: 'leftPanel.knowledge-risks.header2',
-      infoKey: 'leftPanel.knowledge-risks.info2',
-      items,
-    }
-  })
-
-  function getOwnershipColor(percent: number): string {
-    if (percent < 20) return '#064e3b'
-    if (percent < 40) return '#0f6f4a'
-    if (percent < 60) return '#0fa15c'
-    if (percent < 80) return '#07c86d'
-    return '#00f47a'
   }
 </script>
 

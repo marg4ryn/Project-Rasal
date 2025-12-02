@@ -5,7 +5,6 @@
     :tabs="tabs"
     :colorData="colorData"
     :leftPanelConfig="leftPanelConfig"
-    :secondLeftPanelConfig="secondLeftPanelConfig"
     :rightPanelConfig="rightPanelConfig"
   >
     <template #leftPanelItem="{ item }">
@@ -14,27 +13,18 @@
       }}</span>
       <span class="item-value">{{ item.filesCount }} {{ $t('common.files') }}</span>
     </template>
-
-    <template #secondLeftPanelItem="{ item }">
-      <span class="item-name">{{ item.name }}</span>
-      <span class="item-value" :style="{ color: getOwnershipColor(item.displayValue) }">
-        {{ item.displayValue }}%</span
-      >
-    </template>
   </CodeCityPageTemplate>
 </template>
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
-  import { useRestApiStore } from '@/stores/restApiStore'
-  import type { MetricType, FilesExtensionsDetails, AuthorContribution } from '@/types'
+  import type { MetricType, FilesExtensionsDetails } from '@/types'
   import CodeCityPageTemplate from '@/components/city/CodeCityPageTemplate.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
-  const { filesExtensionsDetails, fileDetails, isGeneralLoading } = useRestApi()
+  const { filesExtensionsDetails, isGeneralLoading } = useRestApi()
 
-  const restApiStore = useRestApiStore()
   const detailsRef = filesExtensionsDetails()
   const codeCityRef = ref<InstanceType<typeof CodeCityPageTemplate>>()
 
@@ -147,53 +137,6 @@
     infoKey: 'leftPanel.file-extensions.info',
     items: items.value,
   }))
-
-  const secondLeftPanelConfig = computed(() => {
-    const selected = codeCityRef.value?.selectedPath
-
-    if (!selected || restApiStore.getItemByPath(selected)?.type === 'dir') {
-      return {
-        itemType: 'author' as const,
-        labelKey: 'leftPanel.knowledge-risks.header2',
-        infoKey: 'leftPanel.knowledge-risks.info2',
-        items: [],
-      }
-    }
-
-    const details = fileDetails(selected).value
-
-    if (!details?.knowledge?.contributions) {
-      return {
-        itemType: 'author' as const,
-        labelKey: 'leftPanel.knowledge-risks.header2',
-        infoKey: 'leftPanel.knowledge-risks.info2',
-        items: [],
-      }
-    }
-
-    const items = details.knowledge.contributions
-      .map((author: AuthorContribution) => ({
-        path: author.name,
-        name: author.name,
-        displayValue: author.percentage.toFixed(1),
-      }))
-      .sort((a, b) => parseFloat(b.displayValue) - parseFloat(a.displayValue))
-
-    return {
-      itemType: 'author' as const,
-      labelKey: 'leftPanel.knowledge-risks.header2',
-      infoKey: 'leftPanel.knowledge-risks.info2',
-      items,
-    }
-  })
-
-  function getOwnershipColor(percent: number): string {
-    if (percent < 20) return '#064e3b'
-    if (percent < 40) return '#0f6f4a'
-    if (percent < 60) return '#0fa15c'
-    if (percent < 80) return '#07c86d'
-    return '#00f47a'
-  }
 </script>
 
 <style scoped lang="scss">

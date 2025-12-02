@@ -264,7 +264,7 @@
 
   .table-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 1fr;
     gap: 16px;
     padding: 16px 20px;
     background: var(--color-bg-primary);
@@ -410,8 +410,8 @@
 
   .details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 32px;
+    grid-template-columns: repeat(auto-fit, 210px);
+    gap: 24px;
   }
 
   .detail-section {
@@ -464,9 +464,8 @@
   .email {
     font-size: 14px;
     font-family: 'Courier New', monospace;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   @media (max-width: 1024px) {
