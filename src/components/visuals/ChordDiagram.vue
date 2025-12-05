@@ -19,7 +19,7 @@
   const ARC_TRANSPARENCY_NORMAL = 1.0
   const ARC_TRANSPARENCY_DISABLED = 0.1
   const ARC_THICKNESS = 0.85 // mniej = grubsze
-  const ARC_GAP_SIZE = 0.1
+  let ARC_GAP_SIZE = 0.05
 
   const LABEL_TRANSPARENCY_NORMAL = 1.0
   const LABEL_TRANSPARENCY_DISABLED = 0.1
@@ -46,6 +46,8 @@
   let resizeHandler: (() => void) | null = null
 
   const colors = d3.schemeCategory10.concat(d3.schemePaired)
+
+  updateArcGapSize()
 
   function createChordDiagram() {
     if (!containerRef.value || !props.data || props.data.length === 0) return
@@ -246,9 +248,20 @@
     createChordDiagram()
   }
 
+  function updateArcGapSize() {
+    if (!props.data || props.data.length === 0) {
+      ARC_GAP_SIZE = 0.05
+      return
+    }
+    
+    const n = props.data.length
+    ARC_GAP_SIZE = 2 * Math.exp(-n / 4)
+  }
+
   watch(
     () => props.data,
     () => {
+      updateArcGapSize()
       createChordDiagram()
     },
     { deep: true }
