@@ -17,7 +17,7 @@
     TimeScale,
     Title,
     Tooltip,
-    CategoryScale
+    CategoryScale,
   } from 'chart.js'
   import 'chartjs-adapter-date-fns'
 
@@ -37,17 +37,9 @@
     tooltipPadding: 12,
   }
 
-  Chart.register(
-    BarController,
-    BarElement,
-    LinearScale,
-    TimeScale,
-    CategoryScale,
-    Title,
-    Tooltip
-  )
+  Chart.register(BarController, BarElement, LinearScale, TimeScale, CategoryScale, Title, Tooltip)
 
-  interface ChurnData {
+  export interface ChurnData {
     date: string // yyyy-mm-dd
     linesAdded: number
     linesDeleted: number
@@ -71,8 +63,8 @@
       chartInstance = null
     }
 
-    const sortedData = [...props.data].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+    const sortedData = [...props.data].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     )
 
     const ctx = chartRef.value.getContext('2d')
@@ -81,11 +73,11 @@
     chartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: sortedData.map(d => d.date),
+        labels: sortedData.map((d) => d.date),
         datasets: [
           {
             label: 'Lines Added',
-            data: sortedData.map(d => d.linesAdded),
+            data: sortedData.map((d) => d.linesAdded),
             backgroundColor: CHART_COLORS.linesAdded,
             hoverBackgroundColor: CHART_COLORS.linesAddedHover,
             barPercentage: 0.9,
@@ -93,13 +85,13 @@
           },
           {
             label: 'Lines Deleted',
-            data: sortedData.map(d => -Math.abs(d.linesDeleted)),
+            data: sortedData.map((d) => -Math.abs(d.linesDeleted)),
             backgroundColor: CHART_COLORS.linesDeleted,
             hoverBackgroundColor: CHART_COLORS.linesDeletedHover,
             barPercentage: 0.9,
             categoryPercentage: 0.95,
-          }
-        ]
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -113,8 +105,8 @@
             left: 0,
             right: 0,
             top: 10,
-            bottom: 0
-          }
+            bottom: 0,
+          },
         },
         plugins: {
           tooltip: {
@@ -133,19 +125,19 @@
                 return date.toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'short',
-                  day: 'numeric'
+                  day: 'numeric',
                 })
               },
               label: (context) => {
                 const value = Math.abs(context.parsed.y ?? 0)
                 const label = context.dataset.label
                 return `${label}: ${value.toLocaleString()}`
-              }
-            }
+              },
+            },
           },
           legend: {
-            display: false
-          }
+            display: false,
+          },
         },
         scales: {
           x: {
@@ -153,7 +145,7 @@
             stacked: true,
             grid: {
               display: false,
-              offset: false
+              offset: false,
             },
             ticks: {
               color: CHART_COLORS.text,
@@ -161,16 +153,16 @@
               autoSkip: true,
               autoSkipPadding: 0,
               maxTicksLimit: CHART_CONFIG.maxTicksLimit,
-              callback: function(value, index) {
+              callback: function (value, index) {
                 const dateStr = sortedData[index]?.date
                 if (!dateStr) return ''
                 const date = new Date(dateStr + 'T00:00:00')
                 return date.toLocaleDateString('en-US', {
                   month: 'short',
-                  day: 'numeric'
+                  day: 'numeric',
                 })
-              }
-            }
+              },
+            },
           },
           y: {
             stacked: false,
@@ -179,13 +171,13 @@
             },
             ticks: {
               color: CHART_COLORS.text,
-              callback: function(value) {
+              callback: function (value) {
                 return Math.abs(Number(value)).toLocaleString()
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     })
   }
 
@@ -212,7 +204,7 @@
       window.removeEventListener('resize', resizeHandler)
       resizeHandler = null
     }
-    
+
     if (chartInstance) {
       chartInstance.destroy()
       chartInstance = null

@@ -20,7 +20,7 @@
     Tooltip,
     Legend,
     Filler,
-    CategoryScale
+    CategoryScale,
   } from 'chart.js'
   import 'chartjs-adapter-date-fns'
   import { useLogger } from '@/composables/useLogger'
@@ -298,7 +298,7 @@
       window.removeEventListener('resize', resizeHandler)
       resizeHandler = null
     }
-    
+
     if (chartInstance) {
       chartInstance.destroy()
       chartInstance = null

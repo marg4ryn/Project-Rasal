@@ -253,18 +253,18 @@
       ARC_GAP_SIZE = 0.05
       return
     }
-    
+
     const n = props.data.length
     ARC_GAP_SIZE = 2 * Math.exp(-n / 4)
   }
 
   watch(
-    () => props.data,
+    () => [props.data?.length ?? 0, ...(props.data?.map((d) => d.name) ?? [])],
     () => {
       updateArcGapSize()
       createChordDiagram()
     },
-    { deep: true }
+    { immediate: false }
   )
 
   onMounted(() => {

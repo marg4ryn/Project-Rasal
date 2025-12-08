@@ -276,6 +276,48 @@ export function useRestApi() {
     return computed(() => store.authorCouplingDetails)
   }
 
+  function repositoryDetails() {
+    if (store.repositoryDetails) {
+      log.info('Returning cached repository details')
+      return computed(() => store.repositoryDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchRepositoryDetails(analysisId)
+          store.setRepositoryDetails(data)
+        },
+        'repositoryDetails',
+        'Repository details fetched successfully'
+      )
+    }
+
+    return computed(() => store.repositoryDetails)
+  }
+
+  function analysisTrendsDetails() {
+    if (store.analysisTrendsDetails) {
+      log.info('Returning cached analysis trends details')
+      return computed(() => store.analysisTrendsDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchAnalysisTrendsDetails(analysisId)
+          store.setAnalysisTrendsDetails(data)
+        },
+        'analysisTrendsDetails',
+        'Analysis trends details fetched successfully'
+      )
+    }
+
+    return computed(() => store.analysisTrendsDetails)
+  }
+
   const loadingValue = computed(() => store.loading)
 
   const isFileDetailsLoading = computed(() => Boolean(loadingValue.value['fileDetails']))
@@ -298,6 +340,8 @@ export function useRestApi() {
     leadAuthorsDetails,
     filesExtensionsDetails,
     authorCouplingDetails,
+    repositoryDetails,
+    analysisTrendsDetails,
 
     isFileDetailsLoading,
     isGeneralLoading,
