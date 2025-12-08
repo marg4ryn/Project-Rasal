@@ -81,7 +81,17 @@
           <div class="card-header">
             <h3 class="card-title">{{ t('repositoryOverview.commitTrends.title') }}</h3>
           </div>
-          <TimelineChart v-if="commitData" :data="commitData" tooltipDesc="Commits" />
+            <TimelineChart 
+              v-if="commitData" :datasets="[
+                {
+                  label: 'Commits',
+                  data: commitData,
+                  color: ChartColor.Green,
+                  tooltipDesc: 'Commits',
+                  yAxisID: 'left'
+                }
+              ]"
+            />
         </div>
 
         <!-- Code Changes Card -->
@@ -131,7 +141,17 @@
           <div class="card-header">
             <h3 class="card-title">{{ t('repositoryOverview.developerCountTrends.title') }}</h3>
           </div>
-          <TimelineChart v-if="authorsData" :data="authorsData" tooltipDesc="Commits" />
+            <TimelineChart 
+              v-if="authorsData" :datasets="[
+                {
+                  label: 'Commits',
+                  data: authorsData,
+                  color: ChartColor.Blue,
+                  tooltipDesc: 'Commits',
+                  yAxisID: 'left'
+                }
+              ]"
+            />
         </div>
 
         <!-- Analysis Statistics Card -->
@@ -298,8 +318,8 @@
   import { computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
   import { useUserSettingsStore } from '@/stores/userSettingsStore'
-  import { ChartData } from '@/components/visuals/TimelineChart.vue'
   import { ChurnData } from '@/components/visuals/CodeChurnChart.vue'
+  import { ChartColor, ChartDataPoint } from '@/types/timelineChart.js'
   import { useI18n } from 'vue-i18n'
   import type { AuthorsStatisticsDetails } from '@/types'
 
@@ -342,7 +362,7 @@
       .slice(0, 5)
   })
 
-  const commitData = computed<ChartData[] | null>(
+  const commitData = computed<ChartDataPoint[] | null>(
     () =>
       trendsRef.value?.map((item) => ({
         date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
@@ -350,7 +370,7 @@
       })) ?? null
   )
 
-  const authorsData = computed<ChartData[] | null>(
+  const authorsData = computed<ChartDataPoint[] | null>(
     () =>
       trendsRef.value?.map((item) => ({
         date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
