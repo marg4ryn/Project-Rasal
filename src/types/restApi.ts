@@ -168,6 +168,15 @@ export interface RepositoryDetails {
   staticAnalysis: RepositoryStaticAnalysis
 }
 
+export interface AnalysisTrendsDetails {
+  date: Date
+  commits: number
+  uniqueAuthors: number
+  activeAuthors: number
+  linesAdded: number
+  linesDeleted: number
+}
+
 export type ItemsListResponse = ItemsListItem[]
 export type FileDetailsResponse = FileDetails
 export type HotspotsResponse = HotspotsDetails
@@ -179,3 +188,4 @@ export type LeadAuthorsResponse = LeadAuthorsDetails
 export type FilesExtensionsResponse = FilesExtensionsDetails
 export type AuthorCouplingResponse = AuthorData
 export type RepositoryResponse = RepositoryDetails
+export type AnalysisTrendsResponse = AnalysisTrendsDetails[]

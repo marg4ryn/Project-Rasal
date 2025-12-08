@@ -287,7 +287,6 @@ export function useRestApi() {
       handleFetch(
         async () => {
           const data = await api.fetchRepositoryDetails(analysisId)
-
           store.setRepositoryDetails(data)
         },
         'repositoryDetails',
@@ -296,6 +295,27 @@ export function useRestApi() {
     }
 
     return computed(() => store.repositoryDetails)
+  }
+
+  function analysisTrendsDetails() {
+    if (store.analysisTrendsDetails) {
+      log.info('Returning cached analysis trends details')
+      return computed(() => store.analysisTrendsDetails)
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchAnalysisTrendsDetails(analysisId)
+          store.setAnalysisTrendsDetails(data)
+        },
+        'analysisTrendsDetails',
+        'Analysis trends details fetched successfully'
+      )
+    }
+
+    return computed(() => store.analysisTrendsDetails)
   }
 
   const loadingValue = computed(() => store.loading)
@@ -321,6 +341,7 @@ export function useRestApi() {
     filesExtensionsDetails,
     authorCouplingDetails,
     repositoryDetails,
+    analysisTrendsDetails,
 
     isFileDetailsLoading,
     isGeneralLoading,

@@ -56,8 +56,40 @@
           </div>
         </div>
 
-        <!-- Statistics Card -->
+        <!-- Commits Card -->
         <div class="stats-card" data-cols="1">
+          <div class="card-header">
+            <h3 class="card-title">Commits</h3>
+          </div>
+          <TimelineChart :data="commitData" tooltipDesc="Commits" />
+        </div>
+
+        <!-- Churn Diagram Card -->
+        <div class="stats-card" data-cols="2">
+          <div class="card-header">
+            <h3 class="card-title">Lines</h3>
+          </div>
+          <CodeChurnChart :data="churnData" />
+        </div>
+
+        <!-- Authors Card -->
+        <div class="stats-card" data-cols="1">
+          <div class="card-header">
+            <h3 class="card-title">Authors</h3>
+          </div>
+          <div class="card-content"></div>
+        </div>
+
+        <!-- Authors Diagram Card -->
+        <div class="stats-card" data-cols="1">
+          <div class="card-header">
+            <h3 class="card-title">Authors</h3>
+          </div>
+          <TimelineChart :data="authorsData" tooltipDesc="Commits" />
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="stats-card" data-cols="2">
           <div class="card-header">
             <h3 class="card-title">Statistics</h3>
           </div>
@@ -125,14 +157,6 @@
           </div>
         </div>
 
-        <!-- Authors Card -->
-        <div class="stats-card" data-cols="1">
-          <div class="card-header">
-            <h3 class="card-title">Authors</h3>
-          </div>
-          <div class="card-content"></div>
-        </div>
-
         <!-- File Types Card -->
         <div class="stats-card" data-cols="1">
           <div class="card-header">
@@ -156,21 +180,34 @@
             </div>
           </div>
         </div>
+
+        <!-- X-Ray Card -->
+        <div class="stats-card" data-cols="1">
+          <div class="card-header">
+            <h3 class="card-title">X-Ray</h3>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
   import { useUserSettingsStore } from '@/stores/userSettingsStore'
+  import { ChartData } from '@/components/visuals/TimelineChart.vue'
+  import { ChurnData } from '@/components/visuals/CodeChurnChart.vue'
 
+  import TimelineChart from '@/components/visuals/TimelineChart.vue'
+  import CodeChurnChart from '@/components/visuals/CodeChurnChart.vue'
   import TabNavigation from '@/components/city/TabNavigation.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
-  const { repositoryDetails, isGeneralLoading } = useRestApi()
+  const { repositoryDetails, analysisTrendsDetails, isGeneralLoading } = useRestApi()
 
   const detailsRef = repositoryDetails()
+  const trendsRef = analysisTrendsDetails()
 
   const tabs = [
     {
@@ -218,6 +255,31 @@
       hour12: false,
     })
   }
+
+  const commitData = computed<ChartData[]>(
+    () =>
+      trendsRef.value?.map((item) => ({
+        date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
+        value: item.commits,
+      })) ?? []
+  )
+
+  const authorsData = computed<ChartData[]>(
+    () =>
+      trendsRef.value?.map((item) => ({
+        date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
+        value: item.uniqueAuthors,
+      })) ?? []
+  )
+
+  const churnData = computed<ChurnData[]>(
+    () =>
+      trendsRef.value?.map((item) => ({
+        date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
+        linesAdded: item.linesAdded,
+        linesDeleted: item.linesDeleted,
+      })) ?? []
+  )
 </script>
 
 <style scoped lang="scss">
