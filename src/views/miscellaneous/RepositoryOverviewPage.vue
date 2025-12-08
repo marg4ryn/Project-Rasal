@@ -61,7 +61,17 @@
           <div class="card-header">
             <h3 class="card-title">Commits</h3>
           </div>
-          <TimelineChart :data="commitData" tooltipDesc="Commits" />
+            <TimelineChart 
+              :datasets="[
+                {
+                  label: 'Commits',
+                  data: commitData,
+                  color: ChartColor.Green,
+                  tooltipDesc: 'Commits',
+                  yAxisID: 'left'
+                }
+              ]"
+            />
         </div>
 
         <!-- Churn Diagram Card -->
@@ -85,7 +95,17 @@
           <div class="card-header">
             <h3 class="card-title">Authors</h3>
           </div>
-          <TimelineChart :data="authorsData" tooltipDesc="Commits" />
+            <TimelineChart 
+              :datasets="[
+                {
+                  label: 'Commits',
+                  data: authorsData,
+                  color: ChartColor.Blue,
+                  tooltipDesc: 'Commits',
+                  yAxisID: 'left'
+                }
+              ]"
+            />
         </div>
 
         <!-- Statistics Card -->
@@ -196,8 +216,8 @@
   import { computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
   import { useUserSettingsStore } from '@/stores/userSettingsStore'
-  import { ChartData } from '@/components/visuals/TimelineChart.vue'
   import { ChurnData } from '@/components/visuals/CodeChurnChart.vue'
+  import { ChartColor, ChartDataPoint } from '@/types/timelineChart.js'
 
   import TimelineChart from '@/components/visuals/TimelineChart.vue'
   import CodeChurnChart from '@/components/visuals/CodeChurnChart.vue'
@@ -256,7 +276,7 @@
     })
   }
 
-  const commitData = computed<ChartData[]>(
+  const commitData = computed<ChartDataPoint[]>(
     () =>
       trendsRef.value?.map((item) => ({
         date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
@@ -264,7 +284,7 @@
       })) ?? []
   )
 
-  const authorsData = computed<ChartData[]>(
+  const authorsData = computed<ChartDataPoint[]>(
     () =>
       trendsRef.value?.map((item) => ({
         date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
