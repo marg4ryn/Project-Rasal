@@ -197,7 +197,8 @@
       "analysisTime": "Analysis Time"
     },
     "commitTrends": {
-      "title": "Commit Trends"
+      "title": "Commit Trends",
+      "tooltip": "Commits"
     },
     "codeChanges": {
       "title": "Code Changes"
@@ -209,9 +210,12 @@
       "files": "Files"
     },
     "developerCountTrends": {
-      "title": "Developer Count Trends"
+      "title": "Developer Count Trends",
+      "labelUnique": "Unique Authors",
+      "tooltipUnique": "Unique",
+      "labelActive": "Active Authors",
+      "tooltipActive": "Active"
     },
-
     "analysisStatistics": {
       "title": "Behavioral Analysis",
       "authors": "Authors",

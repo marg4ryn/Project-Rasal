@@ -81,17 +81,19 @@
           <div class="card-header">
             <h3 class="card-title">{{ t('repositoryOverview.commitTrends.title') }}</h3>
           </div>
-            <TimelineChart 
-              v-if="commitData" :datasets="[
-                {
-                  label: 'Commits',
-                  data: commitData,
-                  color: ChartColor.Green,
-                  tooltipDesc: 'Commits',
-                  yAxisID: 'left'
-                }
-              ]"
-            />
+          <TimelineChart
+            v-if="commitData"
+            :showLegend="false"
+            :datasets="[
+              {
+                label: '',
+                data: commitData,
+                color: ChartColor.Blue,
+                tooltipDesc: t('repositoryOverview.commitTrends.tooltip'),
+                yAxisID: 'left',
+              },
+            ]"
+          />
         </div>
 
         <!-- Code Changes Card -->
@@ -141,17 +143,25 @@
           <div class="card-header">
             <h3 class="card-title">{{ t('repositoryOverview.developerCountTrends.title') }}</h3>
           </div>
-            <TimelineChart 
-              v-if="authorsData" :datasets="[
-                {
-                  label: 'Commits',
-                  data: authorsData,
-                  color: ChartColor.Blue,
-                  tooltipDesc: 'Commits',
-                  yAxisID: 'left'
-                }
-              ]"
-            />
+          <TimelineChart
+            v-if="uniqueAuthorsData && activeAuthorsData"
+            :datasets="[
+              {
+                label: t('repositoryOverview.developerCountTrends.labelUnique'),
+                data: uniqueAuthorsData,
+                color: ChartColor.Purple,
+                tooltipDesc: t('repositoryOverview.developerCountTrends.tooltipUnique'),
+                yAxisID: 'left',
+              },
+              {
+                label: t('repositoryOverview.developerCountTrends.labelActive'),
+                data: activeAuthorsData,
+                color: ChartColor.Pink,
+                tooltipDesc: t('repositoryOverview.developerCountTrends.tooltipActive'),
+                yAxisID: 'left',
+              },
+            ]"
+          />
         </div>
 
         <!-- Analysis Statistics Card -->
@@ -370,11 +380,19 @@
       })) ?? null
   )
 
-  const authorsData = computed<ChartDataPoint[] | null>(
+  const uniqueAuthorsData = computed<ChartDataPoint[] | null>(
     () =>
       trendsRef.value?.map((item) => ({
         date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
         value: item.uniqueAuthors,
+      })) ?? null
+  )
+
+  const activeAuthorsData = computed<ChartDataPoint[] | null>(
+    () =>
+      trendsRef.value?.map((item) => ({
+        date: item.date instanceof Date ? item.date.toISOString().slice(0, 10) : item.date,
+        value: item.activeAuthors,
       })) ?? null
   )
 
@@ -462,7 +480,7 @@
     border: 1px solid var(--color-border);
     border-radius: $radius-xl;
     padding: $spacing-xl;
-    min-height: 300px;
+    min-height: 400px;
     max-height: 500px;
     display: flex;
     flex-direction: column;

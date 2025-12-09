@@ -65,7 +65,7 @@
     ChartColor.Orange,
     ChartColor.Red,
     ChartColor.Purple,
-    ChartColor.Pink
+    ChartColor.Pink,
   ]
 
   const CHART_CONFIG = {
@@ -102,7 +102,7 @@
   }
 
   const props = withDefaults(defineProps<Props>(), {
-    showLegend: true
+    showLegend: true,
   })
 
   const log = useLogger('TimelineChart')
@@ -123,8 +123,8 @@
       if (!ctx) return
 
       // Sprawdź czy używamy wielu osi
-      const leftAxisDatasets = props.datasets.filter(d => !d.yAxisID || d.yAxisID === 'left')
-      const rightAxisDatasets = props.datasets.filter(d => d.yAxisID === 'right')
+      const leftAxisDatasets = props.datasets.filter((d) => !d.yAxisID || d.yAxisID === 'left')
+      const rightAxisDatasets = props.datasets.filter((d) => d.yAxisID === 'right')
       const hasMultipleAxes = leftAxisDatasets.length > 0 && rightAxisDatasets.length > 0
 
       // Pobierz kolory osi
@@ -139,8 +139,8 @@
       const y1AxisColor = getAxisColor(rightAxisDatasets, 1)
 
       const chartDatasets = props.datasets.map((dataset, index) => {
-        const sortedData = [...dataset.data].sort((a, b) => 
-          new Date(a.date).getTime() - new Date(b.date).getTime()
+        const sortedData = [...dataset.data].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
         )
 
         // Wybierz kolor
@@ -149,7 +149,7 @@
 
         return {
           label: dataset.label,
-          data: sortedData.map(d => ({ x: d.date, y: d.value })),
+          data: sortedData.map((d) => ({ x: d.date, y: d.value })),
           borderColor: colors.line,
           backgroundColor: colors.fill,
           borderWidth: CHART_CONFIG.lineWidth,
@@ -163,14 +163,14 @@
           pointHoverBackgroundColor: colors.lineHover,
           pointHoverBorderColor: CHART_CONFIG.pointBorder,
           tooltipDesc: dataset.tooltipDesc || dataset.label,
-          yAxisID: dataset.yAxisID === 'right' ? 'y1' : 'y'
+          yAxisID: dataset.yAxisID === 'right' ? 'y1' : 'y',
         }
       })
 
       chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-          datasets: chartDatasets
+          datasets: chartDatasets,
         },
         options: {
           responsive: true,
@@ -196,15 +196,15 @@
                   return date.toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
-                    day: 'numeric'
+                    day: 'numeric',
                   })
                 },
                 label: (context) => {
                   const dataset = context.dataset as any
                   const desc = dataset.tooltipDesc || context.dataset.label
                   return `${desc}: ${context.parsed.y}`
-                }
-              }
+                },
+              },
             },
             legend: {
               display: props.showLegend,
@@ -213,12 +213,12 @@
                 color: CHART_CONFIG.text,
                 padding: 15,
                 font: {
-                  size: 12
+                  size: 12,
                 },
                 usePointStyle: true,
-                pointStyle: 'circle'
-              }
-            }
+                pointStyle: 'circle',
+              },
+            },
           },
           scales: {
             x: {
@@ -227,19 +227,19 @@
                 unit: 'day',
                 displayFormats: {
                   day: 'MMM dd yyyy',
-                  month: 'MMM yyyy'
+                  month: 'MMM yyyy',
                 },
                 parser: 'yyyy-MM-dd',
               },
               grid: {
-                display: false
+                display: false,
               },
               ticks: {
                 color: CHART_CONFIG.text,
                 maxRotation: 0,
                 autoSkip: true,
-                maxTicksLimit: CHART_CONFIG.maxTicksLimit
-              }
+                maxTicksLimit: CHART_CONFIG.maxTicksLimit,
+              },
             },
             y: {
               type: 'linear',
@@ -251,12 +251,13 @@
               },
               ticks: {
                 color: yAxisColor,
-                precision: 0
-              }
+                precision: 0,
+              },
             },
             y1: {
               type: 'linear',
-              display: props.datasets.length >= 2 && props.datasets.some(d => d.yAxisID === 'right'),
+              display:
+                props.datasets.length >= 2 && props.datasets.some((d) => d.yAxisID === 'right'),
               position: 'right',
               beginAtZero: true,
               grid: {
@@ -264,11 +265,11 @@
               },
               ticks: {
                 color: y1AxisColor,
-                precision: 0
-              }
-            }
-          }
-        }
+                precision: 0,
+              },
+            },
+          },
+        },
       })
     } catch (error) {
       log.error('Failed to create chart:', error)

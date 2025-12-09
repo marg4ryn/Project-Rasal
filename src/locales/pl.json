@@ -197,7 +197,8 @@
       "analysisTime": "Czas analizy"
     },
     "commitTrends": {
-      "title": "Trendy zmian"
+      "title": "Trendy zmian",
+      "tooltip": "Commity"
     },
     "codeChanges": {
       "title": "Zmiany w kodzie"
@@ -209,7 +210,11 @@
       "files": "Pliki"
     },
     "developerCountTrends": {
-      "title": "Trendy liczby deweloperów"
+      "title": "Trendy liczby deweloperów",
+      "labelUnique": "Unikalni autorzy",
+      "tooltipUnique": "Unikalni",
+      "labelActive": "Aktywni autorzy",
+      "tooltipActive": "Aktywni"
     },
     "analysisStatistics": {
       "title": "Analiza behawioralna",
