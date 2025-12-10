@@ -23,7 +23,7 @@
   onMounted(async () => {
     try {
       await authStore.fetchCurrentUser()
-      router.back()
+      router.push('/')
     } catch (err) {
       error.value = 'Nie udało się pobrać danych użytkownika'
       console.error('Login callback error:', err)
