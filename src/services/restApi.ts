@@ -13,6 +13,7 @@ import type {
   AuthorCouplingResponse,
   RepositoryResponse,
   AnalysisTrendsResponse,
+  XRayResponse,
 } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
@@ -127,6 +128,11 @@ export const api = {
 
   async fetchAnalysisTrendsDetails(analysisId: string): Promise<AnalysisTrendsResponse> {
     return request<AnalysisTrendsResponse>(`analysis/${analysisId}/trends`)
+  },
+
+  async fetchXRayDetails(analysisId: string, filePath: string): Promise<XRayResponse> {
+    const queryString = buildQueryString({ path: filePath })
+    return request<XRayResponse>(`analysis/${analysisId}/x-ray?${queryString}`)
   },
 
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {

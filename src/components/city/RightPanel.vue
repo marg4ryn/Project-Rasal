@@ -72,7 +72,12 @@
         </div>
 
         <div class="action-buttons">
-          <AppButton :label="$t('rightPanel.xray')" variant="primary" @click="onXRay" />
+          <AppButton
+            :is-loading="isXRayDetailsLoading"
+            :label="$t('rightPanel.xray')"
+            variant="primary"
+            @click="onXRay"
+          />
           <SourceCodeButton @click="onSourceCode" />
         </div>
       </div>
@@ -154,7 +159,7 @@
     metricTypes?: MetricType[]
   }>()
 
-  const { fileDetails, isFileDetailsLoading } = useRestApi()
+  const { fileDetails, xRayDetails, isXRayDetailsLoading, isFileDetailsLoading } = useRestApi()
   const metricsError = ref<string | null>(null)
 
   const currentFileDetails = computed<FileDetails | null>(() => {
@@ -232,7 +237,11 @@
     return node.children?.length || 0
   }
 
-  function onXRay() {}
+  function onXRay() {
+    if (props.selectedItem && props.selectedItem.type === 'file') {
+      xRayDetails(props.selectedItem.path)
+    }
+  }
 
   function onSourceCode() {
     if (props.selectedItem && currentFileDetails.value) {

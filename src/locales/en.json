@@ -14,7 +14,8 @@
     "developers-list": "Developers List",
     "abandoned-code": "Abandoned Code",
     "knowledge-risks": "Knowledge Risks",
-    "developer-relationships": "Relationships"
+    "developer-relationships": "Relationships",
+    "xray-analysis": "X-Ray Analysis"
   },
 
   "appbar": {
@@ -53,6 +54,9 @@
       "start-failed": "Process '{screen}' failed to start: {error}.",
       "cancelled": "Process '{screen}' was cancelled",
       "interrupted": "Analysis {screen} was interrupted by page refresh and will be resumed"
+    },
+    "x-ray": {
+      "completed": "X-Ray analysis for '{filePath}' completed successfully."
     }
   },
 
@@ -386,6 +390,44 @@
       "unknown": "UNKNOWN"
     },
     "dateInfo": "Status as of the end of the analyzed period."
+  },
+
+  "xray": {
+    "fileInfo": "File Information",
+    "authors": "Authors",
+    "codeChanges": "Code Changes",
+    "commitsHistory": "Commits History",
+    "trends": "Complexity Trends",
+    "versionStats": "Version Statistics",
+    "methods": "Methods",
+    "numberOfVersions": "Number of Versions",
+
+    "commits": {
+      "hash": "Hash",
+      "date": "Date",
+      "author": "Author",
+      "changes": "Changes",
+      "added": "Added",
+      "deleted": "Deleted"
+    },
+
+    "versions": {
+      "date": "Date",
+      "lines": "Lines",
+      "complexity": "Complexity",
+      "methods": "Methods",
+      "url": "Link",
+      "open": "Open",
+      "total": "total",
+      "code": "code",
+      "comments": "comments",
+      "blank": "blank"
+    },
+
+    "charts": {
+      "complexityTooltip": "Complexity",
+      "codeLinesTooltip": "Lines"
+    }
   },
 
   "search": {

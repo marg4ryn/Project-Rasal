@@ -1,6 +1,14 @@
 <template>
-  <button :class="['app-button', `app-button--${variant || 'primary'}`]" @click="handleClick">
-    {{ label }}
+  <button
+    :class="[
+      'app-button',
+      `app-button--${variant || 'primary'}`,
+      { 'app-button--loading': isLoading },
+    ]"
+    @click="handleClick"
+    :disabled="isLoading"
+  >
+    {{ isLoading ? $t('common.loading') : label }}
   </button>
 </template>
 
@@ -8,6 +16,7 @@
   defineProps<{
     label: string
     variant?: 'primary' | 'secondary' | 'danger'
+    isLoading?: boolean
   }>()
 
   const emit = defineEmits<{
@@ -20,6 +29,14 @@
 </script>
 
 <style scoped lang="scss">
+  .app-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .app-button--loading {
+    position: relative;
+  }
   .app-button {
     padding: 0.75rem 2rem;
     font-size: 1rem;

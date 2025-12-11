@@ -11,6 +11,7 @@ const LoginSuccess = () => import('@/views/miscellaneous/LoginSuccessPage.vue')
 const AnalysisHistory = () => import('@/views/miscellaneous/AnalysisHistoryPage.vue')
 const RepositoryOverview = () => import('@/views/miscellaneous/RepositoryOverviewPage.vue')
 const DevelopersList = () => import('@/views/miscellaneous/DevelopersListPage.vue')
+const XRayAnalysis = () => import('@/views/miscellaneous/XRayAnalysisPage.vue')
 
 const DeveloperRelationships = () => import('@/views/relationships/DeveloperRelationshipsPage.vue')
 
@@ -106,6 +107,16 @@ export default function (): Router {
         showAppBar: true,
       },
       component: DevelopersList,
+    },
+    {
+      path: '/xray-analysis',
+      name: 'xray-analysis',
+      meta: {
+        titleKey: 'title.xray-analysis',
+        showNavBar: true,
+        showAppBar: true,
+      },
+      component: XRayAnalysis,
     },
 
     {

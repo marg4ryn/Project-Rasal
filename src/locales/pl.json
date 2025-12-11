@@ -14,7 +14,8 @@
     "developers-list": "Lista deweloperów",
     "abandoned-code": "Martwy kod",
     "knowledge-risks": "Rozproszenie wiedzy",
-    "developer-relationships": "Powiązania deweloperów"
+    "developer-relationships": "Powiązania deweloperów",
+    "xray-analysis": "Analiza X-Ray"
   },
 
   "appbar": {
@@ -53,6 +54,9 @@
       "start-failed": "Nie udało się rozpocząć procesu '{screen}': {error}.",
       "cancelled": "Proces '{screen}' został anulowany",
       "interrupted": "Analiza {screen} została przerwana przez odświeżenie strony i zostanie wznowiona"
+    },
+    "x-ray": {
+      "completed": "Analiza X-Ray dla '{filePath}' zakończyła się pomyślnie."
     }
   },
 
@@ -385,6 +389,44 @@
       "unknown": "NIEZNANY"
     },
     "dateInfo": "Stan na dzień kończący analizowany okres."
+  },
+
+  "xray": {
+    "fileInfo": "Informacje o pliku",
+    "authors": "Autorzy",
+    "codeChanges": "Zmiany w kodzie",
+    "commitsHistory": "Historia commitów",
+    "trends": "Trendy złożoności",
+    "versionStats": "Statystyki wersji",
+    "methods": "Metody",
+    "numberOfVersions": "Liczba wersji pliku",
+
+    "commits": {
+      "hash": "Hash",
+      "date": "Data",
+      "author": "Autor",
+      "changes": "Zmiany",
+      "added": "Dodane",
+      "deleted": "Usunięte"
+    },
+
+    "versions": {
+      "date": "Data",
+      "lines": "Linie",
+      "complexity": "Złożoność",
+      "methods": "Metody",
+      "url": "Link",
+      "open": "Otwórz",
+      "total": "łącznie",
+      "code": "kod",
+      "comments": "komentarze",
+      "blank": "puste"
+    },
+
+    "charts": {
+      "complexityTooltip": "Złożoność",
+      "codeLinesTooltip": "Linie"
+    }
   },
 
   "search": {

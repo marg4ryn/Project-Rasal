@@ -1,14 +1,19 @@
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useRestApiStore } from '@/stores/restApiStore'
 import { api } from '@/services/restApi'
 import { ApiError } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 import { useI18n } from 'vue-i18n'
 import { useConnectionStore } from '@/stores/sseConnectorStore'
+import { useNotificationsStore } from '@/stores/notificationsStore'
 
 export function useRestApi() {
   const store = useRestApiStore()
   const connectionStore = useConnectionStore()
+  const notificationsStore = useNotificationsStore()
+  const router = useRouter()
+
   const log = useLogger('useApi')
   const { t } = useI18n()
 
@@ -318,13 +323,48 @@ export function useRestApi() {
     return computed(() => store.analysisTrendsDetails)
   }
 
+  function xRayDetails(filePath: string) {
+    if (store.hasXRayDetails(filePath)) {
+      log.info(`Returning cached X-Ray details for: ${filePath}`)
+      router.push({
+        path: '/xray-analysis',
+        query: { filePath: filePath },
+      })
+      return computed(() => store.getXRayDetails(filePath))
+    }
+
+    const analysisId = getAnalysisId()
+    if (analysisId) {
+      handleFetch(
+        async () => {
+          const data = await api.fetchXRayDetails(analysisId, filePath)
+          store.setXRayDetails(filePath, data)
+
+          notificationsStore.addNotification({
+            message: t('notifications.x-ray.completed', {
+              filePath: t(data.filePath),
+            }),
+            type: 'success',
+            screenRoute: '/xray-analysis?filePath=' + data.filePath,
+          })
+        },
+        'xRayDetails',
+        `X-Ray details fetched for: ${filePath}`
+      )
+    }
+
+    return computed(() => store.getXRayDetails(filePath))
+  }
+
   const loadingValue = computed(() => store.loading)
 
   const isFileDetailsLoading = computed(() => Boolean(loadingValue.value['fileDetails']))
 
+  const isXRayDetailsLoading = computed(() => Boolean(loadingValue.value['xRayDetails']))
+
   const isGeneralLoading = computed(() =>
     Object.entries(loadingValue.value)
-      .filter(([key]) => key !== 'fileDetails')
+      .filter(([key]) => key !== 'fileDetails' && key !== 'xRayDetails')
       .some(([, v]) => v)
   )
 
@@ -342,8 +382,10 @@ export function useRestApi() {
     authorCouplingDetails,
     repositoryDetails,
     analysisTrendsDetails,
+    xRayDetails,
 
     isFileDetailsLoading,
+    isXRayDetailsLoading,
     isGeneralLoading,
     errors: computed(() => store.errors),
 

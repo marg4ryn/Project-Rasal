@@ -177,6 +177,36 @@ export interface AnalysisTrendsDetails {
   linesDeleted: number
 }
 
+export interface Commit {
+  hash: string
+  date: string
+  author: string
+  linesAdded: number
+  linesDeleted: number
+}
+
+export interface VersionStatistics {
+  date: string
+  url: string
+  totalLines: number
+  codeLines: number
+  commentLines: number
+  blankLines: number
+  complexity: number
+  methods: number
+}
+
+export interface XRayDetails {
+  analysisId: string
+  filePath: string
+  analysisStartedAt: string
+  analysisFinishedAt: string
+  analysisTimeInSeconds: number
+  commits: Commit[]
+  versionsStatistics: VersionStatistics[]
+  versions: number
+}
+
 export type ItemsListResponse = ItemsListItem[]
 export type FileDetailsResponse = FileDetails
 export type HotspotsResponse = HotspotsDetails
@@ -189,3 +219,4 @@ export type FilesExtensionsResponse = FilesExtensionsDetails
 export type AuthorCouplingResponse = AuthorData
 export type RepositoryResponse = RepositoryDetails
 export type AnalysisTrendsResponse = AnalysisTrendsDetails[]
+export type XRayResponse = XRayDetails

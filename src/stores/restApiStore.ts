@@ -15,6 +15,7 @@ import {
   type AuthorCouplingResponse,
   type RepositoryResponse,
   type AnalysisTrendsResponse,
+  type XRayResponse,
 } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
@@ -70,6 +71,7 @@ export const useRestApiStore = defineStore('api', () => {
   const authorCouplingDetails = ref<AuthorCouplingResponse | null>(null)
   const repositoryDetails = ref<RepositoryResponse | null>(null)
   const analysisTrendsDetails = ref<AnalysisTrendsResponse | null>(null)
+  const xRayDetails = ref<Record<string, XRayResponse>>({})
   const loading = ref<Record<string, boolean>>({})
   const errors = ref<Record<string, string | null>>({})
 
@@ -89,6 +91,7 @@ export const useRestApiStore = defineStore('api', () => {
         cachedAuthorCoupling,
         cachedRepositoryDetails,
         cachedAnalysisTrendsDetails,
+        cachedXRayDetailsList,
       ] = await Promise.all([
         getCacheItem<CityNode>('structure'),
         getCacheItem<Array<[string, ItemsListItem]>>('itemsMap'),
@@ -103,6 +106,7 @@ export const useRestApiStore = defineStore('api', () => {
         getCacheItem<AuthorCouplingResponse>('authorCoupling'),
         getCacheItem<RepositoryResponse>('repositoryDetails'),
         getCacheItem<AnalysisTrendsResponse>('analysisTrendsDetails'),
+        getCacheItem<XRayResponse[]>('xRayDetailsList'),
       ])
 
       structure.value = cachedStructure
@@ -127,6 +131,15 @@ export const useRestApiStore = defineStore('api', () => {
       authorCouplingDetails.value = cachedAuthorCoupling
       repositoryDetails.value = cachedRepositoryDetails
       analysisTrendsDetails.value = cachedAnalysisTrendsDetails
+
+      if (cachedXRayDetailsList) {
+        xRayDetails.value = {}
+        for (const detail of cachedXRayDetailsList) {
+          if (detail.filePath) {
+            xRayDetails.value[detail.filePath] = detail
+          }
+        }
+      }
 
       log.info('Data loaded from Cache API')
     } catch (error) {
@@ -261,6 +274,19 @@ export const useRestApiStore = defineStore('api', () => {
     { deep: true }
   )
 
+  watch(
+    xRayDetails,
+    (value) => {
+      const detailsList = Object.values(value)
+      if (detailsList.length > 0) {
+        setCacheItem('xRayDetailsList', detailsList)
+      } else {
+        deleteCacheItem('xRayDetailsList')
+      }
+    },
+    { deep: true }
+  )
+
   function setStructure(data: CityNode) {
     structure.value = data
   }
@@ -283,6 +309,10 @@ export const useRestApiStore = defineStore('api', () => {
 
   function setFileDetails(path: string, data: FileDetailsResponse) {
     fileDetails.value[path] = data
+  }
+
+  function setXRayDetails(path: string, data: XRayResponse) {
+    xRayDetails.value[path] = data
   }
 
   function setHotspotsDetails(data: HotspotsResponse) {
@@ -341,6 +371,10 @@ export const useRestApiStore = defineStore('api', () => {
     return fileDetails.value[path]
   }
 
+  function getXRayDetails(path: string): XRayResponse | undefined {
+    return xRayDetails.value[path]
+  }
+
   function getKnowledgeLossDetails(): KnowledgeLossResponse | null {
     return knowledgeLossDetails.value
   }
@@ -373,6 +407,10 @@ export const useRestApiStore = defineStore('api', () => {
     return path in fileDetails.value
   }
 
+  function hasXRayDetails(path: string): boolean {
+    return path in xRayDetails.value
+  }
+
   function setLoading(key: string, value: boolean) {
     loading.value[key] = value
   }
@@ -398,6 +436,7 @@ export const useRestApiStore = defineStore('api', () => {
     authorCouplingDetails.value = null
     repositoryDetails.value = null
     analysisTrendsDetails.value = null
+    xRayDetails.value = {}
     loading.value = {}
     errors.value = {}
 
@@ -426,6 +465,7 @@ export const useRestApiStore = defineStore('api', () => {
     authorCouplingDetails,
     repositoryDetails,
     analysisTrendsDetails,
+    xRayDetails,
     loading,
     errors,
 
@@ -443,6 +483,7 @@ export const useRestApiStore = defineStore('api', () => {
     setAuthorCouplingDetails,
     setRepositoryDetails,
     setAnalysisTrendsDetails,
+    setXRayDetails,
 
     // Getters
     getItemByPath,
@@ -452,6 +493,7 @@ export const useRestApiStore = defineStore('api', () => {
     getCodeAgeDetails,
     getFileCouplingDetails,
     getFileDetails,
+    hasFileDetails,
     getKnowledgeLossDetails,
     getAuthorsStatisticsDetails,
     getLeadAuthorsDetails,
@@ -459,7 +501,8 @@ export const useRestApiStore = defineStore('api', () => {
     getAuthorCouplingDetails,
     getRepositoryDetails,
     getAnalysisTrendsDetails,
-    hasFileDetails,
+    getXRayDetails,
+    hasXRayDetails,
 
     // State management
     setLoading,
