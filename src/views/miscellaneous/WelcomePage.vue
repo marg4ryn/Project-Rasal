@@ -271,16 +271,20 @@
     if (showDateInputs.value) {
       newAnalysisStore.setFromDate(fromDate.value)
       newAnalysisStore.setToDate(toDate.value)
+      start({
+        repositoryUrl: link.value.trim(),
+        startDate: fromDate.value,
+        endDate: toDate.value,
+      })
     } else {
       newAnalysisStore.setFromDate('')
       newAnalysisStore.setToDate('')
+      start({
+        repositoryUrl: link.value.trim(),
+        startDate: newAnalysisStore.fromDate.value,
+        endDate: newAnalysisStore.toDate.value,
+      })
     }
-
-    start({
-      repositoryUrl: link.value.trim(),
-      startDate: newAnalysisStore.fromDate.value,
-      endDate: newAnalysisStore.toDate.value,
-    })
   }
 
   watch(isCompleted, async (newValue) => {
