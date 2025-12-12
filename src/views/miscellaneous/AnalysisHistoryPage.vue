@@ -181,6 +181,13 @@
     const analysis = connectionStore.analyses.get('download-repository')
     if (analysis?.result?.data) {
       analysis.result.data = analysisId
+    } else {
+      connectionStore.analyses.set('download-repository', {
+        analysisId: 'download-repository',
+        result: { data: analysisId, timestamp: Date.now().toString() },
+        screenRoute: '/repository-overview',
+        state: "completed"
+      })
     }
     restApiStore.clearAll()
     router.push('/repository-overview')
