@@ -1,13 +1,12 @@
-# HotSpotter - Frontend Dashboard
+# Project Rasal - Frontend
 
-![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
+![Vue.js](https://img.shields.io/badge/Vue.js-46ba86?style=for-the-badge&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![SCSS](https://img.shields.io/badge/SCSS-d0689d?style=for-the-badge&logo=sass&logoColor=white)
 ![Three.js](https://img.shields.io/badge/Three.js-black?style=for-the-badge&logo=three.js&logoColor=white)
-
-> **Interactive visualization layer for the HotSpotter behavioral analysis system.**
-
-This repository contains the **Frontend** source code for HotSpotter. It provides a rich, interactive interface for exploring code repositories through 3D visualizations ("Code City") and detailed analytical dashboards.
+![D3.js](https://img.shields.io/badge/D3.js-orange?style=for-the-badge&logo=D3&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Chart.js-white?style=for-the-badge&logo=chart.js&logoColor=red)
+![Vite](https://img.shields.io/badge/Vite-8f74fe?style=for-the-badge&logo=vite&logoColor=white)
 
 🔗 **Backend Repository:** [https://github.com/SosnowskiMichal/HotSpotter.git](https://github.com/SosnowskiMichal/HotSpotter.git)
 
@@ -15,16 +14,11 @@ This repository contains the **Frontend** source code for HotSpotter. It provide
 
 ## 📖 About the Project
 
-**HotSpotter Frontend** transforms raw analytical data provided by the backend into intuitive visual formats. It helps developers and managers understand the dynamics of software evolution by combining structural metrics with historical data from Git.
+**Project Rasal Frontend** transforms raw analytical data provided by the backend into intuitive visual formats. It helps developers and managers understand the dynamics of software evolution by combining structural metrics with historical data from Git.
 
-**Key Visualizations:**
+The central element of the application interface is a fully interactive 3D visualization of a repository in the form of a “code city.” In this model, each file is represented as a building, where the height reflects the number of changes and the width corresponds to the file size measured in lines of code. This representation allows users to intuitively understand the structure of the analyzed repository. In a single view, it is possible to trace the directory hierarchy, identify dominant “skyscrapers” indicating areas most prone to changes, and notice wide, massive buildings representing files that have been developed over a long period of time.
 
-* **3D Code City:** An interactive model where buildings represent files.
-    * **Height:** Number of changes (frequency).
-    * **Width:** Code size (LOC).
-    * **Color:** Heatmap of complexity or recent activity.
-* **Hotspot Dashboard:** Charts and tables identifying high-risk files and technical debt.
-* **Team Dynamics:** Visualization of the "Bus Factor" and knowledge distribution across the team.
+Different screens of the tool present the “code city” in various visual variants, enabling repository analysis from multiple perspectives and highlighting different aspects of its structure. For example, the “hotspots” view (Figure) identifies areas with the highest risk of technical debt.
 
 ---
 
@@ -36,41 +30,26 @@ This repository contains the **Frontend** source code for HotSpotter. It provide
 
 ---
 
-## 🛠️ Tech Stack
-
-The application is built using modern web technologies focusing on performance and interactivity.
-
-* **Framework:** Vue.js 3
-* **Build Tool:** Vite
-* **Language:** TypeScript
-* **Styling:** SCSS
-* **3D Visualization:** Three.js
-* **2D Charts & Graphs:** D3.js
-* **State Management:** Pinia
-* **Communication:** Axios
-
----
-
 ## 📂 Project Structure
 
 Here's an overview of the project's directory structure:
 
--   **`components/`**: Reusable Vue components.
+-   **`components/`**: Reusable Vue components
     -   `city/`: Components for building city pages
     -   `common/`: Small, versatile UI components
     -   `modals`: Dialog boxes and popups
     -   `sections`: Larger parts of the interface
     -   `settings`: Settings page components
     -   `visuals`: Graphic elements
--   **`composables/`**: Composables logic.
--   **`locales/`**: Stores translation files for different languages.
--   **`mocks/`**: API and data mocks.
--   **`router/`**: Vue Router configuration.
--   **`services/`**: Files containing business logic and communication with external APIs.
--   **`stores/`**: Pinia modules for global state management.
--   **`styles/`**: SCSS files.
--   **`types/`**: Custom TypeScript types.
--   **`views/`**: Components representing entire pages/views of the application.
+-   **`composables/`**: Composables logic
+-   **`locales/`**: Stores translation files for different languages
+-   **`router/`**: Vue Router configuration
+-   **`services/`**: Files containing business logic and communication with external APIs
+-   **`stores/`**: Pinia modules for global state management
+-   **`styles/`**: SCSS files
+-   **`types/`**: Custom TypeScript types
+-   **`utils/`**: Useful functions and constants
+-   **`views/`**: Components representing entire pages/views of the application
 
 ---
 
@@ -84,8 +63,8 @@ Here's an overview of the project's directory structure:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/marg4ryn/HotSpotter.git
-    cd HotSpotter
+    git clone https://github.com/marg4ryn/Project-Rasal.git
+    cd Project-Rasal
     ```
 
 2.  **Install dependencies:**
@@ -136,22 +115,3 @@ The application is configured via `.env` file.
 | `VITE_API_TIMEOUT` | Request timeout in milliseconds. |
 
 ---
-
-## 👥 Project Team
-
-This project was developed as an Engineering Thesis.
-
-**Developers:**
-
-* **Wiktor Piekarski** – *Frontend*
-* **Jan Powęski** – *Frontend*
-* **Michał Sosnowski** – *Backend*
-* **Michał Wąsiński** – *Backend & DevOps*
-
-**Supervisor:**
-
-* **dr inż. Michał Szczepanik**
-
------
-
-© 2025 HotSpotter Team
