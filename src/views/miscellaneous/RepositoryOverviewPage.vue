@@ -327,12 +327,11 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { useRestApi } from '@/composables/useRestApi'
-  import { useUserSettingsStore } from '@/stores/userSettingsStore'
   import { ChurnData } from '@/components/visuals/CodeChurnChart.vue'
   import { ChartColor, ChartDataPoint } from '@/types/timelineChart.js'
   import { useI18n } from 'vue-i18n'
   import type { AuthorsStatisticsDetails } from '@/types'
-  import { getUserLanguage } from '@/plugins/i18n'
+  import { useDateFormatter } from '@/composables/useDateFormatter'
 
   import TimelineChart from '@/components/visuals/TimelineChart.vue'
   import CodeChurnChart from '@/components/visuals/CodeChurnChart.vue'
@@ -340,6 +339,7 @@
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
   const { t } = useI18n()
+  const {formatDate, formatDateTime} = useDateFormatter()
   const { repositoryDetails, authorsStatisticsDetails, analysisTrendsDetails, isGeneralLoading } =
     useRestApi()
 
@@ -430,30 +430,6 @@
       linesDeleted: existing.linesDeleted + incoming.linesDeleted,
     }))
   })
-
-  const formatDate = (date: Date | string): string => {
-    let lang = getUserLanguage()
-
-    return new Date(date).toLocaleDateString(lang, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  }
-
-  const formatDateTime = (date: Date | string): string => {
-    let lang = getUserLanguage()
-
-    return new Date(date).toLocaleString(lang, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    })
-  }
 
   function mergeSameDayData<T extends Record<string, any>>(
     data: T[],

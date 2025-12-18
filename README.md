@@ -1,4 +1,4 @@
-# Project Rasal - Frontend
+# Quasar - Frontend
 
 ![Vue.js](https://img.shields.io/badge/Vue.js-46ba86?style=for-the-badge&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -14,11 +14,11 @@
 
 ## 📖 About the Project
 
-**Project Rasal Frontend** transforms raw analytical data provided by the backend into intuitive visual formats. It helps developers and managers understand the dynamics of software evolution by combining structural metrics with historical data from Git.
+**Quasar** helps developers and managers understand the dynamics of software evolution by combining structural metrics with historical data from Git.
 
 The central element of the application interface is a fully interactive 3D visualization of a repository in the form of a “code city.” In this model, each file is represented as a building, where the height reflects the number of changes and the width corresponds to the file size measured in lines of code. This representation allows users to intuitively understand the structure of the analyzed repository. In a single view, it is possible to trace the directory hierarchy, identify dominant “skyscrapers” indicating areas most prone to changes, and notice wide, massive buildings representing files that have been developed over a long period of time.
 
-Different screens of the tool present the “code city” in various visual variants, enabling repository analysis from multiple perspectives and highlighting different aspects of its structure. For example, the “hotspots” view (Figure) identifies areas with the highest risk of technical debt.
+Different screens of the tool present the “code city” in various visual variants, enabling repository analysis from multiple perspectives and highlighting different aspects of its structure. For example, the “hotspots” view (figure below) identifies areas with the highest risk of technical debt.
 
 ---
 
@@ -26,7 +26,7 @@ Different screens of the tool present the “code city” in various visual vari
 
 | 3D Code City Model |
 |:---:|
-| ![Code City](./docs/images/city.png) |
+| ![Code City](./docs/city.png) |
 
 ---
 
@@ -64,7 +64,7 @@ Here's an overview of the project's directory structure:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/marg4ryn/Project-Rasal.git
+    git clone https://github.com/marg4ryn/Quasar.git
     cd Project-Rasal
     ```
 
