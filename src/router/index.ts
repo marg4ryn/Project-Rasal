@@ -234,7 +234,7 @@ export default function (): Router {
   router.afterEach((to) => {
     const { t } = i18n.global
 
-    const baseTitle = 'HotSpotter'
+    const baseTitle = 'Quasar'
     const titleKey = to.meta.titleKey as string | undefined
 
     if (titleKey) {
