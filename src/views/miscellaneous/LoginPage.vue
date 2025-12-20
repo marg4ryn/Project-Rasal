@@ -52,7 +52,12 @@
         <span>{{ t('auth.or') }}</span>
       </div>
 
-      <button @click="(event) => handleGoogleLogin(event)" type="button" class="google-btn" :disabled="loading">
+      <button
+        @click="(event) => handleGoogleLogin(event)"
+        type="button"
+        class="google-btn"
+        :disabled="loading"
+      >
         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
@@ -92,7 +97,6 @@
   import { useI18n } from 'vue-i18n'
   import AppButton from '@/components/common/AppButton.vue'
   import AppButtonClose from '@/components/common/AppButtonClose.vue'
-  import { api } from '@/services/restApi'
 
   const { t } = useI18n()
 
