@@ -22,7 +22,7 @@
 
     <RouterLink
       to="/settings"
-      class="settings-btn"
+      class="icon-btn"
       :title="t('appbar.settings')"
       :aria-label="t('appbar.settings')"
     >
@@ -133,34 +133,12 @@
     position: relative;
   }
 
-  .settings-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 8px;
-    color: var(--color-text-primary);
-    object-fit: contain;
-    transition:
-      color 0.25s ease,
-      transform 0.2s ease;
-
-    &:hover {
-      color: var(--color-primary);
-      transform: scale(1.2);
-    }
-
-    &.router-link-exact-active {
-      color: var(--color-primary);
-      transform: scale(1);
-    }
-  }
-
   .icon-btn {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 10px;
+    margin-top: 2px;
+    padding: 8px 10px;
     border-radius: 8px;
     color: var(--color-text-primary);
     object-fit: contain;

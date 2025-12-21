@@ -153,7 +153,7 @@
   import { useI18n } from 'vue-i18n'
   import { AuthorsStatisticsDetails } from '@/types'
   import { useRestApi } from '@/composables/useRestApi'
-  import { formatDate, formatDaysSince, formatDaysOnly } from '@/utils/dateFormatter'
+  import { formatDate, formatDaysSince, formatDaysOnly } from '@/utils/common/dateFormatter'
 
   import TabNavigation from '@/components/city/TabNavigation.vue'
   import LoadingBar from '@/components/sections/LoadingBar.vue'

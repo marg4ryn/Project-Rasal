@@ -584,7 +584,7 @@
       transition:
         transform 0.2s ease,
         opacity 0.2s ease;
-      background-color: #ffffff;
+      background-color: white;
       padding: 4px;
       border-radius: 4px;
 
@@ -605,7 +605,7 @@
       padding: 1rem;
       background: var(--color-bg-secondary);
       border-radius: 0.5rem;
-      border: 2px solid #8b5cf6;
+      border: 1px solid #8b5cf6;
       font-size: 1rem;
       color: var(--color-text-secondary);
       text-align: center;
