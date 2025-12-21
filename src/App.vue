@@ -76,6 +76,7 @@
     position: relative;
     z-index: 1;
     min-width: 0;
+    min-height: 100vh;
   }
 
   .toast-container {

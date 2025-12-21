@@ -1,16 +1,16 @@
 <template>
   <AppButtonClose />
   <section class="about">
-    <div class="header">
-      <h2 class="project-name">
-        <img src="/logo.svg" class="logo" />
+    <div class="about-header">
+      <h2 class="about-header-title">
+        <img src="/logo.svg" class="about-header-logo" />
         <span>uasar</span>
       </h2>
     </div>
 
-    <div class="content">
-      <div class="f">
-        <h3 class="title">
+    <div class="about-content">
+      <div class="about-section">
+        <h3 class="about-section-title">
           <svg
             width="36"
             height="36"
@@ -27,11 +27,11 @@
           </svg>
           {{ t('about.description.title1') }}
         </h3>
-        <p class="text">{{ t('about.description.p1') }}</p>
+        <p class="about-section-text">{{ t('about.description.p1') }}</p>
       </div>
 
-      <div class="about__section about__section--intro">
-        <h3 class="about__section-title">
+      <div class="about-section">
+        <h3 class="about-section-title">
           <svg
             width="36"
             height="36"
@@ -51,11 +51,11 @@
           </svg>
           {{ t('about.description.title2') }}
         </h3>
-        <p class="about__text">{{ t('about.description.p2') }}</p>
+        <p class="about-section-text">{{ t('about.description.p2') }}</p>
       </div>
 
-      <div class="about__section about__section--intro">
-        <h3 class="about__section-title">
+      <div class="about-section">
+        <h3 class="about-section-title">
           <svg
             width="36"
             height="36"
@@ -89,11 +89,11 @@
           </svg>
           {{ t('about.description.title3') }}
         </h3>
-        <p class="about__text">{{ t('about.description.p3') }}</p>
+        <p class="about-section-text">{{ t('about.description.p3') }}</p>
       </div>
 
-      <div class="about__section about__section--intro">
-        <h3 class="about__section-title">
+      <div class="about-section">
+        <h3 class="about-section-title">
           <svg
             width="36"
             height="36"
@@ -122,11 +122,11 @@
           </svg>
           {{ t('about.description.title4') }}
         </h3>
-        <p class="about__text">{{ t('about.description.p4') }}</p>
+        <p class="about-section-text">{{ t('about.description.p4') }}</p>
       </div>
 
-      <div class="about__section about__section--intro">
-        <h3 class="about__section-title">
+      <div class="about-section">
+        <h3 class="about-section-title">
           <svg
             width="36"
             height="36"
@@ -150,12 +150,22 @@
           </svg>
           {{ t('about.description.title5') }}
         </h3>
-        <p class="about__text">{{ t('about.description.p5') }}</p>
+        <p class="about-section-text">{{ t('about.description.p5') }}</p>
       </div>
 
-      <div class="about__section">
-        <h3 class="about__section-title">
-          <svg class="about__icon2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <div class="about-section">
+        <h3 class="about-section-title">
+          <svg
+            :style="{
+              width: '28px',
+              height: '28px',
+              color: '#22c55e',
+              flexShrink: 0,
+            }"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -165,30 +175,154 @@
           </svg>
           {{ t('about.technologies.title') }}
         </h3>
-        <ul class="about__list about__list--tech">
-          <li class="about__list-item about__list-item--tech">
+        <ul class="about-section-list about-section-list--tech">
+          <li class="about-section-list__item about-section-list__item--tech">
             <span class="about__tech-label">{{ t('about.technologies.frontendLabel') }}:</span>
-            {{ t('about.technologies.frontend') }}
+            <div class="tech-logos">
+              <a
+                href="https://www.typescriptlang.org/docs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"
+                  alt="TypeScript"
+                  class="tech-logo"
+                />
+              </a>
+              <a
+                href="https://vuejs.org/guide/introduction.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg"
+                  alt="Vue.js"
+                  class="tech-logo"
+                />
+              </a>
+              <a
+                href="https://sass-lang.com/documentation/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg"
+                  alt="SCSS"
+                  class="tech-logo"
+                />
+              </a>
+            </div>
           </li>
-          <li class="about__list-item about__list-item--tech">
+          <li class="about-section-list__item about-section-list__item--tech">
             <span class="about__tech-label"
               >{{ t('about.technologies.visualizationsLabel') }}:</span
             >
-            {{ t('about.technologies.visualizations') }}
+            <div class="tech-logos">
+              <a
+                href="https://threejs.org/docs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/threejs/threejs-original.svg"
+                  alt="Three.js"
+                  class="tech-logo"
+                />
+              </a>
+              <a
+                href="https://d3js.org/getting-started"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/d3js/d3js-original.svg"
+                  alt="D3.js"
+                  class="tech-logo"
+                />
+              </a>
+              <a
+                href="https://www.chartjs.org/docs/latest/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://www.chartjs.org/media/logo-title.svg"
+                  alt="Chart.js"
+                  class="tech-logo"
+                />
+              </a>
+            </div>
           </li>
-          <li class="about__list-item about__list-item--tech">
+          <li class="about-section-list__item about-section-list__item--tech">
             <span class="about__tech-label">{{ t('about.technologies.backendLabel') }}:</span>
-            {{ t('about.technologies.backend') }}
+            <div class="tech-logos">
+              <a
+                href="https://docs.oracle.com/en/java/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg"
+                  alt="Java"
+                  class="tech-logo"
+                />
+              </a>
+              <a
+                href="https://spring.io/projects/spring-boot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg"
+                  alt="Spring Boot"
+                  class="tech-logo"
+                />
+              </a>
+              <a
+                href="https://www.mongodb.com/docs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg"
+                  alt="MongoDB"
+                  class="tech-logo"
+                />
+              </a>
+            </div>
           </li>
-          <li class="about__list-item about__list-item--tech">
+          <li class="about-section-list__item about-section-list__item--tech">
             <span class="about__tech-label">{{ t('about.technologies.analysisLabel') }}:</span>
-            {{ t('about.technologies.analysis') }}
+            <div class="tech-logos">
+              <a
+                href="https://git-scm.com/doc"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tech-logo-link"
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"
+                  alt="Git"
+                  class="tech-logo"
+                />
+              </a>
+            </div>
           </li>
         </ul>
       </div>
 
-      <div class="about__section about__section--team">
-        <h3 class="about__section-title">
+      <div class="about-section">
+        <h3 class="about-section-title">
           <svg
             width="36"
             height="36"
@@ -220,11 +354,11 @@
           <span class="about__supervisor-label">{{ t('about.team.supervisorLabel') }}:</span>
           {{ t('about.team.supervisorDegree') }} {{ supervisor }}
         </p>
-        <ul class="about__list about__list--team">
+        <ul class="about-section-list about-section-list--team">
           <li
             v-for="(member, index) in teamMembers"
             :key="index"
-            class="about__list-item about__list-item--member"
+            class="about-section-list__item about-section-list__item--member"
           >
             <a
               :href="member.link"
@@ -284,25 +418,12 @@
     margin: 0 auto;
     animation: fadeInUp 0.6s ease-out;
 
-    .header {
+    &-header {
       text-align: center;
-      margin-bottom: $spacing-3xl;
-      padding-bottom: $spacing-2xl;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
       border-bottom: 2px solid var(--color-border);
       position: relative;
-
-      .project-name {
-        font-size: $font-size-3xl;
-        font-weight: $font-weight-semibold;
-        color: var(--color-text-secondary);
-        margin: 0;
-        letter-spacing: 0.5px;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-
-        .logo {
-          width: 32px;
-        }
-      }
 
       &::after {
         content: '';
@@ -314,191 +435,184 @@
         height: 2px;
         background: linear-gradient(90deg, transparent, #fd98eb, transparent);
       }
+
+      &-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        margin: 0;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      &-logo {
+        width: 32px;
+        margin-right: 2px;
+      }
     }
 
-    .content {
+    &-content {
       display: flex;
       flex-direction: column;
-      gap: $spacing-3xl;
+      gap: 1.5rem;
+    }
 
-      .f {
+    &-section {
+      background: var(--color-bg-primary);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--color-border);
+      transition: all 0.3s ease;
+
+      &-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin: 0 0 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      &-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--color-text-secondary);
+        margin: 0 0 1rem;
+        text-align: justify;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
         display: flex;
         flex-direction: column;
-        background: var(--color-bg-primary);
-        padding: $spacing-2xl;
-        border-radius: $radius-lg;
-        border: 1px solid var(--color-border);
-        transition: all $transition-base;
+        gap: 0.75rem;
 
-        .title {
-          font-size: $font-size-2xl;
-          font-weight: $font-weight-semibold;
-          color: var(--color-text-primary);
-          margin: 0 0 $spacing-xl;
-          display: flex;
-          align-items: center;
-          gap: $spacing-md;
+        &--tech {
+          gap: 1rem;
         }
 
-        .text {
-          font-size: $font-size-base;
-          line-height: $line-height-relaxed;
-          color: var(--color-text-secondary);
-          margin: 0 0 $spacing-lg;
-          text-align: justify;
+        &--team {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
 
-          &:last-child {
-            margin-bottom: 0;
+          @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        &__item {
+          font-size: 1rem;
+          color: var(--color-text-secondary);
+          line-height: 1.5;
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          display: flex;
+          align-items: stretch;
+
+          &--tech {
+            padding: 0.75rem;
+            background: var(--color-bg-secondary);
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--color-success);
+            transition: all 0.2s ease;
+          }
+
+          &--member {
+            background: var(--color-bg-secondary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-border);
+            transition: all 0.2s ease;
+            align-items: center;
+
+            &:hover {
+              border-color: #8b5cf6;
+              box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+              transform: scale(1.02);
+            }
           }
         }
       }
     }
 
-    &__section {
-      background: var(--color-bg-primary);
-      padding: $spacing-2xl;
-      border-radius: $radius-lg;
-      border: 1px solid var(--color-border);
-      transition: all $transition-base;
-      text-align: justify;
-    }
-
-    &__section-title {
-      font-size: $font-size-2xl;
-      font-weight: $font-weight-semibold;
-      color: var(--color-text-primary);
-      margin: 0 0 $spacing-xl;
+    &__member-link {
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
-      gap: $spacing-md;
-    }
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
 
-    &__icon2 {
-      width: 28px;
-      height: 28px;
-      color: $color-success;
-      flex-shrink: 0;
-    }
-
-    &__text {
-      font-size: $font-size-base;
-      line-height: $line-height-relaxed;
-      color: var(--color-text-secondary);
-      margin: 0 0 $spacing-lg;
-
-      &:last-child {
-        margin-bottom: 0;
+      &:focus-visible {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
       }
-    }
-
-    &__list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-md;
-
-      &--tech {
-        gap: $spacing-lg;
-      }
-
-      &--team {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: $spacing-lg;
-      }
-    }
-
-    &__list-item {
-      font-size: $font-size-base;
-      color: var(--color-text-secondary);
-      line-height: $line-height-normal;
-      display: flex;
-      align-items: flex-start;
-      gap: $spacing-md;
-      padding: $spacing-sm 0;
-
-      &--tech {
-        padding: $spacing-md;
-        background: var(--color-bg-secondary);
-        border-radius: $radius-md;
-        border-left: 3px solid $color-success;
-        transition: all $transition-fast;
-      }
-
-      &--member {
-        padding: $spacing-md;
-        background: var(--color-bg-secondary);
-        border-radius: $radius-md;
-        border: 1px solid var(--color-border);
-        transition: all $transition-fast;
-        align-items: center;
-
-        .about__member-link {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-
-          text-decoration: none;
-          color: inherit;
-
-          padding: 8px 12px;
-          border-radius: 8px;
-
-          transition:
-            background-color 0.2s ease,
-            transform 0.2s ease;
-
-          &:focus-visible {
-            outline: 2px solid #8b5cf6;
-            outline-offset: 2px;
-          }
-        }
-
-        &:hover {
-          border-color: #8b5cf6;
-          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-          transform: scale(1.02);
-        }
-      }
-    }
-
-    &__bullet {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--color-primary);
-      flex-shrink: 0;
-      margin-top: 6px;
     }
 
     &__tech-label {
-      font-weight: $font-weight-semibold;
-      color: $color-success;
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: #22c55e;
       min-width: 120px;
     }
 
-    &__member-icon {
-      font-size: $font-size-xl;
-      flex-shrink: 0;
+    .tech-logos {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tech-logo-link {
+      display: inline-flex;
+      align-items: center;
+      transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+      background-color: #ffffff;
+      padding: 4px;
+      border-radius: 4px;
+
+      &:hover {
+        transform: translateY(-2px);
+        opacity: 0.8;
+      }
+    }
+
+    .tech-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
     }
 
     &__supervisor {
-      margin-bottom: $spacing-2xl;
-      padding: $spacing-lg;
+      margin-bottom: 2rem;
+      padding: 1rem;
       background: var(--color-bg-secondary);
-      border-radius: $radius-md;
+      border-radius: 0.5rem;
       border: 2px solid #8b5cf6;
-      font-size: $font-size-base;
+      font-size: 1rem;
       color: var(--color-text-secondary);
       text-align: center;
     }
 
     &__supervisor-label {
-      font-weight: $font-weight-semibold;
+      font-weight: 600;
       color: #8b5cf6;
     }
   }

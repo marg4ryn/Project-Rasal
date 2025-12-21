@@ -508,13 +508,9 @@
     "technologies": {
       "title": "Technologie",
       "backendLabel": "Backend",
-      "backend": "Java, Spring Boot, MongoDB",
       "frontendLabel": "Frontend",
-      "frontend": "TypeScript, Vue.js, SCSS",
       "visualizationsLabel": "Wizualizacje",
-      "visualizations": "Three.js, D3.js, Chart.js",
-      "analysisLabel": "Analiza",
-      "analysis": "Git"
+      "analysisLabel": "Analiza"
     }
   }
 }
