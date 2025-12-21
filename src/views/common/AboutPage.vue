@@ -437,7 +437,7 @@
       }
 
       &-title {
-        font-size: 2rem;
+        font-size: 3rem;
         font-weight: 600;
         color: var(--color-text-secondary);
         margin: 0;
@@ -446,7 +446,7 @@
       }
 
       &-logo {
-        width: 32px;
+        width: 50px;
         margin-right: 2px;
       }
     }

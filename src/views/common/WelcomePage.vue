@@ -78,17 +78,15 @@
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
-  import { useRouter, onBeforeRouteLeave } from 'vue-router'
+  import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
   import { useNewAnalysisStore } from '@/stores/newAnalysisStore'
   import { useSseConnector } from '@/composables/useSseConnector'
-  import { useRestApi } from '@/composables/useRestApi'
   import { useLogger } from '@/composables/useLogger'
   import AppButton from '@/components/common/AppButton.vue'
 
   const { t } = useI18n()
   const router = useRouter()
-  const api = useRestApi()
   const log = useLogger('WelcomePage')
   const newAnalysisStore = useNewAnalysisStore()
   const REPO_URL_PATTERN =
@@ -104,10 +102,6 @@
   const toDate = ref(newAnalysisStore.toDate || MAX_DATE)
   const fromDateError = ref('')
   const toDateError = ref('')
-
-  onBeforeRouteLeave((to, from, next) => {
-    api.clearAll().then(() => next())
-  })
 
   const { start } = useSseConnector(
     'download-repository',

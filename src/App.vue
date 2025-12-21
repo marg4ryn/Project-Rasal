@@ -9,7 +9,7 @@
     <AppBar v-if="isAppBarVisible" />
     <RightSection />
     <NavBar v-if="isNavBarVisible" />
-    <div class="content">
+    <div class="content" :style="{ minHeight: contentMinHeight }">
       <RouterView />
     </div>
     <AppFooter />
@@ -28,9 +28,9 @@
 </template>
 
 <script setup lang="ts">
-  import { useUIStore } from '@/stores/uiStore'
-  import { RouterView } from 'vue-router'
   import { computed, onBeforeMount } from 'vue'
+  import { RouterView } from 'vue-router'
+  import { useUIStore } from '@/stores/uiStore'
   import { useUserSettingsStore } from './stores/userSettingsStore'
   import { useNotificationsStore } from './stores/notificationsStore'
   import { useToast } from '@/composables/useToast'
@@ -49,6 +49,12 @@
 
   const isNavBarVisible = computed(() => uiStore.isNavBarVisible)
   const isAppBarVisible = computed(() => uiStore.isAppBarVisible)
+
+  const contentMinHeight = computed(() => {
+    const appBarHeight = isNavBarVisible.value ? 50 : 0
+    const navBarHeight = isNavBarVisible.value ? 50 : 0
+    return `calc(100vh - ${appBarHeight + navBarHeight}px)`
+  })
 
   onBeforeMount(() => {
     notificationsStore.clearAll()
@@ -76,7 +82,6 @@
     position: relative;
     z-index: 1;
     min-width: 0;
-    min-height: 100vh;
   }
 
   .toast-container {

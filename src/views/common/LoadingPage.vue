@@ -13,10 +13,12 @@
   import { useRouter } from 'vue-router'
   import { t } from '@/plugins/i18n'
   import { useSseConnector } from '@/composables/useSseConnector'
+  import { useRestApi } from '@/composables/useRestApi'
   import { useNewAnalysisStore } from '@/stores/newAnalysisStore'
   import LoadingBar from '@/components/sections/LoadingBar.vue'
 
   const newAnalysisStore = useNewAnalysisStore()
+  const api = useRestApi()
   const router = useRouter()
   const MIN_DATE = '2000-01-01'
   const today = new Date().toISOString().split('T')[0]
@@ -31,6 +33,7 @@
   watch(isCompleted, async (newValue) => {
     if (newValue) {
       resetNewAnalysisStore()
+      api.clearAll()
       router.push('/repository-overview')
     }
   })
