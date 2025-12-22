@@ -14,15 +14,35 @@
 
 ## 📖 About
 
-**Quasar** helps developers and managers understand the dynamics of software evolution by combining structural metrics with historical data from Git.
+**Quasar** is a modern tool that serves as an intelligent navigation system for complex code repositories. Most large software projects resemble living yet intricate organisms in which it is easy to lose orientation. Instead of relying on static file browsing, the application analyzes change history and the dynamics of software evolution. This allows teams to better understand how their work evolves and to precisely identify areas that require special attention. Quasar transforms raw data from version control systems into clear and readable information, facilitating proactive management of technical debt in large-scale software systems.
 
-The central element of the application interface is a fully interactive 3D visualization of a repository in the form of a **“code city.”** In this model, each file is represented as a building, where the height reflects the number of changes and the width corresponds to the file size measured in lines of code. This representation allows users to intuitively understand the structure of the analyzed repository. In a single view, it is possible to trace the directory hierarchy, identify dominant *“skyscrapers”* indicating areas most prone to changes, and notice wide, massive buildings representing files that have been developed over a long period of time.
+| Starting the Analysis |
+|:---:|
+| <img src="./docs/welcome.png" width="1000"/> |
 
-Different screens of the tool present the *“code city”* in various visual variants, enabling repository analysis from multiple perspectives and highlighting different aspects of its structure. For example, the *“hotspots”* view identifies areas with the highest risk of technical debt.
+The project abandons conventional tables in favor of an intuitive **_3D code city_** visualization. In this model, each file is represented as a building whose dimensions reflect key metrics: height symbolizes the intensity of work on a given component, while width corresponds to its physical size. This form of presentation enables users to instantly spot _skyscrapers_ – critical parts of the system around which the greatest development effort is concentrated. Thanks to the interactive map, developers can quickly identify areas of highest activity, significantly accelerating the auditing process without the need for tedious report analysis.
 
 | 3D Code City Model |
 |:---:|
-| ![Code City](./docs/city.png) |
+| <img src="./docs/extensions.png" width="1000"/> |
+
+The application’s name refers to quasars, the brightest objects in the universe. In the context of software development, these correspond to so-called **_hotspots_** – areas where high complexity coincides with frequent changes. Quasar acts as a powerful spotlight, illuminating these highly active regions that often remain hidden in traditional analyses. By precisely identifying critical points, the tool enables teams to focus their attention and resources where intervention is most needed, reducing the risk of failures and supporting long-term, sustainable system maintenance.
+
+| Hotspots View |
+|:---:|
+| <img src="./docs/hotspots.png" width="1000"/> |
+
+Quasar recognizes that software is ultimately the result of human collaboration and therefore provides insights into team dynamics. The application visualizes knowledge flow and the distribution of contributions across individual modules, supporting the development of more informed and cohesive development teams. It enables the identification of centers of expertise and facilitates communication through a clear presentation of code ownership history. This human-centered approach makes the software development process more transparent and less stressful, encouraging a culture of knowledge sharing within the organization.
+
+| Developer Relationships |
+|:---:|
+| <img src="./docs/relationships.png" width="1000"/> |
+
+Built with a strong focus on quality, Quasar combines technical data analysis with a modern form of presentation. The system is based on a solid technology stack: **Java** and **Spring Boot** on the backend, **MongoDB** as the database, and **Vue.js** together with **Three.js** in the visualization layer. The goal of the project was to create a solution that makes everyday development work more predictable and transparent. By combining behavioral analysis with an interactive interface, Quasar supports developers in maintaining control over the evolution of their projects.
+
+| Repository Overview |
+|:---:|
+| <img src="./docs/overview.png" width="1000"/> |
 
 ---
 
@@ -47,6 +67,7 @@ Here's an overview of the project's directory structure:
 -   **`types/`**: Custom TypeScript types
 -   **`utils/`**: Useful functions and constants
     -   `city/`: Useful city functions and constants
+    -   `common/`: General useful functions
 -   **`views/`**: Components representing entire pages of the application
     -   `auth/`: User authorization pages
     -   `cities/`: Code city pages

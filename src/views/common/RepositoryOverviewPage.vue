@@ -331,7 +331,7 @@
   import { ChartColor, ChartDataPoint } from '@/types/timelineChart.js'
   import { useI18n } from 'vue-i18n'
   import type { AuthorsStatisticsDetails } from '@/types'
-  import { formatDate, formatDateTime } from '@/utils/dateFormatter'
+  import { formatDate, formatDateTime } from '@/utils/common/dateFormatter'
 
   import TimelineChart from '@/components/visuals/TimelineChart.vue'
   import CodeChurnChart from '@/components/visuals/CodeChurnChart.vue'

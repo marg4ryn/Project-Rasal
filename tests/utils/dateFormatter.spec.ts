@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { formatDate, formatDateTime, formatDaysOnly, formatDaysSince } from '@/utils/dateFormatter'
+import {
+  formatDate,
+  formatDateTime,
+  formatDaysOnly,
+  formatDaysSince,
+} from '@/utils/common/dateFormatter'
 import { setLocale } from '@/plugins/i18n'
 
 describe('dateFormatter', () => {

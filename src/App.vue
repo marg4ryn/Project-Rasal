@@ -28,9 +28,9 @@
 </template>
 
 <script setup lang="ts">
-  import { useUIStore } from '@/stores/uiStore'
-  import { RouterView } from 'vue-router'
   import { computed, onBeforeMount } from 'vue'
+  import { RouterView } from 'vue-router'
+  import { useUIStore } from '@/stores/uiStore'
   import { useUserSettingsStore } from './stores/userSettingsStore'
   import { useNotificationsStore } from './stores/notificationsStore'
   import { useToast } from '@/composables/useToast'

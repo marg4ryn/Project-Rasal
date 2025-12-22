@@ -48,13 +48,14 @@
     min-width: 120px;
 
     &--primary {
-      background: $color-button-primary;
-      color: white;
+      background: none;
+      color: $color-button-primary;
+      border: 1px solid $color-button-primary;
 
       &:hover {
         background: $color-button-primary-hover;
+        color: white;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
       }
 
       &:active {
@@ -63,7 +64,7 @@
     }
 
     &--secondary {
-      background: var(--color-button-secondary);
+      background: none;
       color: white;
       border: 1px solid var(--color-border);
 
@@ -79,8 +80,8 @@
     }
 
     &--danger {
-      background: var(--color-button-danger-bg);
-      color: #fff;
+      color: $color-button-danger;
+      background: none;
       border: 1px solid $color-button-danger;
       transition: all 0.2s ease;
 
@@ -88,7 +89,6 @@
         background: $color-button-danger;
         color: white;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
       }
 
       &:active {

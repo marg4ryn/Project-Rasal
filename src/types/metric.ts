@@ -1,7 +1,7 @@
 import { t } from '@/plugins/i18n'
 import { CityNode } from '@/types'
 import type { FileDetails } from '@/types/restApi'
-import { formatDate, formatDaysOnly } from '@/utils/dateFormatter'
+import { formatDate, formatDaysOnly } from '@/utils/common/dateFormatter'
 
 export interface MetricsStore {
   fileDetails?: Map<string, FileDetails>

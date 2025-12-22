@@ -1,25 +1,16 @@
 export type ConnectionState = 'idle' | 'running' | 'completed' | 'error'
 
 export interface Analysis {
-  analysisId: string
-  screenRoute: string
-  screenName?: string
-  state: ConnectionState
+  analysisId?: string
+  state?: ConnectionState
   status?: AnalysisStatus
-  result?: AnalysisResult
   error?: string
   startedAt?: Date
   completedAt?: Date
-  params?: Record<string, string>
 }
 
 export interface AnalysisConnection {
   cleanup: () => void
-}
-
-export interface AnalysisResult {
-  data: string
-  timestamp: string
 }
 
 export enum AnalysisStatus {

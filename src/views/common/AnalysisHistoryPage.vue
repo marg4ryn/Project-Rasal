@@ -123,6 +123,7 @@
   import { AnalysisHistoryResponseItem, AnalysisHistoryResponse } from '@/types'
   import { useConnectionStore } from '@/stores/sseConnectorStore'
   import { useRestApi } from '@/composables/useRestApi'
+  import { formatDate, formatDateTime } from '@/utils/common/dateFormatter'
   import AppButtonClose from '@/components/common/AppButtonClose.vue'
 
   const { t } = useI18n()
@@ -178,17 +179,13 @@
   }
 
   const goToResults = (analysisId: string) => {
-    const analysis = connectionStore.analyses.get('download-repository')
-    if (analysis?.result?.data) {
-      analysis.result.data = analysisId
-    } else {
-      connectionStore.analyses.set('download-repository', {
-        analysisId: 'download-repository',
-        result: { data: analysisId, timestamp: Date.now().toString() },
-        screenRoute: '/repository-overview',
-        state: 'completed',
-      })
-    }
+    connectionStore.setAnalysis({
+      analysisId: analysisId,
+      startedAt: new Date(),
+      completedAt: new Date(),
+      status: undefined,
+      state: 'completed',
+    })
     restApiStore.clearAll()
     router.push('/repository-overview')
   }
@@ -200,26 +197,6 @@
     } catch {
       return url
     }
-  }
-
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '-'
-    return new Date(dateStr).toLocaleDateString(navigator.language, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-  }
-
-  const formatDateTime = (dateStr: string) => {
-    if (!dateStr) return '-'
-    return new Date(dateStr).toLocaleString(navigator.language, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
   }
 
   onMounted(() => {
