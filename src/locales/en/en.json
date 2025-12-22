@@ -266,7 +266,8 @@
       "commits": "Commits",
       "files": "Files",
       "codeLines": "Code Lines",
-      "commentLines": "Comment Lines"
+      "commentLines": "Comment Lines",
+      "blankLines": "Blank Lines"
     },
     "staticAnalysis": {
       "title": "Static Code Analysis",

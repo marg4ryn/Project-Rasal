@@ -67,6 +67,7 @@ Here's an overview of the project's directory structure:
 -   **`types/`**: Custom TypeScript types
 -   **`utils/`**: Useful functions and constants
     -   `city/`: Useful city functions and constants
+    -   `common/`: General useful functions
 -   **`views/`**: Components representing entire pages of the application
     -   `auth/`: User authorization pages
     -   `cities/`: Code city pages

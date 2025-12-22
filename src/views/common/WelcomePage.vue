@@ -103,11 +103,7 @@
   const fromDateError = ref('')
   const toDateError = ref('')
 
-  const { start } = useSseConnector(
-    'download-repository',
-    '/repository-overview',
-    'sse.analysis.repo-download'
-  )
+  const { start } = useSseConnector()
 
   const validateLink = () => {
     const trimmedLink = link.value.trim()

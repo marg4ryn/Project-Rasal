@@ -32,7 +32,7 @@
   const uiStore = useUIStore()
 
   const handleBack = () => {
-    router.back()
+    router.smartBack()
   }
 
   const buttonTop = computed(() => (uiStore.isAppBarVisible ? '8px' : '48px'))

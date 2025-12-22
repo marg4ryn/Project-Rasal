@@ -1,13 +1,12 @@
 import { useLogger } from '@/composables/useLogger'
-import { AnalysisConnection, AnalysisStatus, AnalysisResult } from '@/types'
+import { AnalysisConnection, AnalysisStatus } from '@/types'
 
 const log = useLogger('sseConnector')
 
 export function createAnalysisConnection(
-  analysisId: string,
   params: Record<string, string> | undefined,
   onProgress: (status: AnalysisStatus) => void,
-  onSuccess: (result: AnalysisResult) => void,
+  onSuccess: (result: string) => void,
   onError: (error: string) => void
 ): AnalysisConnection {
   let url = `${import.meta.env.VITE_API_URL}analysis`
@@ -30,7 +29,6 @@ export function createAnalysisConnection(
   eventSource.addEventListener('progress', (event: MessageEvent) => {
     try {
       const status = JSON.parse(event.data) as AnalysisStatus
-
       log.info('Progress:', status)
       onProgress(status)
     } catch (error) {
@@ -42,11 +40,7 @@ export function createAnalysisConnection(
     try {
       const analysisId = event.data
       log.info('Analysis completed:', analysisId)
-      const result: AnalysisResult = {
-        data: analysisId,
-        timestamp: new Date().toISOString(),
-      }
-      onSuccess(result)
+      onSuccess(analysisId)
       eventSource.close()
     } catch (error) {
       log.error('Failed to parse success:', error)
@@ -73,7 +67,7 @@ export function createAnalysisConnection(
   }
 
   eventSource.onopen = () => {
-    log.info(`SSE connection opened: "${analysisId}"`)
+    log.info(`SSE connection opened`)
   }
 
   return {

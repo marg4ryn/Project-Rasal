@@ -3,195 +3,171 @@ import { useI18n } from 'vue-i18n'
 import { ref, computed, watch } from 'vue'
 import { createAnalysisConnection } from '@/services/sseConnector'
 import { useNotificationsStore } from '@/stores/notificationsStore'
-import { Analysis, AnalysisConnection } from '@/types'
+import { Analysis, AnalysisConnection, ConnectionState, AnalysisStatus } from '@/types'
 import { useLogger } from '@/composables/useLogger'
 
 const log = useLogger('sseConnectorStore')
-const STORAGE_KEY = 'sse-analyses'
+const STORAGE_KEY = 'sse-analysis'
 
-const serializeAnalyses = (analyses: Map<string, Analysis>): string => {
-  const serializable = Array.from(analyses.entries()).map(([key, value]) => [
-    key,
-    {
-      ...value,
-      startedAt: value.startedAt?.toISOString(),
-      completedAt: value.completedAt?.toISOString(),
-    },
-  ])
-  return JSON.stringify(serializable)
+const serializeAnalysis = (analysis: Analysis | null): string => {
+  if (!analysis) return JSON.stringify(null)
+
+  return JSON.stringify({
+    ...analysis,
+    startedAt: analysis.startedAt?.toISOString(),
+    completedAt: analysis.completedAt?.toISOString(),
+  })
 }
 
-const deserializeAnalyses = (json: string): Map<string, Analysis> => {
+const deserializeAnalysis = (json: string): Analysis | null => {
   try {
-    const parsed = JSON.parse(json)
-    const map = new Map<string, Analysis>()
+    const parsed: unknown = JSON.parse(json)
 
-    parsed.forEach(([key, value]: [string, any]) => {
-      map.set(key, {
-        ...value,
-        startedAt: value.startedAt ? new Date(value.startedAt) : undefined,
-        completedAt: value.completedAt ? new Date(value.completedAt) : undefined,
-      })
-    })
+    if (parsed === null || typeof parsed !== 'object') {
+      return null
+    }
 
-    return map
+    const data = parsed as {
+      analysisId?: string
+      state?: ConnectionState
+      status?: AnalysisStatus
+      error?: string
+      startedAt?: string
+      completedAt?: string
+    }
+
+    return {
+      ...data,
+      startedAt: data.startedAt ? new Date(data.startedAt) : undefined,
+      completedAt: data.completedAt ? new Date(data.completedAt) : undefined,
+    }
   } catch (error) {
-    log.error('Failed to deserialize analyses from localStorage:', error)
-    return new Map()
+    log.error('Failed to deserialize analysis from localStorage:', error)
+    return null
   }
 }
 
-export const useConnectionStore = defineStore('connections', () => {
+export const useConnectionStore = defineStore('SSEconnectionStore', () => {
   const { t } = useI18n()
 
   const storedData = localStorage.getItem(STORAGE_KEY)
-  const analyses = ref<Map<string, Analysis>>(
-    storedData ? deserializeAnalyses(storedData) : new Map()
-  )
-  const connections = ref<Map<string, AnalysisConnection>>(new Map())
+  const analysis = ref<Analysis | null>(storedData ? deserializeAnalysis(storedData) : null)
+  const connection = ref<AnalysisConnection | null>(null)
 
   watch(
-    analyses,
-    (newAnalyses) => {
-      localStorage.setItem(STORAGE_KEY, serializeAnalyses(newAnalyses))
+    analysis,
+    (newAnalysis) => {
+      localStorage.setItem(STORAGE_KEY, serializeAnalysis(newAnalysis))
     },
-    { deep: true, flush: 'post' }
+    { deep: true }
   )
 
-  const getAnalysis = (analysisId: string) => {
-    return computed(() => analyses.value.get(analysisId))
-  }
+  const getAnalysis = computed(() => analysis.value)
 
-  const isRunning = (analysisId: string) => {
-    return computed(() => analyses.value.get(analysisId)?.state === 'running')
-  }
+  const isRunning = computed(() => analysis.value?.state === 'running')
 
-  const initializeAnalysis = (analysisId: string, screenRoute: string, screenName: string) => {
-    analyses.value.set(analysisId, {
-      analysisId,
-      screenRoute,
-      screenName,
-      state: 'idle',
-    })
-  }
-
-  const startAnalysis = (analysisId: string, params?: Record<string, string>) => {
-    const analysis = analyses.value.get(analysisId)
-    if (!analysis) {
-      log.error(`Analysis "${analysisId}" not initialized`)
+  const startAnalysis = (params?: Record<string, string>) => {
+    if (analysis.value?.state === 'running') {
+      log.warn('Analysis is already running')
       return
     }
 
-    if (analysis.state === 'running') {
-      log.warn(`Analysis "${analysisId}" is already running`)
-      return
+    analysis.value = {
+      analysisId: undefined,
+      state: 'running',
+      status: undefined,
+      error: undefined,
+      startedAt: new Date(),
+      completedAt: undefined,
     }
-
-    const existingConnection = connections.value.get(analysisId)
-    if (existingConnection) {
-      existingConnection.cleanup()
-      connections.value.delete(analysisId)
-    }
-
-    analysis.state = 'running'
-    analysis.status = undefined
-    analysis.result = undefined
-    analysis.error = undefined
-    analysis.startedAt = new Date()
-    analysis.completedAt = undefined
-    analysis.params = params
 
     const notificationsStore = useNotificationsStore()
 
-    const connection = createAnalysisConnection(
-      analysisId,
+    connection.value = createAnalysisConnection(
       params,
       (status) => {
-        const current = analyses.value.get(analysisId)
-        if (current) {
-          current.status = status
+        if (analysis.value) {
+          analysis.value.status = status
         }
       },
       (result) => {
-        const current = analyses.value.get(analysisId)
-        if (current) {
-          current.state = 'completed'
-          current.result = result
-          current.completedAt = new Date()
+        if (analysis.value) {
+          analysis.value.state = 'completed'
+          analysis.value.completedAt = new Date()
+          analysis.value.analysisId = result
 
-          const screenNameKey = current.screenName || current.screenRoute
-          const duration = current.startedAt
-            ? Math.round((current.completedAt.getTime() - current.startedAt.getTime()) / 1000)
+          const duration = analysis.value.startedAt
+            ? Math.round(
+                (analysis.value.completedAt.getTime() - analysis.value.startedAt.getTime()) / 1000
+              )
             : 0
 
           notificationsStore.addNotification({
             message: t('notifications.analysis.completed', {
-              screen: t(screenNameKey),
+              screen: t('download-repository'),
               duration,
             }),
             type: 'success',
-            screenRoute: current.screenRoute,
+            screenRoute: '/repository-overview',
           })
         }
-        connections.value.delete(analysisId)
+        connection.value = null
       },
       (error) => {
-        const current = analyses.value.get(analysisId)
-        if (current) {
-          current.state = 'error'
-          current.error = error
-          current.completedAt = new Date()
+        if (analysis.value) {
+          analysis.value.state = 'error'
+          analysis.value.error = error
+          analysis.value.completedAt = new Date()
 
-          const screenNameKey = current.screenName || current.screenRoute
           notificationsStore.addNotification({
             message: t('notifications.analysis.failed', {
-              screen: t(screenNameKey),
+              screen: t('download-repository'),
               error: t(error),
             }),
             type: 'error',
           })
         }
-        connections.value.delete(analysisId)
+        connection.value = null
       }
     )
-
-    connections.value.set(analysisId, connection)
   }
 
-  const stopAnalysis = (analysisId: string) => {
-    const connection = connections.value.get(analysisId)
-    if (connection) {
-      connection.cleanup()
-      connections.value.delete(analysisId)
+  const stopAnalysis = () => {
+    if (connection.value) {
+      connection.value.cleanup()
+      connection.value = null
     }
 
-    const analysis = analyses.value.get(analysisId)
-    if (analysis && analysis.state === 'running') {
-      analysis.state = 'idle'
-      analysis.status = undefined
+    if (analysis.value && analysis.value.state === 'running') {
+      analysis.value.state = 'idle'
+      analysis.value.status = undefined
 
       const notificationsStore = useNotificationsStore()
-      const screenNameKey = analysis.screenName || analysis.screenRoute
       notificationsStore.addNotification({
-        message: t('notifications.analysis.cancelled', {
-          screen: t(screenNameKey),
-        }),
+        message: t('notifications.analysis.cancelled'),
         type: 'info',
       })
     }
   }
+  const setAnalysis = (newAnalysis: Analysis | null) => {
+    analysis.value = newAnalysis
+  }
 
-  const clearAll = () => {
-    analyses.value.clear()
+  const clearAnalysis = () => {
+    if (connection.value) {
+      connection.value.cleanup()
+      connection.value = null
+    }
+    analysis.value = null
+    localStorage.removeItem(STORAGE_KEY)
   }
 
   return {
-    analyses,
-    getAnalysis,
+    analysis: getAnalysis,
     isRunning,
-    initializeAnalysis,
     startAnalysis,
     stopAnalysis,
-    clearAll,
+    setAnalysis,
+    clearAnalysis,
   }
 })

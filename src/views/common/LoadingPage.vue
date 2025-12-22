@@ -24,11 +24,7 @@
   const today = new Date().toISOString().split('T')[0]
   const MAX_DATE = today
 
-  const { isCompleted, statusLabel, stop } = useSseConnector(
-    'download-repository',
-    '/repository-overview',
-    'sse.analysis.repo-download'
-  )
+  const { isCompleted, statusLabel, stop } = useSseConnector()
 
   watch(isCompleted, async (newValue) => {
     if (newValue) {

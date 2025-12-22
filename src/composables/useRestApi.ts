@@ -18,9 +18,9 @@ export function useRestApi() {
   const { t } = useI18n()
 
   function getAnalysisId(): string | null {
-    const analysis = connectionStore.analyses.get('download-repository')
-    if (analysis?.result?.data) {
-      return analysis.result.data
+    const analysis = connectionStore.analysis
+    if (analysis?.analysisId) {
+      return analysis.analysisId
     }
     log.warn('Analysis ID not found in connectionStore')
     return null
